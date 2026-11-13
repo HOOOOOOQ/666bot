@@ -18,7 +18,6 @@ const EMOJI = {
   fire: '🔥',
   bolt: '⚡',
   duo: '🤝',
-  heart: '💔',
   badge: '🎖️',
   trophy: '🏆',
   clock: '⏳',

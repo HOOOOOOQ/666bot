@@ -14,6 +14,9 @@ const guildConfigSchema = new Schema(
     reminderMinute: { type: Number, default: 0, min: 0, max: 59 },
     notificationChannelId: { type: String, default: null },
 
+    /** Channel for automatic 666 DUO STREAK LOGS (null = logs disabled). */
+    logChannelId: { type: String, default: null },
+
     activityCooldownSeconds: { type: Number, default: 60, min: 0, max: 3600 },
     minMessageLength: { type: Number, default: 3, min: 1, max: 50 },
     ignoredChannelIds: { type: [String], default: [] },

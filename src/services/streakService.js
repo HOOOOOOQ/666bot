@@ -8,6 +8,7 @@ const { getDayKey, previousDayKey } = require('../utils/time');
 const duoService = require('./duoService');
 const rewardService = require('./rewardService');
 const notificationService = require('./notificationService');
+const logService = require('./logService');
 
 const log = createLogger('streak');
 
@@ -94,6 +95,16 @@ async function onActivityRecorded({ duo, guildConfig = null, dayKey }) {
 
   const rewards = await rewardService.checkAndGrant({ duo: finalDuo, guildConfig });
 
+  const streakLog = await logService.recordStreakIncrement({
+    duo: finalDuo,
+    previousStreak: Math.max(0, Number(finalDuo.currentStreak) - 1),
+    dayKey,
+    guildConfig,
+  }).catch((error) => {
+    log.warn('Could not queue automatic streak log.', error.message);
+    return null;
+  });
+
   notificationService.notifyStreakCompleted({
     duo: finalDuo,
     streak: finalDuo.currentStreak,
@@ -110,6 +121,7 @@ async function onActivityRecorded({ duo, guildConfig = null, dayKey }) {
     streak: Number(finalDuo.currentStreak) || 0,
     xpAwarded: xpPerDay,
     rewards,
+    streakLog,
   };
 }
 

@@ -53,7 +53,7 @@ const REWARDS = Object.freeze([
     days: 365,
     key: 'eternal',
     name: 'Eternal Duo Badge',
-    emoji: '♾️',
+    emoji: '👑',
     description: 'Satu tahun penuh. Eternal connection.',
   },
 ]);

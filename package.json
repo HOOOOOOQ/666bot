@@ -2,7 +2,7 @@
   "name": "666-bot",
   "version": "1.0.0",
   "private": true,
-  "description": "666 BOT \u2014 TWO MEMBERS. ONE CONNECTION. ONE STREAK. Discord Duo Streak system.",
+  "description": "666 BOT — TWO MEMBERS. ONE CONNECTION. ONE STREAK. Discord Duo Streak system.",
   "main": "src/index.js",
   "type": "commonjs",
   "engines": {
@@ -26,6 +26,7 @@
   "author": "666 SYSTEM",
   "license": "MIT",
   "dependencies": {
+    "@napi-rs/canvas": "^1.1.1",
     "discord.js": "^14.28.1",
     "dotenv": "^17.4.2",
     "mongoose": "^8.24.9"

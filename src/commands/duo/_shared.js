@@ -44,7 +44,7 @@ function breakButtons(duoId) {
     new ButtonBuilder()
       .setCustomId(`duo:break:confirm:${duoId}`)
       .setLabel('Konfirmasi Putuskan Duo')
-      .setEmoji('💔')
+      .setEmoji('⛓️')
       .setStyle(ButtonStyle.Danger),
     new ButtonBuilder()
       .setCustomId(`duo:break:cancel:${duoId}`)

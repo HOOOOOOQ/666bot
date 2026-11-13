@@ -44,14 +44,20 @@ async function paginate(interaction, render, { pageCount, page = 0, ephemeral = 
   let currentPage = clampPage(Number(page) || 0, safePageCount);
 
   const buildPayload = async (targetPage) => {
-    const embed = await render(targetPage);
+    const rendered = await render(targetPage);
+    const embed = rendered?.embed || rendered;
+    const files = Array.isArray(rendered?.files) ? rendered.files : [];
     return {
       embeds: [embed],
       components: safePageCount > 1 ? [buildRow(token, targetPage, safePageCount)] : [],
+      ...(files.length ? { files } : {}),
     };
   };
 
   const firstPayload = await buildPayload(currentPage);
+  if (ephemeral && interaction.deferred) {
+    firstPayload.flags = MessageFlags.Ephemeral;
+  }
 
   if (interaction.deferred || interaction.replied) {
     await interaction.editReply(firstPayload);
@@ -94,7 +100,17 @@ async function paginate(interaction, render, { pageCount, page = 0, ephemeral = 
     else return;
 
     const payload = await buildPayload(currentPage);
-    await component.update(payload).catch(() => {});
+    // Replace the previous page image instead of stacking attachments.
+    const updatePayload = payload.files?.length
+      ? { ...payload, attachments: [] }
+      : payload;
+    try {
+      await component.update(updatePayload);
+    } catch {
+      // Some API versions dislike an empty attachments array; retry with the
+      // files only so pagination still works.
+      await component.update(payload).catch(() => {});
+    }
   });
 
   collector.on('end', async (_collected, reason) => {

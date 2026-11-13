@@ -211,7 +211,7 @@ function leaderboardEmbed({ entries, page, pageSize, total, categoryLabel, guild
 const HISTORY_ICONS = {
   joined: '🤝',
   completed: '🔥',
-  broken: '💔',
+  broken: '⛓️',
   reward: '🎖️',
   ended: '🚪',
   reminder: '🔔',
@@ -317,7 +317,7 @@ function breakConfirmEmbed({ duo }) {
         ].join('\n'),
       ),
       '',
-      `${EMOJI.heart} Streak akan berhenti dan badge tetap tersimpan di riwayat. Tindakan ini tidak bisa dibatalkan.`,
+      `${EMOJI.chain} Streak akan berhenti dan badge tetap tersimpan di riwayat. Tindakan ini tidak bisa dibatalkan.`,
       '',
       'Tekan tombol **Konfirmasi** di bawah untuk melanjutkan.' ,
     ].join('\n'),
@@ -328,7 +328,7 @@ function breakConfirmEmbed({ duo }) {
 function breakResultEmbed({ duo, streakLost }) {
   return buildEmbed({
     color: COLORS.ash,
-    authorName: `${EMOJI.heart} 666 DUO CONNECTION ENDED`,
+    authorName: `${EMOJI.chain} 666 DUO CONNECTION ENDED`,
     title: 'Duo telah diakhiri',
     description: [
       `Duo **${duo.name}** telah diputuskan.`,
@@ -370,10 +370,10 @@ function streakCompletedNotification({ duo, streak, rewards = [], timezone }) {
 function streakBrokenNotification({ duo, lostStreak, timezone, reason }) {
   return buildEmbed({
     color: COLORS.error,
-    authorName: `${EMOJI.heart} 666 DUO NOTIFICATION`,
-    title: `${EMOJI.heart} Streak terputus`,
+    authorName: `${EMOJI.chain} 666 DUO NOTIFICATION`,
+    title: `${EMOJI.chain} Streak terputus`,
     description: [
-      `${mention(duo.members[0])} ${EMOJI.heart} ${mention(duo.members[1])}`,
+      `${mention(duo.members[0])} ${EMOJI.chain} ${mention(duo.members[1])}`,
       '',
       reason === 'partner_left'
         ? 'Salah satu member meninggalkan server.'
@@ -431,7 +431,7 @@ function rewardNotification({ duo, reward, timezone }) {
 function partnerLeftNotification({ duo, leftMember, timezone }) {
   return buildEmbed({
     color: COLORS.ash,
-    authorName: `${EMOJI.heart} 666 DUO CONNECTION`,
+    authorName: `${EMOJI.chain} 666 DUO CONNECTION`,
     title: 'Duo partner meninggalkan server',
     description: [
       `${mention(leftMember)} keluar dari server.`,
@@ -463,6 +463,10 @@ function configEmbed({ guildConfig, guildName }) {
       `Notifikasi: ${guildConfig.notificationsEnabled ? '✅ aktif' : '❌ nonaktif'}`,
       `Reminder harian: ${guildConfig.remindersEnabled ? '✅ aktif' : '❌ nonaktif'} pukul \`${String(guildConfig.reminderHour).padStart(2, '0')}:${String(guildConfig.reminderMinute).padStart(2, '0')}\``,
       `Channel notifikasi: ${channel}`,
+      '',
+      '**666 DUO STREAK LOGS**',
+      `Channel log otomatis: ${guildConfig.logChannelId ? `<#${guildConfig.logChannelId}>` : '*belum diatur — gunakan /duo setlog*'}`,
+      'Log dikirim hanya saat streak benar-benar bertambah.',
       '',
       '**AKTIVITAS**',
       `Cooldown aktivitas: \`${guildConfig.activityCooldownSeconds}s\``,
@@ -502,6 +506,8 @@ function helpEmbed({ prefixCommands = [] } = {}) {
       '`/duo rename <nama>` — mengganti nama Duo',
       '`/duo break` — mengakhiri Duo (dengan konfirmasi)',
       '`/duo config` — pengaturan server (admin)',
+      '`/duo setlog #channel` — channel untuk 666 DUO STREAK LOGS (admin)',
+      '`/duo logstatus` — status sistem log otomatis (admin)',
       '`/duo help` — panduan ini',
       ...prefixCommands,
       '',
@@ -579,9 +585,181 @@ function pendingInviteEmbed({ fromMember, expiresAt }) {
   });
 }
 
+
+/**
+ * Compact companion embed for the rendered Duo profile card.
+ * The image carries the visual identity; this preserves searchable text.
+ */
+function profileCardEmbed({ duo, members, today, timezone }) {
+  const pair = Array.isArray(members) && members.length
+    ? members
+    : (duo?.members || []).map((member) => member);
+  const [memberA, memberB] = pair;
+  const bothActive = Boolean(today?.bothCompleted);
+
+  return buildEmbed({
+    color: bothActive ? COLORS.flame : COLORS.ember,
+    authorName: `${EMOJI.fire} 666 DUO STREAK`,
+    title: duo.name,
+    description: [
+      memberA && memberB
+        ? `${mention(memberA)} ${EMOJI.chain} ${mention(memberB)}`
+        : '',
+      '',
+      `## ${EMOJI.fire} ${formatDays(duo.currentStreak).toUpperCase()} STREAK`,
+      `**${formatDays(duo.totalDays)} together**`,
+      '',
+      todayStatusLine(today, duo),
+    ].filter(Boolean).join('\n'),
+    fields: [
+      { name: 'CURRENT STREAK', value: `🔥 **${formatDays(duo.currentStreak)}**`, inline: true },
+      { name: 'BEST STREAK', value: `🏆 **${formatDays(duo.bestStreak)}**`, inline: true },
+      { name: 'DUO XP', value: `💎 **${formatNumber(duo.xp)} XP**`, inline: true },
+      { name: 'TOTAL DAYS', value: `📅 **${formatDays(duo.totalDays)}**`, inline: true },
+      { name: 'ACTIVITY', value: bothActive ? '✅ **BOTH MEMBERS ACTIVE**' : '⏳ **IN PROGRESS**', inline: true },
+      { name: 'TIMEZONE', value: String(timezone || 'Asia/Jakarta'), inline: true },
+    ],
+    footer: `${BRAND} • ${timezone || 'Asia/Jakarta'}`,
+  });
+}
+
+/** Compact companion embed for the rendered leaderboard image. */
+function leaderboardCardEmbed({ page, pageCount, total, categoryLabel, guildName }) {
+  return buildEmbed({
+    color: COLORS.blood,
+    authorName: `${EMOJI.trophy} 666 DUO LEADERBOARD`,
+    title: categoryLabel || 'Current Streak',
+    description: [
+      '**TWO MEMBERS. ONE CONNECTION. ONE STREAK.**',
+      '',
+      'Rank 1 gold • Rank 2 silver • Rank 3 bronze • everyone else fights in red.',
+    ].join('\n'),
+    fields: [
+      { name: 'TOTAL DUO', value: `**${formatNumber(total)}**`, inline: true },
+      { name: 'PAGE', value: `**${page + 1}/${pageCount}**`, inline: true },
+      { name: 'SERVER', value: guildName ? `**${guildName}**` : '—', inline: true },
+    ],
+    footer: `${BRAND} • DUO STREAK LEADERBOARD`,
+  });
+}
+
+/** Automatic streak log embed. The rendered banner is attached by the sender. */
+function streakLogEmbed({ log, timezone }) {
+  const members = Array.isArray(log.members) ? log.members : [];
+  const memberA = members[0];
+  const memberB = members[1];
+  const previous = Number(log.previousStreak) || 0;
+  const current = Number(log.currentStreak) || 0;
+  const names = members.map((member) => `**${memberName(member)}**`).join(' & ');
+  const activityLine = members.length
+    ? members.map((member) => `${EMOJI.check} ${memberName(member)} completed`).join('   ')
+    : `${EMOJI.check} Both members completed today`;
+
+  const embed = buildEmbed({
+    color: COLORS.flame,
+    authorName: `${EMOJI.fire} 666 DUO STREAK LOGS`,
+    title: `${EMOJI.fire} 666 DUO STREAK UPDATED`,
+    description: [
+      memberA && memberB ? `${mention(memberA)} ${EMOJI.chain} ${mention(memberB)}` : names,
+      '',
+      '## STREAK INCREASED!',
+      `## ${EMOJI.fire} ${formatNumber(previous)} ${previous === 1 ? 'DAY' : 'DAYS'} → ${formatNumber(current)} DAYS`,
+      '',
+      activityLine,
+    ].filter(Boolean).join('\n'),
+    fields: [
+      { name: 'CURRENT STREAK', value: `🔥 **${formatNumber(current)} DAYS**`, inline: true },
+      { name: 'PREVIOUS STREAK', value: `⛓️ **${formatNumber(previous)} DAYS**`, inline: true },
+      { name: 'BEST STREAK', value: `🏆 **${formatNumber(log.bestStreak)} DAYS**`, inline: true },
+      { name: 'DUO XP', value: `💎 **${formatNumber(log.xp)} XP**`, inline: true },
+      { name: 'TOTAL DAYS', value: `📅 **${formatNumber(log.totalDays)} DAYS**`, inline: true },
+      { name: 'ACTIVITY STATUS', value: '✅ **BOTH MEMBERS ACTIVE**', inline: true },
+    ],
+    footer: `666 SYSTEM • AUTOMATIC LOGS • ${timezone || 'Asia/Jakarta'}`,
+    timestamp: false,
+  });
+
+  const when = log.sentAt || log.createdAt;
+  if (when) embed.setTimestamp(new Date(when));
+  else embed.setTimestamp(new Date());
+  return embed;
+}
+
+/** `/duo logstatus` overview of the automatic log queue. */
+function logStatusEmbed({ guildConfig, counts, last, recent, channel, timezone }) {
+  const statusLine = channel
+    ? `Log channel: <#${channel.id}>`
+    : 'Log channel belum diatur. Gunakan `/duo setlog #channel`.';
+
+  const recentLines = (recent || []).map((entry) => {
+    const icon = entry.status === 'sent'
+      ? EMOJI.check
+      : entry.status === 'failed'
+        ? EMOJI.cross
+        : entry.status === 'skipped'
+          ? EMOJI.clock
+          : EMOJI.fire;
+    return `${icon} \`${entry.dayKey}\` • **${entry.duoName || 'Duo'}** • ${entry.previousStreak}→${entry.currentStreak} • \`${String(entry.status).toUpperCase()}\``;
+  });
+
+  return buildEmbed({
+    color: COLORS.ember,
+    authorName: `${EMOJI.chain} 666 DUO STREAK LOGS`,
+    title: 'Log System Status',
+    description: [
+      statusLine,
+      '',
+      counts.failed > 0
+        ? '⚠️ Ada log gagal. Sistem akan mencoba ulang otomatis dengan exponential backoff.'
+        : 'Sistem log berjalan otomatis dan tahan restart.',
+    ].join('\n'),
+    fields: [
+      { name: 'SENT', value: `✅ **${formatNumber(counts.sent)}**`, inline: true },
+      { name: 'PENDING', value: `⏳ **${formatNumber(counts.pending)}**`, inline: true },
+      { name: 'FAILED', value: `❌ **${formatNumber(counts.failed)}**`, inline: true },
+      { name: 'SKIPPED', value: `⏭️ **${formatNumber(counts.skipped)}**`, inline: true },
+      {
+        name: 'LAST LOG',
+        value: last
+          ? `<t:${Math.floor(new Date(last.sentAt || last.createdAt).getTime() / 1000)}:R> • **${last.duoName || 'Duo'}** • ${last.previousStreak}→${last.currentStreak}`
+          : 'Belum ada log terkirim.',
+        inline: false,
+      },
+      {
+        name: 'RECENT LOGS',
+        value: recentLines.length ? recentLines.join('\n') : 'Belum ada log.',
+        inline: false,
+      },
+    ],
+    footer: `666 SYSTEM • AUTOMATIC LOGS • ${timezone || 'Asia/Jakarta'}`,
+  });
+}
+
+function logChannelConfiguredEmbed({ channel, guildConfig }) {
+  return buildEmbed({
+    color: COLORS.success,
+    authorName: `${EMOJI.chain} 666 DUO STREAK LOGS`,
+    title: 'Log channel aktif',
+    description: [
+      `Setiap kenaikan streak akan otomatis diposting ke <#${channel.id}>.`,
+      '',
+      'Log hanya dikirim saat streak benar-benar bertambah.',
+      'Tidak ada log untuk aktivitas satu member, dan tidak akan dobel per hari.',
+      '',
+      `Timezone server: \`${guildConfig?.timezone || 'Asia/Jakarta'}\``,
+    ].join('\n'),
+    footer: '666 SYSTEM • AUTOMATIC LOGS',
+  });
+}
+
 module.exports = {
   buildEmbed,
   profileEmbed,
+  profileCardEmbed,
+  leaderboardCardEmbed,
+  streakLogEmbed,
+  logStatusEmbed,
+  logChannelConfiguredEmbed,
   streakEmbed,
   leaderboardEmbed,
   historyEmbed,

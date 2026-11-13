@@ -9,9 +9,9 @@ const { getDuoOverview } = require('../services/profileService');
 const {
   errorEmbed,
   infoEmbed,
-  profileEmbed,
   breakResultEmbed,
 } = require('../ui/embeds');
+const { buildProfilePayload } = require('../ui/cards/payloads');
 
 const log = createLogger('interaction');
 
@@ -80,19 +80,14 @@ async function handleInvitationAccept(interaction, invitationId) {
   });
 
   const overview = await getDuoOverview({ guild: interaction.guild, userId: interaction.user.id });
-  const embed = profileEmbed({
-    duo: overview.duo,
-    members: overview.members,
-    today: overview.today,
-    rewardSummary: overview.rewardSummary,
-    nextMilestone: overview.nextMilestone,
-    timezone: overview.timezone,
+  const payload = await buildProfilePayload(overview, {
+    title: `✅ Duo Connection Established — ${overview.duo.name}`,
   });
-  embed.setTitle(`✅ Duo Connection Established — ${overview.duo.name}`);
 
   await interaction.editReply({
     content: '🔥 **DUO CONNECTION: ACTIVE** — streak kalian dimulai setelah kedua member menyelesaikan aktivitas pertama.',
-    embeds: [embed],
+    embeds: [payload.embed],
+    files: payload.files,
     components: [],
     allowedMentions: { users: overview.duo.members.map((member) => member.userId), parse: [] },
   });

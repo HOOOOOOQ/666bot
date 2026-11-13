@@ -2,10 +2,10 @@
 
 const { SlashCommandSubcommandBuilder } = require('discord.js');
 const duoService = require('../../services/duoService');
-const { leaderboardEmbed } = require('../../ui/embeds');
+const { buildLeaderboardPayload } = require('../../ui/cards/payloads');
 const { paginate } = require('../../ui/paginator');
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 module.exports = {
   data: new SlashCommandSubcommandBuilder()
@@ -47,13 +47,9 @@ module.exports = {
         page,
         pageSize: PAGE_SIZE,
       });
-      return leaderboardEmbed({
-        entries: board.entries,
-        page: board.page,
-        pageSize: board.pageSize,
-        total: board.total,
-        categoryLabel: board.label,
-        guildName: interaction.guild.name,
+      return buildLeaderboardPayload({
+        board,
+        guild: interaction.guild,
       });
     };
 

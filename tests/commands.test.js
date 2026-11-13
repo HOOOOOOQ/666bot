@@ -9,6 +9,7 @@ const models = installFakeDatabase();
 const configService = require('../src/services/configService');
 const duoService = require('../src/services/duoService');
 const activityService = require('../src/services/activityService');
+const cardService = require('../src/services/cardService');
 const duoCommand = require('../src/commands/duo');
 const interactionCreate = require('../src/events/interactionCreate');
 const { loadEvents } = require('../src/handlers/eventHandler');
@@ -120,6 +121,7 @@ function lastPayload(interaction) {
 
 beforeEach(() => {
   models.__reset();
+  cardService.setAvatarFetcher(async () => null);
   configService.clearConfigCache();
   duoService.clearDuoCache();
   activityService.clearActivityCache();
@@ -130,6 +132,7 @@ test('/duo exposes every documented subcommand', () => {
   assert.deepEqual(names, [
     'help', 'invite', 'accept', 'decline', 'profile', 'streak',
     'leaderboard', 'rewards', 'history', 'rename', 'break', 'config',
+    'setlog', 'logstatus',
   ]);
 });
 
@@ -177,10 +180,15 @@ test('full command flow: help, invite, decline, invite, accept, profile, streak,
 
   // profile
   const profile = await runSubcommand('profile', { guild });
-  const profileJson = lastPayload(profile).embeds[0].toJSON();
+  const profilePayload = lastPayload(profile);
+  const profileJson = profilePayload.embeds[0].toJSON();
   assert.equal(profileJson.title, duo.name);
   assert.match(profileJson.description, /1 DAY STREAK/);
-  assert.match(profileJson.description, /BEST STREAK : 1 DAY/);
+  assert.equal(profileJson.image?.url, 'attachment://duo-profile.png');
+  assert.equal(profilePayload.files?.length, 1, 'profile card PNG should be attached');
+  assert.ok(profilePayload.files[0].attachment.length > 10000, 'rendered profile PNG should not be empty');
+  const bestField = profileJson.fields.find((field) => field.name === 'BEST STREAK');
+  assert.match(bestField.value, /1 day/);
 
   // streak
   const streak = await runSubcommand('streak', { guild });
@@ -204,8 +212,11 @@ test('full command flow: help, invite, decline, invite, accept, profile, streak,
   // leaderboard (deferred + paginated)
   const leaderboard = await runSubcommand('leaderboard', { guild, values: { category: 'current' } });
   assert.equal(leaderboard.deferred, true);
-  const boardJson = lastPayload(leaderboard).embeds[0].toJSON();
+  const boardPayload = lastPayload(leaderboard);
+  const boardJson = boardPayload.embeds[0].toJSON();
   assert.match(boardJson.author.name, /LEADERBOARD/);
+  assert.equal(boardJson.image?.url, 'attachment://duo-leaderboard.png');
+  assert.equal(boardPayload.files?.length, 1, 'leaderboard card PNG should be attached');
 
   // config
   const config = await runSubcommand('config', { guild, values: { timezone: 'Asia/Tokyo', min_message_length: 5 } });

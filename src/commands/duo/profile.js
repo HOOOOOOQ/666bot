@@ -2,7 +2,7 @@
 
 const { SlashCommandSubcommandBuilder } = require('discord.js');
 const { getDuoOverview } = require('../../services/profileService');
-const { profileEmbed } = require('../../ui/embeds');
+const { buildProfilePayload } = require('../../ui/cards/payloads');
 const { loadOverviewOrReply } = require('./_shared');
 
 module.exports = {
@@ -37,18 +37,18 @@ module.exports = {
       return;
     }
 
-    await interaction.reply({
-      embeds: [
-        profileEmbed({
-          duo: overview.duo,
-          members: overview.members,
-          today: overview.today,
-          rewardSummary: overview.rewardSummary,
-          nextMilestone: overview.nextMilestone,
-          timezone: overview.timezone,
-        }),
-      ],
+    // Rendering + uploading a 1280x1280 PNG can take longer than Discord's
+    // initial 3s response window, so acknowledge first and edit afterwards.
+    if (!interaction.deferred && !interaction.replied) await interaction.deferReply();
+
+    const payload = await buildProfilePayload(overview);
+    const response = {
+      embeds: [payload.embed],
+      files: payload.files,
       allowedMentions: { users: overview.duo.members.map((member) => member.userId), parse: [] },
-    });
+    };
+
+    if (interaction.deferred) await interaction.editReply(response);
+    else await interaction.reply(response);
   },
 };

@@ -19,6 +19,8 @@ const SUBCOMMAND_NAMES = [
   'rename',
   'break',
   'config',
+  'setlog',
+  'logstatus',
 ];
 
 const subcommands = new Map(

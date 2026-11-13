@@ -6,6 +6,8 @@ const { createLogger } = require('../utils/logger');
 const { serializeCommands } = require('../handlers/commandHandler');
 const schedulerService = require('../services/schedulerService');
 const apiService = require('../services/apiService');
+const logService = require('../services/logService');
+const cardService = require('../services/cardService');
 
 const log = createLogger('ready');
 
@@ -55,6 +57,8 @@ module.exports = {
       await deployCommands(client);
     }
 
+    cardService.warmup().catch(() => {});
+    logService.start(client).catch((error) => log.error('Failed to start streak log service.', error));
     schedulerService.start(client);
     apiService.start(client);
 

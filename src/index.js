@@ -11,6 +11,8 @@ const { loadEvents } = require('./handlers/eventHandler');
 const notificationService = require('./services/notificationService');
 const schedulerService = require('./services/schedulerService');
 const apiService = require('./services/apiService');
+const logService = require('./services/logService');
+const cardService = require('./services/cardService');
 
 const log = createLogger('boot');
 
@@ -52,6 +54,8 @@ const client = new Client({
 client.commands = loadCommands();
 loadEvents(client);
 notificationService.init(client);
+logService.init(client);
+cardService.warmup().catch(() => {});
 
 let shuttingDown = false;
 
@@ -77,6 +81,12 @@ async function shutdown(signal, exitCode = 0) {
     await apiService.stop();
   } catch (error) {
     log.warn('Failed to stop API server.', error.message);
+  }
+
+  try {
+    await logService.stop();
+  } catch (error) {
+    log.warn('Failed to flush streak logs.', error.message);
   }
 
   try {

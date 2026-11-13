@@ -49,17 +49,19 @@ BEST STREAK: 45 DAYS • DUO XP: 2,800 XP
 - **Daily Duo Streak** — streak bertambah hanya jika **kedua member** menyelesaikan aktivitas valid pada hari yang sama.
 - **Timezone-aware day boundary** — default `Asia/Jakarta`, bisa diubah per server. Pergantian hari konsisten dan anti double-count.
 - **Activity detection dari Message Event** — anti spam, anti pesan berulang, cooldown, minimum panjang pesan, abaikan bot/emoji-only/link-only/command-like.
-- **Duo Profile Card** — embed dark cyber / hitam / merah / api dengan avatar member, statistik, progress, badge, timestamp.
+- **Duo Profile Card (image)** — kartu PNG 1280×1280 bergaya dark cyber / blood red / gothic gaming: avatar Discord asli kedua member, nama, streak, best streak, Duo XP, total days, status aktivitas harian, progress badge. Bukan dummy data.
+- **Duo Leaderboard Card (image)** — rank dengan avatar, nama Duo, current streak, best streak. Rank 1 emas, 2 perak, 3 perunggu, sisanya merah. 10 Duo per halaman + tombol Prev/Next.
+- **666 DUO STREAK LOGS** — channel log otomatis per server. Bot memposting banner + embed setiap kali streak benar-benar naik: timestamp, kedua avatar, nama, current/previous/best streak, XP, status aktivitas.
 - **Automatic Rewards** — 7, 14, 30, 50, 100, 365 hari. Sekali diberikan, tidak akan pernah dobel.
 - **Notification System** — reminder harian sekali per hari, notifikasi streak selesai, streak putus, dan badge baru. Bisa dikirim ke channel atau DM.
 - **Leaderboard** — current streak, best streak, total XP, total days. Pagination tombol.
 - **History** — riwayat joined, completed, broken, reward, ended. Pagination tombol.
 - **Server Config** — `/duo config` untuk timezone, channel notifikasi, jam reminder, cooldown, minimum panjang pesan.
-- **MongoDB** — 7 collection terpisah, unique index, partial index, TTL index, validasi schema.
-- **Restart-safe** — streak, aktivitas, reward, dan konfigurasi tetap konsisten setelah restart.
-- **Graceful shutdown** — flush notifikasi, tutup API, tutup koneksi MongoDB.
-- **Streak API opsional** — endpoint HTTP untuk uptime monitor / dashboard (Pterodactyl).
-- **Test suite** — 37 test otomatis (`node --test`) termasuk simulasi alur Duo dari undangan sampai streak putus.
+- **MongoDB** — 8 collection terpisah, unique index, partial index, TTL index, validasi schema.
+- **Restart-safe** — streak, aktivitas, reward, konfigurasi, dan antrean log tetap konsisten setelah restart.
+- **Graceful shutdown** — flush antrean log & notifikasi, tutup API, tutup koneksi MongoDB.
+- **Streak API opsional** — endpoint HTTP untuk uptime monitor (Pterodactyl).
+- **Test suite** — 48 test otomatis (`node --test`) termasuk render kartu PNG, dedupe log, retry, dan recovery setelah restart.
 
 ---
 
@@ -72,6 +74,7 @@ BEST STREAK: 45 DAYS • DUO XP: 2,800 XP
 | MongoDB | 6 / 7 / 8 (local atau Atlas) |
 | Mongoose | `^8.24.9` |
 | dotenv | `^17.4.2` |
+| @napi-rs/canvas | `^1.1.1` (prebuilt, tanpa system library) |
 | Test runner | built-in `node:test` |
 
 ---
@@ -83,6 +86,7 @@ BEST STREAK: 45 DAYS • DUO XP: 2,800 XP
 - Discord Application + Bot Token.
 - Bot diundang ke server dengan scope `bot` + `applications.commands`.
 - Privileged intents **Message Content** dan **Server Members** diaktifkan.
+- Font sudah dibundel di `src/assets/fonts` (Bebas Neue + Chakra Petch, lisensi OFL). Tidak perlu install font di host.
 
 ---
 
@@ -110,7 +114,16 @@ Setelah bot online:
 ```text
 /duo invite @partner
 /duo accept          (dijalankan oleh partner)
+/duo profile         (kartu profil PNG)
+/duo leaderboard     (kartu leaderboard PNG)
 /duo help
+```
+
+Admin dapat mengaktifkan log otomatis:
+
+```text
+/duo setlog #duo-streak-logs
+/duo logstatus
 ```
 
 ---
@@ -234,6 +247,8 @@ Startup yang sehat akan menampilkan log seperti:
 [boot] Environment: production • Node v22.x
 [ready] Logged in as 666 BOT#0001
 [ready] Registered 1 guild slash command(s)
+[cards] Canvas renderer ready (fonts + background plates loaded).
+[streaklogs] 666 DUO STREAK LOGS service ready.
 [scheduler] Daily scheduler started
 [api] Streak API listening on http://0.0.0.0:3000
 ```
@@ -288,7 +303,8 @@ Jika tidak memakai API: `ENABLE_API=false`.
 - Aktifkan **Start on Boot**.
 - Bot menangani `SIGTERM`/`SIGINT` dengan graceful shutdown (aman saat restart dari panel).
 - `uncaughtException` akan menutup proses dengan kode error, lalu panel menjalankan ulang otomatis.
-- Tidak ada dependency native (tidak perlu canvas/ffmpeg), hemat RAM dan CPU.
+- Rendering memakai **@napi-rs/canvas** yang sudah menyertakan binary prebuilt — tidak perlu `libcairo`, `pango`, atau `ffmpeg` di container. Font dan background plate ikut di repository (`src/assets`), jadi hasil render identik di Pterodactyl.
+- Render kartu memakai ~1–3 MB per gambar dan CPU singkat (< 1 detik). Cache avatar 250 entri / 15 menit; aman untuk RAM 512 MB.
 - Untuk menghemat resource, biarkan `LOG_LEVEL=info` dan `LOG_TO_FILE=false`.
 
 ### 6. Backup
@@ -306,14 +322,16 @@ Semua command berada di bawah `/duo`.
 | `/duo invite @member` | Mengirim undangan Duo (dengan tombol Accept/Decline) |
 | `/duo accept` | Menerima undangan Duo terbaru |
 | `/duo decline` | Menolak undangan Duo terbaru |
-| `/duo profile [user]` | Profil lengkap Duo: partner, avatar, streak, XP, badge, status hari ini |
+| `/duo profile [user]` | Kartu PNG profil Duo: kedua avatar, nama, streak, best, XP, total days, status harian |
 | `/duo streak` | Info streak saat ini + status aktivitas hari ini |
-| `/duo leaderboard [category] [page]` | Peringkat Duo (current/best/xp/days) + pagination |
+| `/duo leaderboard [category] [page]` | Kartu PNG peringkat Duo (current/best/xp/days) 10 baris + pagination |
 | `/duo rewards` | Semua badge + progres menuju badge berikutnya |
 | `/duo history [page]` | Riwayat joined/completed/broken/reward/ended |
 | `/duo rename <nama>` | Mengubah nama Duo (sanitasi mention & karakter kontrol) |
 | `/duo break` | Mengakhiri Duo dengan konfirmasi tombol |
 | `/duo config` | Pengaturan server (Manage Server): timezone, channel, reminder, cooldown, min length |
+| `/duo setlog #channel` | Mengaktifkan channel **666 DUO STREAK LOGS** (Manage Server) |
+| `/duo logstatus` | Status sistem log: channel, sent/pending/failed/skipped, log terakhir (Manage Server) |
 | `/duo help` | Panduan lengkap |
 
 Detail `/duo config`:
@@ -325,6 +343,48 @@ Detail `/duo config`:
 ```
 
 Tanpa opsi, `/duo config` hanya menampilkan konfigurasi saat ini.
+
+---
+
+## 666 DUO STREAK LOGS
+
+Log otomatis dikirim ke channel yang dipilih admin **hanya saat streak benar-benar bertambah** (kedua member aktif pada hari yang sama).
+
+```text
+/duo setlog #duo-streak-logs
+/duo logstatus
+```
+
+Contoh pesan log:
+
+```text
+🔥 666 DUO STREAK UPDATED
+STREAK INCREASED!
+🔥 27 DAYS → 28 DAYS
+
+✅ Tama completed   ✅ Zen completed
+
+CURRENT STREAK: 28 DAYS • PREVIOUS: 27 DAYS • BEST: 45 DAYS
+DUO XP: 2,800 XP • TOTAL DAYS: 28
+666 SYSTEM • AUTOMATIC LOGS
+```
+
+Setiap log juga menyertakan **banner PNG** berisi kedua avatar, nama, current/previous/best streak, XP, total hari, status aktivitas, dan timestamp.
+
+Aturan yang dijamin:
+
+| Aturan | Implementasi |
+| --- | --- |
+| Hanya saat increment nyata | Dipanggil setelah atomic update streak berhasil |
+| Tidak dikirim jika hanya satu member aktif | Streak baru naik saat `activityCount = 2` |
+| Tidak dobel per hari | Unique index `{ duoId, dayKey }` pada collection `streaklogs` |
+| Satu increment per Duo per hari | Filter `lastCompletedDay != dayKey` |
+| DB sebagai sumber kebenaran | Snapshot log disimpan sebelum dikirim |
+| Konsisten setelah restart | Baris `sending` di-recover saat boot, lalu retry otomatis |
+| Retry tanpa double-post | Klaim atomik `pending/failed → sending`, exponential backoff 1→30 menit, maksimum 6 attempt |
+| Channel per server | `GuildConfig.logChannelId` |
+
+`/duo logstatus` menampilkan jumlah terkirim, antrean, gagal, dilewati, serta log terakhir. Log gagal akan dicoba ulang otomatis oleh scheduler setiap 30 detik dan saat startup.
 
 ---
 
@@ -414,7 +474,7 @@ Scheduler memeriksa setiap guild setiap 30 detik:
 | 30 hari | ⚔️ Elite Duo Badge |
 | 50 hari | 🔥 Flame Duo Badge |
 | 100 hari | 👑 Legendary Duo Badge |
-| 365 hari | ♾️ Eternal Duo Badge |
+| 365 hari | 👑 Eternal Duo Badge |
 
 Badge diberikan **otomatis** ketika streak mencapai milestone, disimpan di collection `duorewards`, dicatat di `streakhistories`, dan tidak pernah dobel. Badge tetap dimiliki setelah streak putus.
 
@@ -453,7 +513,7 @@ Kategori:
 /duo leaderboard category:xp page:2
 ```
 
-Menampilkan 5 Duo per halaman dengan tombol Prev / Next / Close. Hanya Duo berstatus `active` yang masuk peringkat.
+Setiap halaman dirender sebagai **kartu PNG 1280×1280**: rank, dua avatar Discord, nama Duo, current streak, dan best streak. 10 Duo per halaman dengan tombol Prev / Next / Close. Rank 1 emas, rank 2 perak, rank 3 perunggu, rank lainnya merah. Hanya Duo berstatus `active` yang masuk peringkat, dan angkanya dibaca langsung dari MongoDB.
 
 ---
 
@@ -469,7 +529,8 @@ Menampilkan 5 Duo per halaman dengan tombol Prev / Next / Close. Hanya Duo berst
 | `streakhistories` | Event: joined, completed, broken, reward, ended |
 | `duorewards` | Badge yang sudah didapat per milestone |
 | `userstats` | Statistik per member: hari aktif, pesan, completed days, streak |
-| `guildconfigs` | Timezone, notifikasi, reminder, cooldown, channel |
+| `guildconfigs` | Timezone, notifikasi, reminder, cooldown, channel, `logChannelId` |
+| `streaklogs` | Satu baris per Duo per hari yang streak-nya naik + status pengiriman/retry |
 
 ### Index penting
 
@@ -482,6 +543,9 @@ streakhistories { duoId, dayKey, type } unique
 duorewards      { duoId, milestone } unique
 userstats       { guildId, userId } unique
 guildconfigs    { guildId } unique
+streaklogs      { duoId, dayKey } unique
+streaklogs      { status, nextAttemptAt } (retry queue)
+streaklogs      { guildId, createdAt } (logstatus)
 ```
 
 ### Struktur dokumen Duo
@@ -520,9 +584,10 @@ guildconfigs    { guildId } unique
 - **Error handling** — command error ditangkap dan dibalas ephemeral; event error di-log tanpa mematikan bot.
 - **Logging** — scoped logger `boot`, `duo`, `activity`, `streak`, `rewards`, `notify`, `scheduler`, `api`.
 - **Rate limit aware** — queue notifikasi berurutan, delay 1.2 detik.
-- **Graceful shutdown** — flush notifikasi, tutup API, putus MongoDB.
+- **Graceful shutdown** — flush antrean log + notifikasi, tutup API, putus MongoDB.
 - **Tanpa kredensial di source** — semua lewat `.env`.
-- **Permission** — `/duo config` membutuhkan `Manage Server`.
+- **Permission** — `/duo config`, `/duo setlog`, dan `/duo logstatus` membutuhkan `Manage Server`.
+- **Log delivery** — unique index per hari, klaim atomik, retry exponential backoff, recovery saat restart.
 - **API opsional** — `API_KEY` untuk membatasi akses endpoint `/api/*`.
 
 ---
@@ -591,6 +656,9 @@ Cakupan:
 - Reminder hanya sekali per hari.
 - Leaderboard & history.
 - Semua embed (profile, streak, rewards, history, notifikasi, help) dirender tanpa `undefined`/`NaN`.
+- Renderer PNG profile, leaderboard, dan streak log menghasilkan buffer valid (> 10 KB).
+- Log otomatis: hanya saat increment, tidak untuk satu member, unik per hari, retry tanpa dobel, recovery setelah restart.
+- `/duo setlog` memvalidasi Manage Server + izin bot; `/duo logstatus` menghitung antrean.
 
 ---
 
@@ -617,6 +685,8 @@ Cakupan:
 │   │       ├── rename.js
 │   │       ├── break.js
 │   │       ├── config.js
+│   │       ├── setlog.js
+│   │       ├── logstatus.js
 │   │       ├── help.js
 │   │       └── _shared.js
 │   ├── events/
@@ -636,6 +706,8 @@ Cakupan:
 │   │   ├── schedulerService.js
 │   │   ├── configService.js
 │   │   ├── profileService.js
+│   │   ├── cardService.js        # Render PNG + cache avatar
+│   │   ├── logService.js         # Queue, retry, dedupe 666 DUO STREAK LOGS
 │   │   └── apiService.js
 │   ├── database/
 │   │   ├── connection.js
@@ -647,11 +719,21 @@ Cakupan:
 │   │       ├── DuoReward.js
 │   │       ├── UserStat.js
 │   │       ├── GuildConfig.js
+│   │       ├── StreakLog.js
 │   │       └── index.js
 │   ├── ui/
 │   │   ├── theme.js              # Warna, emoji, progress bar
-│   │   ├── embeds.js             # Semua embed card & notifikasi
-│   │   └── paginator.js          # Tombol Prev/Next
+│   │   ├── embeds.js             # Embed card, log & notifikasi
+│   │   ├── paginator.js          # Tombol Prev/Next + image attachment
+│   │   └── cards/
+│   │       ├── canvasTools.js    # Font, panel, crown, flame, chain, avatar
+│   │       ├── profileCard.js    # Render profil 1280×1280
+│   │       ├── leaderboardCard.js# Render leaderboard 1280×1280
+│   │       ├── streakLogCard.js  # Render banner log 1280×720
+│   │       └── payloads.js       # Embed + AttachmentBuilder
+│   ├── assets/
+│   │   ├── fonts/                # Bebas Neue + Chakra Petch (OFL)
+│   │   └── images/               # Background plate 666
 │   └── utils/
 │       ├── time.js               # Timezone, day key, midnight
 │       ├── validators.js         # Sanitasi & anti spam
@@ -661,6 +743,8 @@ Cakupan:
 │       └── members.js
 ├── tests/
 │   ├── duoFlow.test.js
+│   ├── commands.test.js
+│   ├── streakLog.test.js
 │   ├── embeds.test.js
 │   ├── time.test.js
 │   ├── validators.test.js
@@ -683,6 +767,8 @@ Cakupan:
 | Streak tidak bertambah meski dua member chat | Kedua member harus chat di **hari yang sama** (timezone server), dan masing-masing minimal satu pesan valid. Cek `/duo streak`. |
 | Streak putus padahal sudah chat | Cek timezone server (`/duo config`). Pesan setelah pergantian hari dihitung untuk hari baru. |
 | Reminder tidak terkirim | Pastikan `reminders` aktif, channel notifikasi valid, dan DM member terbuka. Reminder hanya untuk Duo dengan streak > 0 yang belum lengkap. |
+| Log streak tidak muncul | Jalankan `/duo setlog #channel`, pastikan kedua member benar-benar menyelesaikan aktivitas hari itu, dan bot punya izin **View Channel, Send Messages, Embed Links, Attach Files**. Cek `/duo logstatus`. |
+| Log gagal terkirim | Buka `/duo logstatus`. Sistem retry otomatis (1→30 menit, maks 6 attempt). Jika channel dihapus, set ulang dengan `/duo setlog`. |
 | `MongoServerError: E11000 duplicate key` saat startup/index | Ada data duplikat lama yang melanggar unique index. Bersihkan dokumen duplikat, lalu restart. |
 | API tidak bisa diakses | Set `API_HOST=0.0.0.0`, buka allocation di Pterodactyl, cek firewall. |
 | Bot restart terus | Cek log panel: biasanya token salah, MongoDB tidak reachable, atau Node < 22. |
@@ -701,9 +787,10 @@ Cakupan:
 - [ ] MongoDB dapat diakses dari server.
 - [ ] Timezone dipilih (`Asia/Jakarta` default).
 - [ ] Channel notifikasi diset (opsional).
+- [ ] `/duo setlog #channel` dijalankan dan `/duo logstatus` menunjukkan channel aktif.
 - [ ] Port API dialokasikan (jika `ENABLE_API=true`).
 - [ ] Test lulus: `npm test`.
-- [ ] Uji alur nyata: invite → accept → chat dua member → cek `/duo streak`.
+- [ ] Uji alur nyata: invite → accept → chat dua member → cek `/duo profile`, `/duo leaderboard`, dan log otomatis di channel.
 
 ---
 

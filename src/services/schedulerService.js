@@ -8,6 +8,7 @@ const configService = require('./configService');
 const streakService = require('./streakService');
 const activityService = require('./activityService');
 const notificationService = require('./notificationService');
+const logService = require('./logService');
 
 const log = createLogger('scheduler');
 
@@ -123,6 +124,11 @@ async function tick({ startup = false } = {}) {
         log.error(`Scheduler failed for guild ${guildId}.`, error);
       }
     }
+
+    // Durable automatic streak-log queue (also recovers failed sends).
+    await logService.retryPending({ limit: 3 }).catch((error) => {
+      log.warn('Streak log retry failed.', error.message);
+    });
   } catch (error) {
     log.error('Scheduler tick failed.', error);
   } finally {

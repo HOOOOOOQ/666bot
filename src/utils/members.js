@@ -40,4 +40,74 @@ async function resolveDuoMembers(guild, duo) {
   return Promise.all(stored.map((member) => resolveMember(guild, member)));
 }
 
-module.exports = { resolveMember, resolveDuoMembers };
+/**
+ * Bulk variant used by the leaderboard renderer. Uses the guild cache first,
+ * then one bulk fetch, then individual fallbacks for stragglers.
+ *
+ * @param {import('discord.js').Guild|null} guild
+ * @param {string[]} userIds
+ * @returns {Promise<Map<string, object>>}
+ */
+async function resolveManyMembers(guild, userIds = []) {
+  const result = new Map();
+  const unique = [...new Set(userIds.map((id) => String(id)).filter(Boolean))];
+  if (!guild || !unique.length) return result;
+
+  const missing = [];
+  for (const id of unique) {
+    const cached = guild.members.cache.get(id);
+    if (cached) {
+      result.set(id, {
+        userId: id,
+        username: cached.user?.username || cached.username || 'Unknown',
+        displayName: cached.displayName || cached.user?.username || 'Unknown',
+        avatar: cached.displayAvatarURL
+          ? cached.displayAvatarURL({ size: 256, extension: 'png' })
+          : null,
+      });
+    } else {
+      missing.push(id);
+    }
+  }
+
+  if (!missing.length) return result;
+
+  try {
+    if (typeof guild.members.fetch === 'function') {
+      await guild.members.fetch({ user: missing }).catch(() => null);
+    }
+  } catch {
+    // A single failed bulk fetch should never break a leaderboard page.
+  }
+
+  await Promise.all(missing.map(async (id) => {
+    const cached = guild.members.cache.get(id);
+    if (cached) {
+      result.set(id, {
+        userId: id,
+        username: cached.user?.username || cached.username || 'Unknown',
+        displayName: cached.displayName || cached.user?.username || 'Unknown',
+        avatar: cached.displayAvatarURL
+          ? cached.displayAvatarURL({ size: 256, extension: 'png' })
+          : null,
+      });
+      return;
+    }
+
+    const member = await guild.members.fetch(id).catch(() => null);
+    if (member) {
+      result.set(id, {
+        userId: id,
+        username: member.user?.username || member.username || 'Unknown',
+        displayName: member.displayName || member.user?.username || 'Unknown',
+        avatar: member.displayAvatarURL
+          ? member.displayAvatarURL({ size: 256, extension: 'png' })
+          : null,
+      });
+    }
+  }));
+
+  return result;
+}
+
+module.exports = { resolveMember, resolveDuoMembers, resolveManyMembers };

@@ -545,6 +545,7 @@ function createFakeModels() {
       reminderHour: 21,
       reminderMinute: 0,
       notificationChannelId: null,
+      logChannelId: null,
       activityCooldownSeconds: 60,
       minMessageLength: 3,
       ignoredChannelIds: [],
@@ -555,6 +556,28 @@ function createFakeModels() {
     unique: [uniqueRule((doc) => [`guild:${doc.guildId}`])],
   });
 
+  const StreakLog = new FakeModel('StreakLog', {
+    timestamps: true,
+    defaults: () => ({
+      channelId: null,
+      duoName: null,
+      members: [],
+      activity: [],
+      previousStreak: 0,
+      currentStreak: 0,
+      bestStreak: 0,
+      xp: 0,
+      totalDays: 0,
+      status: 'pending',
+      attempts: 0,
+      nextAttemptAt: new Date(),
+      lastError: null,
+      messageId: null,
+      sentAt: null,
+    }),
+    unique: [uniqueRule((doc) => [`log:${doc.duoId}:${doc.dayKey}`])],
+  });
+
   const models = {
     Duo,
     Invitation,
@@ -563,6 +586,7 @@ function createFakeModels() {
     DuoReward,
     UserStat,
     GuildConfig,
+    StreakLog,
     __reset() {
       for (const value of Object.values(models)) {
         if (value instanceof FakeModel) value.reset();

@@ -13,6 +13,7 @@ const StreakHistory = require('./StreakHistory');
 const DuoReward = require('./DuoReward');
 const UserStat = require('./UserStat');
 const GuildConfig = require('./GuildConfig');
+const StreakLog = require('./StreakLog');
 
 module.exports = {
   Duo,
@@ -22,4 +23,5 @@ module.exports = {
   DuoReward,
   UserStat,
   GuildConfig,
+  StreakLog,
 };
