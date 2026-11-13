@@ -8,11 +8,6 @@
  * initial instead of breaking a command or an automated log.
  */
 
-const { loadImage } = require('@napi-rs/canvas');
-const { renderProfileCard } = require('../ui/cards/profileCard');
-const { renderLeaderboardCard } = require('../ui/cards/leaderboardCard');
-const { renderStreakLogCard } = require('../ui/cards/streakLogCard');
-const { registerFonts, loadBackground } = require('../ui/cards/canvasTools');
 const { createLogger } = require('../utils/logger');
 
 const log = createLogger('cards');
@@ -25,6 +20,31 @@ const AVATAR_MAX_BYTES = 6 * 1024 * 1024;
 
 const avatarCache = new Map();
 const avatarFailures = new Map();
+
+let renderers = null;
+
+/**
+ * Lazily loads the canvas stack. If a host genuinely cannot load the prebuilt
+ * binary, commands/logs fall back to text instead of crashing the bot at boot.
+ */
+function getRenderers() {
+  if (!renderers) {
+    const { loadImage } = require('@napi-rs/canvas');
+    const { renderProfileCard } = require('../ui/cards/profileCard');
+    const { renderLeaderboardCard } = require('../ui/cards/leaderboardCard');
+    const { renderStreakLogCard } = require('../ui/cards/streakLogCard');
+    const { registerFonts, loadBackground } = require('../ui/cards/canvasTools');
+    renderers = {
+      loadImage,
+      renderProfileCard,
+      renderLeaderboardCard,
+      renderStreakLogCard,
+      registerFonts,
+      loadBackground,
+    };
+  }
+  return renderers;
+}
 
 async function defaultAvatarFetcher(url) {
   const controller = new AbortController();
@@ -81,6 +101,7 @@ async function loadAvatar(url) {
   try {
     const payload = await avatarFetcher(url);
     if (!payload) throw new Error('empty avatar payload');
+    const { loadImage } = getRenderers();
     const image = await loadImage(Buffer.isBuffer(payload) ? payload : Buffer.from(payload));
     avatarCache.set(url, { image, expiresAt: now + AVATAR_TTL_MS });
     avatarFailures.delete(url);
@@ -126,6 +147,7 @@ async function resolveAvatars(members = []) {
  */
 async function renderProfile(overview) {
   const avatars = await resolveAvatars(overview.members);
+  const { renderProfileCard } = getRenderers();
   return renderProfileCard({
     duo: overview.duo,
     members: overview.members,
@@ -146,6 +168,7 @@ async function renderLeaderboard({
 }) {
   const members = entries.flatMap((entry) => entry.members || []);
   const avatars = await resolveAvatars(members);
+  const { renderLeaderboardCard } = getRenderers();
   return renderLeaderboardCard({
     entries,
     page,
@@ -161,6 +184,7 @@ async function renderLeaderboard({
  */
 async function renderStreakLog(log, { timezone, guildName } = {}) {
   const avatars = await resolveAvatars(Array.isArray(log.members) ? log.members : []);
+  const { renderStreakLogCard } = getRenderers();
   return renderStreakLogCard({
     log,
     timezone,
@@ -178,6 +202,7 @@ let warmupPromise = null;
 function warmup() {
   if (!warmupPromise) {
     warmupPromise = (async () => {
+      const { registerFonts, loadBackground } = getRenderers();
       registerFonts();
       await Promise.all([
         loadBackground('profile-bg.png'),
