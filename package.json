@@ -1,0 +1,34 @@
+{
+  "name": "666-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "666 BOT — TWO MEMBERS. ONE CONNECTION. ONE STREAK. Discord Duo Streak system.",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "deploy": "node src/deploy-commands.js",
+    "test": "node --test",
+    "test:watch": "node --test --watch tests/"
+  },
+  "keywords": [
+    "discord",
+    "discord-bot",
+    "duo-streak",
+    "streak",
+    "mongodb",
+    "666"
+  ],
+  "author": "666 SYSTEM",
+  "license": "MIT",
+  "dependencies": {
+    "@napi-rs/canvas": "^1.1.1",
+    "discord.js": "^14.28.1",
+    "dotenv": "^17.4.2",
+    "mongoose": "^8.24.9"
+  }
+}
