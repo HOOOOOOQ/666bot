@@ -303,7 +303,7 @@ Jika tidak memakai API: `ENABLE_API=false`.
 - Aktifkan **Start on Boot**.
 - Bot menangani `SIGTERM`/`SIGINT` dengan graceful shutdown (aman saat restart dari panel).
 - `uncaughtException` akan menutup proses dengan kode error, lalu panel menjalankan ulang otomatis.
-- Rendering memakai **@napi-rs/canvas** yang sudah menyertakan binary prebuilt — tidak perlu `libcairo`, `pango`, atau `ffmpeg` di container. Font dan background plate ikut di repository (`src/assets`), jadi hasil render identik di Pterodactyl.
+- Rendering memakai **@napi-rs/canvas** yang sudah menyertakan binary prebuilt — tidak perlu `libcairo` atau `pango` di container. Font dan background plate ikut di repository (`src/assets`), jadi hasil render identik di Pterodactyl.
 - Render kartu memakai ~1–3 MB per gambar dan CPU singkat (< 1 detik). Cache avatar 250 entri / 15 menit; aman untuk RAM 512 MB.
 - Untuk menghemat resource, biarkan `LOG_LEVEL=info` dan `LOG_TO_FILE=false`.
 
