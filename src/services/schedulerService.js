@@ -129,6 +129,11 @@ async function tick({ startup = false } = {}) {
     await logService.retryPending({ limit: 3 }).catch((error) => {
       log.warn('Streak log retry failed.', error.message);
     });
+
+    // Additive RPG economy upkeep (world boss, market expiry, guild wars, sessions).
+    await require('../rpg/scheduler').tick().catch((error) => {
+      log.warn('RPG scheduler tick failed.', error.message);
+    });
   } catch (error) {
     log.error('Scheduler tick failed.', error);
   } finally {

@@ -12,6 +12,7 @@ const {
   breakResultEmbed,
 } = require('../ui/embeds');
 const { buildProfilePayload } = require('../ui/cards/payloads');
+const { isRPGInteraction, handleRPGInteraction } = require('../rpg/interactions');
 
 const log = createLogger('interaction');
 
@@ -168,6 +169,10 @@ module.exports = {
         return;
       }
       if (interaction.isButton()) {
+        if (isRPGInteraction(interaction.customId)) {
+          await handleRPGInteraction(interaction);
+          return;
+        }
         await handleButton(interaction);
       }
     } catch (error) {

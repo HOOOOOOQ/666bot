@@ -24,4 +24,5 @@ module.exports = {
   UserStat,
   GuildConfig,
   StreakLog,
+  ...require('./rpg'),
 };
