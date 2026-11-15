@@ -1,7 +1,7 @@
 {
   "name": "666 ULTIMATE RPG",
   "tagline": "TWO MEMBERS. ONE CONNECTION. ONE STREAK.",
-  "prefix": "6",
+  "prefix": "t",
   "categories": [
     {
       "id": "rankings",
@@ -10,13 +10,13 @@
       "blurb": "Peringkat wealth, level, hunt, battle, dan achievement.",
       "commands": [
         {
-          "name": "6top",
+          "name": "ttop",
           "aliases": [],
           "summary": "Leaderboard server untuk wealth, level, hunt, battle, boss, games, atau shards.",
-          "usage": "6top [wealth|level|hunt|battle|boss|games|shards] [limit]",
+          "usage": "ttop [wealth|level|hunt|battle|boss|games|shards] [limit]",
           "examples": [
-            "6top",
-            "6top battle 10"
+            "ttop",
+            "ttop battle 10"
           ],
           "required": [],
           "optional": [],
@@ -24,19 +24,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6top [wealth|level|hunt|battle|boss|games|shards] [limit]",
-            "Contoh: 6top",
-            "Contoh: 6top battle 10"
+            "ttop [wealth|level|hunt|battle|boss|games|shards] [limit]",
+            "Contoh: ttop",
+            "Contoh: ttop battle 10"
           ]
         },
         {
-          "name": "6my",
+          "name": "tmy",
           "aliases": [],
           "summary": "Ringkasan profil, posisi server, saldo, dan progress level kamu.",
-          "usage": "6my [@user]",
+          "usage": "tmy [@user]",
           "examples": [
-            "6my",
-            "6my @friend"
+            "tmy",
+            "tmy @friend"
           ],
           "required": [],
           "optional": [],
@@ -44,18 +44,18 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6my [@user]",
-            "Contoh: 6my",
-            "Contoh: 6my @friend"
+            "tmy [@user]",
+            "Contoh: tmy",
+            "Contoh: tmy @friend"
           ]
         },
         {
-          "name": "6rank",
+          "name": "trank",
           "aliases": [],
           "summary": "Level, rank, EXP, dan posisi server.",
-          "usage": "6rank",
+          "usage": "trank",
           "examples": [
-            "6rank"
+            "trank"
           ],
           "required": [],
           "optional": [],
@@ -63,18 +63,18 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6rank — level, rank, EXP, posisi server"
+            "trank — level, rank, EXP, posisi server"
           ]
         },
         {
-          "name": "6achievement",
+          "name": "tachievement",
           "aliases": [
-            "6achievements"
+            "tachievements"
           ],
           "summary": "Daftar badge dan progres achievement.",
-          "usage": "6achievement",
+          "usage": "tachievement",
           "examples": [
-            "6achievement"
+            "tachievement"
           ],
           "required": [],
           "optional": [],
@@ -82,7 +82,7 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6achievement — daftar badge & progres"
+            "tachievement — daftar badge & progres"
           ]
         }
       ]
@@ -94,16 +94,16 @@
       "blurb": "Dompet, bank, reward berkala, kerja, quest, checklist, shop, dan market.",
       "commands": [
         {
-          "name": "6cash",
+          "name": "tcash",
           "aliases": [
-            "6economy"
+            "teconomy"
           ],
           "summary": "Dompet, bank, reward harian/mingguan/bulanan, kerja, transfer, shop, dan history.",
-          "usage": "6cash <balance|daily|weekly|monthly|work|beg|deposit|withdraw|transfer|leaderboard|inventory|shop|buy|sell|history|profile>",
+          "usage": "tcash <balance|daily|weekly|monthly|work|beg|deposit|withdraw|transfer|leaderboard|inventory|shop|buy|sell|history|profile>",
           "examples": [
-            "6cash",
-            "6cash daily",
-            "6cash transfer @teman 500"
+            "tcash",
+            "tcash daily",
+            "tcash transfer @teman 500"
           ],
           "required": [],
           "optional": [],
@@ -111,27 +111,27 @@
           "permission": "Everyone",
           "note": "Semua transaksi memakai idempotency key dan tidak bisa membuat saldo minus.",
           "subcommands": [
-            "6cash — lihat saldo",
-            "6cash daily|weekly|monthly — klaim reward",
-            "6cash work|beg — cari koin",
-            "6cash deposit|withdraw <jumlah|all>",
-            "6cash transfer @user <jumlah>",
-            "6cash leaderboard [wealth|level|hunt|battle|boss]",
-            "6cash inventory — isi tas",
-            "6cash shop / 6cash buy <id> [qty] / 6cash sell <id> [qty]",
-            "6cash history — riwayat transaksi",
-            "6cash profile [@user] — kartu profil lengkap"
+            "tcash — lihat saldo",
+            "tcash daily|weekly|monthly — klaim reward",
+            "tcash work|beg — cari koin",
+            "tcash deposit|withdraw <jumlah|all>",
+            "tcash transfer @user <jumlah>",
+            "tcash leaderboard [wealth|level|hunt|battle|boss]",
+            "tcash inventory — isi tas",
+            "tcash shop / tcash buy <id> [qty] / tcash sell <id> [qty]",
+            "tcash history — riwayat transaksi",
+            "tcash profile [@user] — kartu profil lengkap"
           ]
         },
         {
-          "name": "6give",
+          "name": "tgive",
           "aliases": [
-            "6transfer"
+            "ttransfer"
           ],
           "summary": "Transfer 666 Coins ke member lain dengan tax server dan idempotency.",
-          "usage": "6give @user <jumlah>",
+          "usage": "tgive @user <jumlah>",
           "examples": [
-            "6give @friend 500"
+            "tgive @friend 500"
           ],
           "required": [
             "user",
@@ -142,17 +142,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6give @user <jumlah>",
-            "Contoh: 6give @friend 500"
+            "tgive @user <jumlah>",
+            "Contoh: tgive @friend 500"
           ]
         },
         {
-          "name": "6daily",
+          "name": "tdaily",
           "aliases": [],
           "summary": "Klaim reward harian 666 Coins.",
-          "usage": "6daily",
+          "usage": "tdaily",
           "examples": [
-            "6daily"
+            "tdaily"
           ],
           "required": [],
           "optional": [],
@@ -160,17 +160,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6daily",
-            "Contoh: 6daily"
+            "tdaily",
+            "Contoh: tdaily"
           ]
         },
         {
-          "name": "6weekly",
+          "name": "tweekly",
           "aliases": [],
           "summary": "Klaim reward mingguan.",
-          "usage": "6weekly",
+          "usage": "tweekly",
           "examples": [
-            "6weekly"
+            "tweekly"
           ],
           "required": [],
           "optional": [],
@@ -178,17 +178,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6weekly",
-            "Contoh: 6weekly"
+            "tweekly",
+            "Contoh: tweekly"
           ]
         },
         {
-          "name": "6monthly",
+          "name": "tmonthly",
           "aliases": [],
           "summary": "Klaim reward bulanan.",
-          "usage": "6monthly",
+          "usage": "tmonthly",
           "examples": [
-            "6monthly"
+            "tmonthly"
           ],
           "required": [],
           "optional": [],
@@ -196,17 +196,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6monthly",
-            "Contoh: 6monthly"
+            "tmonthly",
+            "Contoh: tmonthly"
           ]
         },
         {
-          "name": "6work",
+          "name": "twork",
           "aliases": [],
           "summary": "Bekerja untuk mendapatkan 666 Coins.",
-          "usage": "6work",
+          "usage": "twork",
           "examples": [
-            "6work"
+            "twork"
           ],
           "required": [],
           "optional": [],
@@ -214,17 +214,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6work",
-            "Contoh: 6work"
+            "twork",
+            "Contoh: twork"
           ]
         },
         {
-          "name": "6vote",
+          "name": "tvote",
           "aliases": [],
           "summary": "Klaim hadiah vote 666 Coins setiap 12 jam.",
-          "usage": "6vote",
+          "usage": "tvote",
           "examples": [
-            "6vote"
+            "tvote"
           ],
           "required": [],
           "optional": [],
@@ -232,19 +232,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6vote",
-            "Contoh: 6vote"
+            "tvote",
+            "Contoh: tvote"
           ]
         },
         {
-          "name": "6quest",
+          "name": "tquest",
           "aliases": [],
           "summary": "Quest harian/mingguan dan klaim reward.",
-          "usage": "6quest [list|daily|weekly] | 6quest claim <questId>",
+          "usage": "tquest [list|daily|weekly] | tquest claim <questId>",
           "examples": [
-            "6quest",
-            "6quest daily",
-            "6quest claim <id>"
+            "tquest",
+            "tquest daily",
+            "tquest claim <id>"
           ],
           "required": [],
           "optional": [],
@@ -252,20 +252,20 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6quest / 6quest list — quest harian & mingguan",
-            "6quest daily|weekly — filter",
-            "6quest claim <questId> — klaim reward",
-            "6achievement — badge & progres",
-            "6rank — level, rank, posisi server"
+            "tquest / tquest list — quest harian & mingguan",
+            "tquest daily|weekly — filter",
+            "tquest claim <questId> — klaim reward",
+            "tachievement — badge & progres",
+            "trank — level, rank, posisi server"
           ]
         },
         {
-          "name": "6checklist",
+          "name": "tchecklist",
           "aliases": [],
           "summary": "Checklist quest harian dan mingguan beserta progress kamu.",
-          "usage": "6checklist",
+          "usage": "tchecklist",
           "examples": [
-            "6checklist"
+            "tchecklist"
           ],
           "required": [],
           "optional": [],
@@ -273,19 +273,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6checklist",
-            "Contoh: 6checklist"
+            "tchecklist",
+            "Contoh: tchecklist"
           ]
         },
         {
-          "name": "6shop",
+          "name": "tshop",
           "aliases": [
-            "6store"
+            "tstore"
           ],
           "summary": "Tampilkan shop item 666.",
-          "usage": "6shop",
+          "usage": "tshop",
           "examples": [
-            "6shop"
+            "tshop"
           ],
           "required": [],
           "optional": [],
@@ -293,17 +293,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6shop",
-            "Contoh: 6shop"
+            "tshop",
+            "Contoh: tshop"
           ]
         },
         {
-          "name": "6buy",
+          "name": "tbuy",
           "aliases": [],
           "summary": "Beli item dari shop 666.",
-          "usage": "6buy <itemId> [qty]",
+          "usage": "tbuy <itemId> [qty]",
           "examples": [
-            "6buy bait 3"
+            "tbuy bait 3"
           ],
           "required": [],
           "optional": [],
@@ -311,18 +311,18 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6buy <itemId> [qty]",
-            "Contoh: 6buy bait 3"
+            "tbuy <itemId> [qty]",
+            "Contoh: tbuy bait 3"
           ]
         },
         {
-          "name": "6sell",
+          "name": "tsell",
           "aliases": [],
           "summary": "Jual monster, item shop, atau semua duplikat monster.",
-          "usage": "6sell <monsterId|itemId|all>",
+          "usage": "tsell <monsterId|itemId|all>",
           "examples": [
-            "6sell all",
-            "6sell a1b2c3"
+            "tsell all",
+            "tsell a1b2c3"
           ],
           "required": [],
           "optional": [],
@@ -330,22 +330,22 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6sell <monsterId|itemId|all>",
-            "Contoh: 6sell all",
-            "Contoh: 6sell a1b2c3"
+            "tsell <monsterId|itemId|all>",
+            "Contoh: tsell all",
+            "Contoh: tsell a1b2c3"
           ]
         },
         {
-          "name": "6market",
+          "name": "tmarket",
           "aliases": [
-            "6shopmarket"
+            "tshopmarket"
           ],
           "summary": "Lihat listing, sell, buy, cancel, mine, dan history dengan escrow.",
-          "usage": "6market [list] [halaman] | 6market sell <monster|pet|item|egg> <id> <harga> | 6market buy <id> | 6market cancel <id>",
+          "usage": "tmarket [list] [halaman] | tmarket sell <monster|pet|item|egg> <id> <harga> | tmarket buy <id> | tmarket cancel <id>",
           "examples": [
-            "6market",
-            "6market sell pet <id> 5000",
-            "6market buy <id>"
+            "tmarket",
+            "tmarket sell pet <id> 5000",
+            "tmarket buy <id>"
           ],
           "required": [],
           "optional": [],
@@ -353,22 +353,22 @@
           "permission": "Everyone",
           "note": "Listing memakai escrow dan short ID; item tidak bisa dipakai saat dikunci.",
           "subcommands": [
-            "6market / 6market list [halaman] — listing aktif",
-            "6market sell <monster|pet|item|egg> <id> <harga>",
-            "6market buy <listingId>",
-            "6market cancel <listingId>",
-            "6market mine / 6market history"
+            "tmarket / tmarket list [halaman] — listing aktif",
+            "tmarket sell <monster|pet|item|egg> <id> <harga>",
+            "tmarket buy <listingId>",
+            "tmarket cancel <listingId>",
+            "tmarket mine / tmarket history"
           ]
         },
         {
-          "name": "6trade",
+          "name": "ttrade",
           "aliases": [],
           "summary": "Trade aman: item dikunci dan dua pihak wajib confirm.",
-          "usage": "6trade @user [koin] | 6trade offer <id> coins <n> monster <id> pet <id> item <id> <qty>",
+          "usage": "ttrade @user [koin] | ttrade offer <id> coins <n> monster <id> pet <id> item <id> <qty>",
           "examples": [
-            "6trade @teman",
-            "6trade offer <id> coins 500",
-            "6trade confirm <id>"
+            "ttrade @teman",
+            "ttrade offer <id> coins 500",
+            "ttrade confirm <id>"
           ],
           "required": [],
           "optional": [],
@@ -376,11 +376,11 @@
           "permission": "Everyone",
           "note": "Item dikunci selama transfer dan baru berpindah setelah kedua pihak confirm.",
           "subcommands": [
-            "6trade @user [koin] — mulai trade",
-            "6trade offer <id> coins <n> monster <id> pet <id> item <id> <qty>",
-            "6trade accept <id> / 6trade decline <id>",
-            "6trade confirm <id> — kedua pihak wajib confirm",
-            "6trade cancel <id> / 6trade status <id>"
+            "ttrade @user [koin] — mulai trade",
+            "ttrade offer <id> coins <n> monster <id> pet <id> item <id> <qty>",
+            "ttrade accept <id> / ttrade decline <id>",
+            "ttrade confirm <id> — kedua pihak wajib confirm",
+            "ttrade cancel <id> / ttrade status <id>"
           ]
         }
       ]
@@ -392,12 +392,12 @@
       "blurb": "Hunt, zoo, pet, battle, dungeon, lootbox, egg, dan world boss.",
       "commands": [
         {
-          "name": "6zoo",
+          "name": "tzoo",
           "aliases": [],
           "summary": "Lihat kandang monster dan koleksi pet kamu.",
-          "usage": "6zoo",
+          "usage": "tzoo",
           "examples": [
-            "6zoo"
+            "tzoo"
           ],
           "required": [],
           "optional": [],
@@ -405,19 +405,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6zoo",
-            "Contoh: 6zoo"
+            "tzoo",
+            "Contoh: tzoo"
           ]
         },
         {
-          "name": "6hunt",
+          "name": "thunt",
           "aliases": [],
           "summary": "Hunt monster, inventory, koleksi, jual, statistik, dan leaderboard.",
-          "usage": "6hunt [start|inventory|collection|sell|stats|leaderboard]",
+          "usage": "thunt [start|inventory|collection|sell|stats|leaderboard]",
           "examples": [
-            "6hunt",
-            "6hunt inventory",
-            "6hunt sell <id>"
+            "thunt",
+            "thunt inventory",
+            "thunt sell <id>"
           ],
           "required": [],
           "optional": [],
@@ -425,22 +425,22 @@
           "permission": "Everyone",
           "note": "Monster tidak akan hilang jika wallet penuh saat dijual.",
           "subcommands": [
-            "6hunt — cari monster (cooldown)",
-            "6hunt inventory [halaman] — kandang monster",
-            "6hunt collection — koleksi spesies",
-            "6hunt sell <id|all> — jual monster/duplikat",
-            "6hunt stats — statistik hunting",
-            "6hunt leaderboard — pemburu terbaik"
+            "thunt — cari monster (cooldown)",
+            "thunt inventory [halaman] — kandang monster",
+            "thunt collection — koleksi spesies",
+            "thunt sell <id|all> — jual monster/duplikat",
+            "thunt stats — statistik hunting",
+            "thunt leaderboard — pemburu terbaik"
           ]
         },
         {
-          "name": "6sell",
+          "name": "tsell",
           "aliases": [],
           "summary": "Jual monster, item shop, atau semua duplikat monster.",
-          "usage": "6sell <monsterId|itemId|all>",
+          "usage": "tsell <monsterId|itemId|all>",
           "examples": [
-            "6sell all",
-            "6sell a1b2c3"
+            "tsell all",
+            "tsell a1b2c3"
           ],
           "required": [],
           "optional": [],
@@ -448,18 +448,18 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6sell <monsterId|itemId|all>",
-            "Contoh: 6sell all",
-            "Contoh: 6sell a1b2c3"
+            "tsell <monsterId|itemId|all>",
+            "Contoh: tsell all",
+            "Contoh: tsell a1b2c3"
           ]
         },
         {
-          "name": "6sacrifice",
+          "name": "tsacrifice",
           "aliases": [],
           "summary": "Korbankan monster untuk koin dan XP instan. Monster akan dihapus permanen.",
-          "usage": "6sacrifice <id>",
+          "usage": "tsacrifice <id>",
           "examples": [
-            "6sacrifice a1b2c3"
+            "tsacrifice a1b2c3"
           ],
           "required": [
             "monster id"
@@ -469,19 +469,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6sacrifice <id>",
-            "Contoh: 6sacrifice a1b2c3"
+            "tsacrifice <id>",
+            "Contoh: tsacrifice a1b2c3"
           ]
         },
         {
-          "name": "6battle",
+          "name": "tbattle",
           "aliases": [],
           "summary": "Tantang player, accept/decline, stats, dan leaderboard.",
-          "usage": "6battle @user | 6battle accept [id] | 6battle decline [id] | 6battle stats | 6battle leaderboard",
+          "usage": "tbattle @user | tbattle accept [id] | tbattle decline [id] | tbattle stats | tbattle leaderboard",
           "examples": [
-            "6battle @rival",
-            "6battle accept",
-            "6battle stats"
+            "tbattle @rival",
+            "tbattle accept",
+            "tbattle stats"
           ],
           "required": [],
           "optional": [],
@@ -489,22 +489,22 @@
           "permission": "Everyone",
           "note": "Battle memakai cooldown dan anti-farm untuk poin guild war.",
           "subcommands": [
-            "6battle @user — tantang battle turn-based",
-            "6battle accept [id] — terima tantangan",
-            "6battle decline [id] — tolak tantangan",
-            "6battle stats — W/L, rating, streak",
-            "6battle leaderboard — ranking arena"
+            "tbattle @user — tantang battle turn-based",
+            "tbattle accept [id] — terima tantangan",
+            "tbattle decline [id] — tolak tantangan",
+            "tbattle stats — W/L, rating, streak",
+            "tbattle leaderboard — ranking arena"
           ]
         },
         {
-          "name": "6sim",
+          "name": "tsim",
           "aliases": [
-            "6simulate"
+            "tsimulate"
           ],
           "summary": "Simulasikan battle melawan monster liar tanpa mempertaruhkan apa pun.",
-          "usage": "6sim",
+          "usage": "tsim",
           "examples": [
-            "6sim"
+            "tsim"
           ],
           "required": [],
           "optional": [],
@@ -512,19 +512,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6sim",
-            "Contoh: 6sim"
+            "tsim",
+            "Contoh: tsim"
           ]
         },
         {
-          "name": "6inv",
+          "name": "tinv",
           "aliases": [
-            "6inventory"
+            "tinventory"
           ],
           "summary": "Inventory gabungan: item, monster, dan pet.",
-          "usage": "6inv",
+          "usage": "tinv",
           "examples": [
-            "6inv"
+            "tinv"
           ],
           "required": [],
           "optional": [],
@@ -532,17 +532,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6inv",
-            "Contoh: 6inv"
+            "tinv",
+            "Contoh: tinv"
           ]
         },
         {
-          "name": "6equip",
+          "name": "tequip",
           "aliases": [],
           "summary": "Pasang pet ke slot aktif atau equip weapon.",
-          "usage": "6equip <petId|weaponId>",
+          "usage": "tequip <petId|weaponId>",
           "examples": [
-            "6equip a1b2c3"
+            "tequip a1b2c3"
           ],
           "required": [
             "pet id"
@@ -552,18 +552,18 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6equip <petId|weaponId>",
-            "Contoh: 6equip a1b2c3"
+            "tequip <petId|weaponId>",
+            "Contoh: tequip a1b2c3"
           ]
         },
         {
-          "name": "6autohunt",
+          "name": "tautohunt",
           "aliases": [],
           "summary": "Aktifkan auto-hunt. Scheduler akan hunt otomatis setiap ±5 menit.",
-          "usage": "6autohunt [on|off|status]",
+          "usage": "tautohunt [on|off|status]",
           "examples": [
-            "6autohunt on",
-            "6autohunt status"
+            "tautohunt on",
+            "tautohunt status"
           ],
           "required": [],
           "optional": [],
@@ -571,21 +571,21 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6autohunt [on|off|status]",
-            "Contoh: 6autohunt on",
-            "Contoh: 6autohunt status"
+            "tautohunt [on|off|status]",
+            "Contoh: tautohunt on",
+            "Contoh: tautohunt status"
           ]
         },
         {
-          "name": "6dex",
+          "name": "tdex",
           "aliases": [
-            "6encyclopedia"
+            "tencyclopedia"
           ],
           "summary": "Ensiklopedia monster dan pet beserta status koleksi.",
-          "usage": "6dex [monster|pet]",
+          "usage": "tdex [monster|pet]",
           "examples": [
-            "6dex",
-            "6dex pet"
+            "tdex",
+            "tdex pet"
           ],
           "required": [],
           "optional": [],
@@ -593,18 +593,18 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6dex [monster|pet]",
-            "Contoh: 6dex",
-            "Contoh: 6dex pet"
+            "tdex [monster|pet]",
+            "Contoh: tdex",
+            "Contoh: tdex pet"
           ]
         },
         {
-          "name": "6lootbox",
+          "name": "tlootbox",
           "aliases": [],
           "summary": "Beli dan buka lootbox berisi koin, shards, item, atau egg.",
-          "usage": "6lootbox",
+          "usage": "tlootbox",
           "examples": [
-            "6lootbox"
+            "tlootbox"
           ],
           "required": [],
           "optional": [],
@@ -612,18 +612,18 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6lootbox",
-            "Contoh: 6lootbox"
+            "tlootbox",
+            "Contoh: tlootbox"
           ]
         },
         {
-          "name": "6egg",
+          "name": "tegg",
           "aliases": [],
           "summary": "Hatch egg pet. Tanpa argumen akan menampilkan daftar egg.",
-          "usage": "6egg [basic|rare|legendary]",
+          "usage": "tegg [basic|rare|legendary]",
           "examples": [
-            "6egg",
-            "6egg rare"
+            "tegg",
+            "tegg rare"
           ],
           "required": [],
           "optional": [],
@@ -631,18 +631,18 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6egg [basic|rare|legendary]",
-            "Contoh: 6egg",
-            "Contoh: 6egg rare"
+            "tegg [basic|rare|legendary]",
+            "Contoh: tegg",
+            "Contoh: tegg rare"
           ]
         },
         {
-          "name": "6crate",
+          "name": "tcrate",
           "aliases": [],
           "summary": "Buka crate dengan hadiah lebih besar dan peluang item langka.",
-          "usage": "6crate",
+          "usage": "tcrate",
           "examples": [
-            "6crate"
+            "tcrate"
           ],
           "required": [],
           "optional": [],
@@ -650,17 +650,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6crate",
-            "Contoh: 6crate"
+            "tcrate",
+            "Contoh: tcrate"
           ]
         },
         {
-          "name": "6team",
+          "name": "tteam",
           "aliases": [],
           "summary": "Lihat tim pet aktif dan bonus stat mereka.",
-          "usage": "6team",
+          "usage": "tteam",
           "examples": [
-            "6team"
+            "tteam"
           ],
           "required": [],
           "optional": [],
@@ -668,18 +668,18 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6team",
-            "Contoh: 6team"
+            "tteam",
+            "Contoh: tteam"
           ]
         },
         {
-          "name": "6weapon",
+          "name": "tweapon",
           "aliases": [],
           "summary": "Lihat, equip, atau unequip weapon untuk bonus battle.",
-          "usage": "6weapon [list|equip <id>|unequip]",
+          "usage": "tweapon [list|equip <id>|unequip]",
           "examples": [
-            "6weapon list",
-            "6weapon equip iron_sword"
+            "tweapon list",
+            "tweapon equip iron_sword"
           ],
           "required": [],
           "optional": [],
@@ -687,18 +687,18 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6weapon [list|equip <id>|unequip]",
-            "Contoh: 6weapon list",
-            "Contoh: 6weapon equip iron_sword"
+            "tweapon [list|equip <id>|unequip]",
+            "Contoh: tweapon list",
+            "Contoh: tweapon equip iron_sword"
           ]
         },
         {
-          "name": "6rename",
+          "name": "trename",
           "aliases": [],
           "summary": "Ganti nama monster atau pet dengan biaya 500 coins.",
-          "usage": "6rename <monster|pet> <id> <nama baru>",
+          "usage": "trename <monster|pet> <id> <nama baru>",
           "examples": [
-            "6rename pet a1b2c3 Kuro"
+            "trename pet a1b2c3 Kuro"
           ],
           "required": [],
           "optional": [],
@@ -706,17 +706,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6rename <monster|pet> <id> <nama baru>",
-            "Contoh: 6rename pet a1b2c3 Kuro"
+            "trename <monster|pet> <id> <nama baru>",
+            "Contoh: trename pet a1b2c3 Kuro"
           ]
         },
         {
-          "name": "6dismantle",
+          "name": "tdismantle",
           "aliases": [],
           "summary": "Bongkar monster atau pet menjadi shards.",
-          "usage": "6dismantle <monster|pet> <id>",
+          "usage": "tdismantle <monster|pet> <id>",
           "examples": [
-            "6dismantle monster a1b2c3"
+            "tdismantle monster a1b2c3"
           ],
           "required": [],
           "optional": [],
@@ -724,19 +724,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6dismantle <monster|pet> <id>",
-            "Contoh: 6dismantle monster a1b2c3"
+            "tdismantle <monster|pet> <id>",
+            "Contoh: tdismantle monster a1b2c3"
           ]
         },
         {
-          "name": "6boss",
+          "name": "tboss",
           "aliases": [],
           "summary": "Status world boss, serang, leaderboard, dan preview reward.",
-          "usage": "6boss [status|attack|leaderboard|rewards]",
+          "usage": "tboss [status|attack|leaderboard|rewards]",
           "examples": [
-            "6boss",
-            "6boss attack",
-            "6boss leaderboard"
+            "tboss",
+            "tboss attack",
+            "tboss leaderboard"
           ],
           "required": [],
           "optional": [],
@@ -744,22 +744,22 @@
           "permission": "Everyone",
           "note": "Boss di-spawn scheduler; minimum kontribusi diatur dari dashboard.",
           "subcommands": [
-            "6boss / 6boss status — HP & damage leaderboard",
-            "6boss attack — serang boss (cooldown 30 detik)",
-            "6boss leaderboard — kontribusi damage",
-            "6boss rewards — preview reward"
+            "tboss / tboss status — HP & damage leaderboard",
+            "tboss attack — serang boss (cooldown 30 detik)",
+            "tboss leaderboard — kontribusi damage",
+            "tboss rewards — preview reward"
           ]
         },
         {
-          "name": "6pet",
+          "name": "tpet",
           "aliases": [],
           "summary": "Hatch, feed, equip/unequip, inventory, stats, upgrade, evolve, collection.",
-          "usage": "6pet <hatch|feed|equip|unequip|inventory|stats|upgrade|evolve|collection> [id]",
+          "usage": "tpet <hatch|feed|equip|unequip|inventory|stats|upgrade|evolve|collection> [id]",
           "examples": [
-            "6pet hatch",
-            "6pet equip <id>",
-            "6pet unequip <id>",
-            "6pet collection"
+            "tpet hatch",
+            "tpet equip <id>",
+            "tpet unequip <id>",
+            "tpet collection"
           ],
           "required": [],
           "optional": [],
@@ -767,15 +767,15 @@
           "permission": "Everyone",
           "note": "Jumlah slot aktif mengikuti setting `pets.maxSlots` di dashboard.",
           "subcommands": [
-            "6pet hatch [egg_basic|egg_rare|egg_legendary] — menetas",
-            "6pet feed [id] — naikkan level pet",
-            "6pet equip <id> — pasang pet aktif",
-            "6pet unequip <id> — lepas slot pet",
-            "6pet inventory — semua pet",
-            "6pet stats [id] — detail pet",
-            "6pet upgrade [id] — boost stat",
-            "6pet evolve [id] — evolusi saat level cukup",
-            "6pet collection — koleksi spesies"
+            "tpet hatch [egg_basic|egg_rare|egg_legendary] — menetas",
+            "tpet feed [id] — naikkan level pet",
+            "tpet equip <id> — pasang pet aktif",
+            "tpet unequip <id> — lepas slot pet",
+            "tpet inventory — semua pet",
+            "tpet stats [id] — detail pet",
+            "tpet upgrade [id] — boost stat",
+            "tpet evolve [id] — evolusi saat level cukup",
+            "tpet collection — koleksi spesies"
           ]
         }
       ]
@@ -787,12 +787,12 @@
       "blurb": "RNG crypto, house edge transparan, dan tombol interaktif.",
       "commands": [
         {
-          "name": "6slots",
+          "name": "tslots",
           "aliases": [],
           "summary": "Spin slot dan menangkan payout.",
-          "usage": "6slots [bet]",
+          "usage": "tslots [bet]",
           "examples": [
-            "6slots 100"
+            "tslots 100"
           ],
           "required": [],
           "optional": [],
@@ -800,16 +800,16 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6slots <bet> — 3 reel, triple up to 200x"
+            "tslots <bet> — 3 reel, triple up to 200x"
           ]
         },
         {
-          "name": "6coinflip",
+          "name": "tcoinflip",
           "aliases": [],
           "summary": "Tebak heads/tails dengan bet.",
-          "usage": "6coinflip <heads|tails> [bet]",
+          "usage": "tcoinflip <heads|tails> [bet]",
           "examples": [
-            "6coinflip heads 100"
+            "tcoinflip heads 100"
           ],
           "required": [],
           "optional": [],
@@ -817,17 +817,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6coinflip heads|tails <bet> — lempar koin adil 50/50"
+            "tcoinflip heads|tails <bet> — lempar koin adil 50/50"
           ]
         },
         {
-          "name": "6lottery",
+          "name": "tlottery",
           "aliases": [],
           "summary": "Lottery server: beli tiket, kumpulkan pot, dan menangkan hadiah.",
-          "usage": "6lottery [status|buy <tiket>]",
+          "usage": "tlottery [status|buy <tiket>]",
           "examples": [
-            "6lottery",
-            "6lottery buy 3"
+            "tlottery",
+            "tlottery buy 3"
           ],
           "required": [],
           "optional": [],
@@ -835,18 +835,18 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6lottery [status|buy <tiket>]",
-            "Contoh: 6lottery",
-            "Contoh: 6lottery buy 3"
+            "tlottery [status|buy <tiket>]",
+            "Contoh: tlottery",
+            "Contoh: tlottery buy 3"
           ]
         },
         {
-          "name": "6blackjack",
+          "name": "tblackjack",
           "aliases": [],
           "summary": "Blackjack melawan dealer dengan tombol hit/stand.",
-          "usage": "6blackjack [bet]",
+          "usage": "tblackjack [bet]",
           "examples": [
-            "6blackjack 100"
+            "tblackjack 100"
           ],
           "required": [],
           "optional": [],
@@ -854,16 +854,16 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6blackjack <bet> — hit/stand melawan dealer"
+            "tblackjack <bet> — hit/stand melawan dealer"
           ]
         },
         {
-          "name": "6dice",
+          "name": "tdice",
           "aliases": [],
           "summary": "Tebak hasil dadu.",
-          "usage": "6dice <1-6> [bet]",
+          "usage": "tdice <1-6> [bet]",
           "examples": [
-            "6dice 6 100"
+            "tdice 6 100"
           ],
           "required": [],
           "optional": [],
@@ -871,16 +871,16 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6dice <1-6> <bet> — tebak dadu, bayaran 6x"
+            "tdice <1-6> <bet> — tebak dadu, bayaran tx"
           ]
         },
         {
-          "name": "6roulette",
+          "name": "troulette",
           "aliases": [],
           "summary": "Taruhan warna/angka roulette.",
-          "usage": "6roulette <red|black|green|0-36> [bet]",
+          "usage": "troulette <red|black|green|0-36> [bet]",
           "examples": [
-            "6roulette red 100"
+            "troulette red 100"
           ],
           "required": [],
           "optional": [],
@@ -888,16 +888,16 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6roulette <red|black|green|0-36> <bet>"
+            "troulette <red|black|green|0-36> <bet>"
           ]
         },
         {
-          "name": "6guess",
+          "name": "tguess",
           "aliases": [],
           "summary": "Tebak angka yang dipilih sistem.",
-          "usage": "6guess <1-100> [bet]",
+          "usage": "tguess <1-100> [bet]",
           "examples": [
-            "6guess 42 100"
+            "tguess 42 100"
           ],
           "required": [],
           "optional": [],
@@ -905,16 +905,16 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6guess <1-10> <bet> — tebak angka, bayaran 10x"
+            "tguess <1-10> <bet> — tebak angka, bayaran 10x"
           ]
         },
         {
-          "name": "6trivia",
+          "name": "ttrivia",
           "aliases": [],
           "summary": "Trivia dengan pilihan tombol.",
-          "usage": "6trivia [bet]",
+          "usage": "ttrivia [bet]",
           "examples": [
-            "6trivia 100"
+            "ttrivia 100"
           ],
           "required": [],
           "optional": [],
@@ -922,17 +922,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6trivia <bet> — jawab pertanyaan via tombol"
+            "ttrivia <bet> — jawab pertanyaan via tombol"
           ]
         },
         {
-          "name": "6rps",
+          "name": "trps",
           "aliases": [],
           "summary": "Rock-paper-scissors lawan bot atau player.",
-          "usage": "6rps [bet] | 6rps @user [bet]",
+          "usage": "trps [bet] | trps @user [bet]",
           "examples": [
-            "6rps 100",
-            "6rps @teman 100"
+            "trps 100",
+            "trps @teman 100"
           ],
           "required": [],
           "optional": [],
@@ -940,8 +940,8 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6rps <rock|paper|scissors> <bet> — lawan bot",
-            "6rps @user <choice> <bet> — tantang pemain"
+            "trps <rock|paper|scissors> <bet> — lawan bot",
+            "trps @user <choice> <bet> — tantang pemain"
           ]
         }
       ]
@@ -953,12 +953,12 @@
       "blurb": "8ball, kamus, GIF, gambar, translate, dadu, pilihan, dan bel.",
       "commands": [
         {
-          "name": "68ball",
+          "name": "t8ball",
           "aliases": [],
           "summary": "Tanya bola 8 dan dapatkan jawaban dari RNG.",
-          "usage": "68ball <pertanyaan>",
+          "usage": "t8ball <pertanyaan>",
           "examples": [
-            "68ball apakah aku menang?"
+            "t8ball apakah aku menang?"
           ],
           "required": [],
           "optional": [],
@@ -966,19 +966,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "68ball <pertanyaan>",
-            "Contoh: 68ball apakah aku menang?"
+            "t8ball <pertanyaan>",
+            "Contoh: t8ball apakah aku menang?"
           ]
         },
         {
-          "name": "6define",
+          "name": "tdefine",
           "aliases": [
-            "6dictionary"
+            "tdictionary"
           ],
           "summary": "Cari arti kata bahasa Inggris lewat dictionary API.",
-          "usage": "6define <kata>",
+          "usage": "tdefine <kata>",
           "examples": [
-            "6define serendipity"
+            "tdefine serendipity"
           ],
           "required": [],
           "optional": [],
@@ -986,17 +986,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6define <kata>",
-            "Contoh: 6define serendipity"
+            "tdefine <kata>",
+            "Contoh: tdefine serendipity"
           ]
         },
         {
-          "name": "6gif",
+          "name": "tgif",
           "aliases": [],
           "summary": "Cari GIF dari Tenor berdasarkan kata kunci.",
-          "usage": "6gif <kata kunci>",
+          "usage": "tgif <kata kunci>",
           "examples": [
-            "6gif cat dance"
+            "tgif cat dance"
           ],
           "required": [],
           "optional": [],
@@ -1004,20 +1004,20 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6gif <kata kunci>",
-            "Contoh: 6gif cat dance"
+            "tgif <kata kunci>",
+            "Contoh: tgif cat dance"
           ]
         },
         {
-          "name": "6pic",
+          "name": "tpic",
           "aliases": [
-            "6image"
+            "timage"
           ],
           "summary": "Ambil gambar acak dari LoremFlickr.",
-          "usage": "6pic [kata kunci]",
+          "usage": "tpic [kata kunci]",
           "examples": [
-            "6pic sunset",
-            "6pic"
+            "tpic sunset",
+            "tpic"
           ],
           "required": [],
           "optional": [],
@@ -1025,18 +1025,18 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6pic [kata kunci]",
-            "Contoh: 6pic sunset",
-            "Contoh: 6pic"
+            "tpic [kata kunci]",
+            "Contoh: tpic sunset",
+            "Contoh: tpic"
           ]
         },
         {
-          "name": "6translate",
+          "name": "ttranslate",
           "aliases": [],
           "summary": "Terjemahkan teks via MyMemory API. Format: dari ke teks.",
-          "usage": "6translate <from> <to> <teks>",
+          "usage": "ttranslate <from> <to> <teks>",
           "examples": [
-            "6translate id en halo dunia"
+            "ttranslate id en halo dunia"
           ],
           "required": [],
           "optional": [],
@@ -1044,19 +1044,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6translate <from> <to> <teks>",
-            "Contoh: 6translate id en halo dunia"
+            "ttranslate <from> <to> <teks>",
+            "Contoh: ttranslate id en halo dunia"
           ]
         },
         {
-          "name": "6roll",
+          "name": "troll",
           "aliases": [],
           "summary": "Roll dadu dengan format NdM atau angka biasa.",
-          "usage": "6roll [2d6|100]",
+          "usage": "troll [2d6|100]",
           "examples": [
-            "6roll",
-            "6roll 2d6+3",
-            "6roll 100"
+            "troll",
+            "troll 2d6+3",
+            "troll 100"
           ],
           "required": [],
           "optional": [],
@@ -1064,21 +1064,21 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6roll [2d6|100]",
-            "Contoh: 6roll",
-            "Contoh: 6roll 2d6+3",
-            "Contoh: 6roll 100"
+            "troll [2d6|100]",
+            "Contoh: troll",
+            "Contoh: troll 2d6+3",
+            "Contoh: troll 100"
           ]
         },
         {
-          "name": "6choose",
+          "name": "tchoose",
           "aliases": [
-            "6pick"
+            "tpick"
           ],
           "summary": "Pilih satu opsi secara acak.",
-          "usage": "6choose opsi1, opsi2, opsi3",
+          "usage": "tchoose opsi1, opsi2, opsi3",
           "examples": [
-            "6choose nasi, mie, sate"
+            "tchoose nasi, mie, sate"
           ],
           "required": [],
           "optional": [],
@@ -1086,17 +1086,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6choose opsi1, opsi2, opsi3",
-            "Contoh: 6choose nasi, mie, sate"
+            "tchoose opsi1, opsi2, opsi3",
+            "Contoh: tchoose nasi, mie, sate"
           ]
         },
         {
-          "name": "6bell",
+          "name": "tbell",
           "aliases": [],
           "summary": "Bunyikan bel keberuntungan 666.",
-          "usage": "6bell",
+          "usage": "tbell",
           "examples": [
-            "6bell"
+            "tbell"
           ],
           "required": [],
           "optional": [],
@@ -1104,8 +1104,8 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6bell",
-            "Contoh: 6bell"
+            "tbell",
+            "Contoh: tbell"
           ]
         }
       ]
@@ -1117,12 +1117,12 @@
       "blurb": "Profil, level, avatar, pernikahan, ship, cookie, emoji, dan wallpaper.",
       "commands": [
         {
-          "name": "6cookie",
+          "name": "tcookie",
           "aliases": [],
           "summary": "Beri cookie ke member lain.",
-          "usage": "6cookie [@user]",
+          "usage": "tcookie [@user]",
           "examples": [
-            "6cookie @friend"
+            "tcookie @friend"
           ],
           "required": [],
           "optional": [],
@@ -1130,19 +1130,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6cookie [@user]",
-            "Contoh: 6cookie @friend"
+            "tcookie [@user]",
+            "Contoh: tcookie @friend"
           ]
         },
         {
-          "name": "6ship",
+          "name": "tship",
           "aliases": [
-            "6love"
+            "tlove"
           ],
           "summary": "Hitung compatibility dua member secara deterministik.",
-          "usage": "6ship @user [@user2]",
+          "usage": "tship @user [@user2]",
           "examples": [
-            "6ship @a @b"
+            "tship @a @b"
           ],
           "required": [],
           "optional": [],
@@ -1150,17 +1150,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6ship @user [@user2]",
-            "Contoh: 6ship @a @b"
+            "tship @user [@user2]",
+            "Contoh: tship @a @b"
           ]
         },
         {
-          "name": "6pray",
+          "name": "tpray",
           "aliases": [],
           "summary": "Kirim doa/blessing untuk member lain.",
-          "usage": "6pray [@user]",
+          "usage": "tpray [@user]",
           "examples": [
-            "6pray @friend"
+            "tpray @friend"
           ],
           "required": [],
           "optional": [],
@@ -1168,17 +1168,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6pray [@user]",
-            "Contoh: 6pray @friend"
+            "tpray [@user]",
+            "Contoh: tpray @friend"
           ]
         },
         {
-          "name": "6curse",
+          "name": "tcurse",
           "aliases": [],
           "summary": "Lempar kutukan ringan (hanya social stats, tanpa mengurangi saldo).",
-          "usage": "6curse [@user]",
+          "usage": "tcurse [@user]",
           "examples": [
-            "6curse @rival"
+            "tcurse @rival"
           ],
           "required": [],
           "optional": [],
@@ -1186,19 +1186,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6curse [@user]",
-            "Contoh: 6curse @rival"
+            "tcurse [@user]",
+            "Contoh: tcurse @rival"
           ]
         },
         {
-          "name": "6marry",
+          "name": "tmarry",
           "aliases": [],
           "summary": "Propose, accept, status, atau divorce partner.",
-          "usage": "6marry @user • 6marry accept <proposalId> • 6marry status • 6marry divorce",
+          "usage": "tmarry @user • tmarry accept <proposalId> • tmarry status • tmarry divorce",
           "examples": [
-            "6marry @partner",
-            "6marry accept a1b2c3",
-            "6marry status"
+            "tmarry @partner",
+            "tmarry accept a1b2c3",
+            "tmarry status"
           ],
           "required": [],
           "optional": [],
@@ -1206,19 +1206,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6marry @user • 6marry accept <proposalId> • 6marry status • 6marry divorce",
-            "Contoh: 6marry @partner",
-            "Contoh: 6marry accept a1b2c3",
-            "Contoh: 6marry status"
+            "tmarry @user • tmarry accept <proposalId> • tmarry status • tmarry divorce",
+            "Contoh: tmarry @partner",
+            "Contoh: tmarry accept a1b2c3",
+            "Contoh: tmarry status"
           ]
         },
         {
-          "name": "6emoji",
+          "name": "temoji",
           "aliases": [],
           "summary": "Tampilkan emoji besar atau info emoji.",
-          "usage": "6emoji <emoji>",
+          "usage": "temoji <emoji>",
           "examples": [
-            "6emoji 🔥"
+            "temoji 🔥"
           ],
           "required": [],
           "optional": [],
@@ -1226,20 +1226,20 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6emoji <emoji>",
-            "Contoh: 6emoji 🔥"
+            "temoji <emoji>",
+            "Contoh: temoji 🔥"
           ]
         },
         {
-          "name": "6profile",
+          "name": "tprofile",
           "aliases": [
-            "6me"
+            "tme"
           ],
           "summary": "Kartu profil lengkap dengan statistik, sosial, dan quest.",
-          "usage": "6profile [@user]",
+          "usage": "tprofile [@user]",
           "examples": [
-            "6profile",
-            "6profile @teman"
+            "tprofile",
+            "tprofile @teman"
           ],
           "required": [],
           "optional": [],
@@ -1247,19 +1247,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6profile [@user] — kartu profil 666 lengkap"
+            "tprofile [@user] — kartu profil 666 lengkap"
           ]
         },
         {
-          "name": "6level",
+          "name": "tlevel",
           "aliases": [
-            "6lvl"
+            "tlvl"
           ],
           "summary": "Lihat level, EXP, dan progress ke level berikutnya.",
-          "usage": "6level [@user]",
+          "usage": "tlevel [@user]",
           "examples": [
-            "6level",
-            "6level @friend"
+            "tlevel",
+            "tlevel @friend"
           ],
           "required": [],
           "optional": [],
@@ -1267,18 +1267,18 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6level [@user]",
-            "Contoh: 6level",
-            "Contoh: 6level @friend"
+            "tlevel [@user]",
+            "Contoh: tlevel",
+            "Contoh: tlevel @friend"
           ]
         },
         {
-          "name": "6wallpaper",
+          "name": "twallpaper",
           "aliases": [],
           "summary": "Ambil wallpaper acak sesuai tema.",
-          "usage": "6wallpaper [tema]",
+          "usage": "twallpaper [tema]",
           "examples": [
-            "6wallpaper cyberpunk"
+            "twallpaper cyberpunk"
           ],
           "required": [],
           "optional": [],
@@ -1286,20 +1286,20 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6wallpaper [tema]",
-            "Contoh: 6wallpaper cyberpunk"
+            "twallpaper [tema]",
+            "Contoh: twallpaper cyberpunk"
           ]
         },
         {
-          "name": "6godify",
+          "name": "tgodify",
           "aliases": [
-            "6ascend"
+            "tascend"
           ],
           "summary": "Buat avatar member menjadi versi 666 ascended lewat canvas API.",
-          "usage": "6godify [@user]",
+          "usage": "tgodify [@user]",
           "examples": [
-            "6godify",
-            "6godify @friend"
+            "tgodify",
+            "tgodify @friend"
           ],
           "required": [],
           "optional": [],
@@ -1307,21 +1307,21 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6godify [@user]",
-            "Contoh: 6godify",
-            "Contoh: 6godify @friend"
+            "tgodify [@user]",
+            "Contoh: tgodify",
+            "Contoh: tgodify @friend"
           ]
         },
         {
-          "name": "6avatar",
+          "name": "tavatar",
           "aliases": [
-            "6av"
+            "tav"
           ],
           "summary": "Tampilkan avatar member dalam ukuran besar.",
-          "usage": "6avatar [@user]",
+          "usage": "tavatar [@user]",
           "examples": [
-            "6avatar",
-            "6avatar @friend"
+            "tavatar",
+            "tavatar @friend"
           ],
           "required": [],
           "optional": [],
@@ -1329,9 +1329,9 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6avatar [@user]",
-            "Contoh: 6avatar",
-            "Contoh: 6avatar @friend"
+            "tavatar [@user]",
+            "Contoh: tavatar",
+            "Contoh: tavatar @friend"
           ]
         }
       ]
@@ -1343,12 +1343,12 @@
       "blurb": "Meme generator canvas dengan teks custom.",
       "commands": [
         {
-          "name": "6spongebobchicken",
+          "name": "tspongebobchicken",
           "aliases": [],
           "summary": "Meme SpongeBob chicken dengan teks custom.",
-          "usage": "6spongebobchicken [teks atas | teks bawah]",
+          "usage": "tspongebobchicken [teks atas | teks bawah]",
           "examples": [
-            "6spongebobchicken ketika kamu | klaim daily"
+            "tspongebobchicken ketika kamu | klaim daily"
           ],
           "required": [],
           "optional": [],
@@ -1356,17 +1356,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6spongebobchicken [teks atas | teks bawah]",
-            "Contoh: 6spongebobchicken ketika kamu | klaim daily"
+            "tspongebobchicken [teks atas | teks bawah]",
+            "Contoh: tspongebobchicken ketika kamu | klaim daily"
           ]
         },
         {
-          "name": "6slapcar",
+          "name": "tslapcar",
           "aliases": [],
           "summary": "Meme slap car untuk rasa kesal.",
-          "usage": "6slapcar [teks atas | teks bawah]",
+          "usage": "tslapcar [teks atas | teks bawah]",
           "examples": [
-            "6slapcar aku kalah | RNG"
+            "tslapcar aku kalah | RNG"
           ],
           "required": [],
           "optional": [],
@@ -1374,17 +1374,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6slapcar [teks atas | teks bawah]",
-            "Contoh: 6slapcar aku kalah | RNG"
+            "tslapcar [teks atas | teks bawah]",
+            "Contoh: tslapcar aku kalah | RNG"
           ]
         },
         {
-          "name": "6isthisa",
+          "name": "tisthisa",
           "aliases": [],
           "summary": "Meme is this a pigeon?",
-          "usage": "6isthisa [teks atas | teks bawah]",
+          "usage": "tisthisa [teks atas | teks bawah]",
           "examples": [
-            "6isthisa apakah ini | reward gratis"
+            "tisthisa apakah ini | reward gratis"
           ],
           "required": [],
           "optional": [],
@@ -1392,17 +1392,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6isthisa [teks atas | teks bawah]",
-            "Contoh: 6isthisa apakah ini | reward gratis"
+            "tisthisa [teks atas | teks bawah]",
+            "Contoh: tisthisa apakah ini | reward gratis"
           ]
         },
         {
-          "name": "6drake",
+          "name": "tdrake",
           "aliases": [],
           "summary": "Meme Drake NO/YES. Pisahkan dua teks dengan |.",
-          "usage": "6drake [teks atas | teks bawah]",
+          "usage": "tdrake [teks atas | teks bawah]",
           "examples": [
-            "6drake grind manual | autohunt"
+            "tdrake grind manual | autohunt"
           ],
           "required": [],
           "optional": [],
@@ -1410,17 +1410,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6drake [teks atas | teks bawah]",
-            "Contoh: 6drake grind manual | autohunt"
+            "tdrake [teks atas | teks bawah]",
+            "Contoh: tdrake grind manual | autohunt"
           ]
         },
         {
-          "name": "6distractedbf",
+          "name": "tdistractedbf",
           "aliases": [],
           "summary": "Meme distracted boyfriend.",
-          "usage": "6distractedbf [teks atas | teks bawah]",
+          "usage": "tdistractedbf [teks atas | teks bawah]",
           "examples": [
-            "6distractedbf walletku | egg legendary"
+            "tdistractedbf walletku | egg legendary"
           ],
           "required": [],
           "optional": [],
@@ -1428,17 +1428,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6distractedbf [teks atas | teks bawah]",
-            "Contoh: 6distractedbf walletku | egg legendary"
+            "tdistractedbf [teks atas | teks bawah]",
+            "Contoh: tdistractedbf walletku | egg legendary"
           ]
         },
         {
-          "name": "6communismcat",
+          "name": "tcommunismcat",
           "aliases": [],
           "summary": "Meme communism cat.",
-          "usage": "6communismcat [teks atas | teks bawah]",
+          "usage": "tcommunismcat [teks atas | teks bawah]",
           "examples": [
-            "6communismcat koinmu | koin kita"
+            "tcommunismcat koinmu | koin kita"
           ],
           "required": [],
           "optional": [],
@@ -1446,17 +1446,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6communismcat [teks atas | teks bawah]",
-            "Contoh: 6communismcat koinmu | koin kita"
+            "tcommunismcat [teks atas | teks bawah]",
+            "Contoh: tcommunismcat koinmu | koin kita"
           ]
         },
         {
-          "name": "6eject",
+          "name": "teject",
           "aliases": [],
           "summary": "Meme emergency eject.",
-          "usage": "6eject [teks atas | teks bawah]",
+          "usage": "teject [teks atas | teks bawah]",
           "examples": [
-            "6eject listing kemahalan | eject"
+            "teject listing kemahalan | eject"
           ],
           "required": [],
           "optional": [],
@@ -1464,17 +1464,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6eject [teks atas | teks bawah]",
-            "Contoh: 6eject listing kemahalan | eject"
+            "teject [teks atas | teks bawah]",
+            "Contoh: teject listing kemahalan | eject"
           ]
         },
         {
-          "name": "6emergencymeeting",
+          "name": "temergencymeeting",
           "aliases": [],
           "summary": "Meme emergency meeting.",
-          "usage": "6emergencymeeting [teks atas | teks bawah]",
+          "usage": "temergencymeeting [teks atas | teks bawah]",
           "examples": [
-            "6emergencymeeting ada secret monster | sus"
+            "temergencymeeting ada secret monster | sus"
           ],
           "required": [],
           "optional": [],
@@ -1482,17 +1482,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6emergencymeeting [teks atas | teks bawah]",
-            "Contoh: 6emergencymeeting ada secret monster | sus"
+            "temergencymeeting [teks atas | teks bawah]",
+            "Contoh: temergencymeeting ada secret monster | sus"
           ]
         },
         {
-          "name": "6headpat",
+          "name": "theadpat",
           "aliases": [],
           "summary": "Meme headpat untuk teman.",
-          "usage": "6headpat [teks atas | teks bawah]",
+          "usage": "theadpat [teks atas | teks bawah]",
           "examples": [
-            "6headpat kamu hebat | semoga hoki"
+            "theadpat kamu hebat | semoga hoki"
           ],
           "required": [],
           "optional": [],
@@ -1500,17 +1500,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6headpat [teks atas | teks bawah]",
-            "Contoh: 6headpat kamu hebat | semoga hoki"
+            "theadpat [teks atas | teks bawah]",
+            "Contoh: theadpat kamu hebat | semoga hoki"
           ]
         },
         {
-          "name": "6tradeoffer",
+          "name": "ttradeoffer",
           "aliases": [],
           "summary": "Meme trade offer.",
-          "usage": "6tradeoffer [teks atas | teks bawah]",
+          "usage": "ttradeoffer [teks atas | teks bawah]",
           "examples": [
-            "6tradeoffer aku dapat pet langka | kamu dapat egg umum"
+            "ttradeoffer aku dapat pet langka | kamu dapat egg umum"
           ],
           "required": [],
           "optional": [],
@@ -1518,17 +1518,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6tradeoffer [teks atas | teks bawah]",
-            "Contoh: 6tradeoffer aku dapat pet langka | kamu dapat egg umum"
+            "ttradeoffer [teks atas | teks bawah]",
+            "Contoh: ttradeoffer aku dapat pet langka | kamu dapat egg umum"
           ]
         },
         {
-          "name": "6waddle",
+          "name": "twaddle",
           "aliases": [],
           "summary": "Meme waddle saat boss muncul.",
-          "usage": "6waddle [teks atas | teks bawah]",
+          "usage": "twaddle [teks atas | teks bawah]",
           "examples": [
-            "6waddle boss spawn | semua waddle"
+            "twaddle boss spawn | semua waddle"
           ],
           "required": [],
           "optional": [],
@@ -1536,8 +1536,8 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6waddle [teks atas | teks bawah]",
-            "Contoh: 6waddle boss spawn | semua waddle"
+            "twaddle [teks atas | teks bawah]",
+            "Contoh: twaddle boss spawn | semua waddle"
           ]
         }
       ]
@@ -1549,12 +1549,12 @@
       "blurb": "Ekspresi dan reaksi dengan GIF nyata.",
       "commands": [
         {
-          "name": "6blush",
+          "name": "tblush",
           "aliases": [],
           "summary": "😊 Ekspresi blush: merona karena malu.",
-          "usage": "6blush",
+          "usage": "tblush",
           "examples": [
-            "6blush"
+            "tblush"
           ],
           "required": [],
           "optional": [],
@@ -1562,17 +1562,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6blush",
-            "Contoh: 6blush"
+            "tblush",
+            "Contoh: tblush"
           ]
         },
         {
-          "name": "6cry",
+          "name": "tcry",
           "aliases": [],
           "summary": "😭 Ekspresi cry: menangis.",
-          "usage": "6cry",
+          "usage": "tcry",
           "examples": [
-            "6cry"
+            "tcry"
           ],
           "required": [],
           "optional": [],
@@ -1580,17 +1580,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6cry",
-            "Contoh: 6cry"
+            "tcry",
+            "Contoh: tcry"
           ]
         },
         {
-          "name": "6dance",
+          "name": "tdance",
           "aliases": [],
           "summary": "💃 Ekspresi dance: menari.",
-          "usage": "6dance",
+          "usage": "tdance",
           "examples": [
-            "6dance"
+            "tdance"
           ],
           "required": [],
           "optional": [],
@@ -1598,17 +1598,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6dance",
-            "Contoh: 6dance"
+            "tdance",
+            "Contoh: tdance"
           ]
         },
         {
-          "name": "6pout",
+          "name": "tpout",
           "aliases": [],
           "summary": "😤 Ekspresi pout: cemberut.",
-          "usage": "6pout",
+          "usage": "tpout",
           "examples": [
-            "6pout"
+            "tpout"
           ],
           "required": [],
           "optional": [],
@@ -1616,17 +1616,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6pout",
-            "Contoh: 6pout"
+            "tpout",
+            "Contoh: tpout"
           ]
         },
         {
-          "name": "6shrug",
+          "name": "tshrug",
           "aliases": [],
           "summary": "🤷 Ekspresi shrug: angkat bahu.",
-          "usage": "6shrug",
+          "usage": "tshrug",
           "examples": [
-            "6shrug"
+            "tshrug"
           ],
           "required": [],
           "optional": [],
@@ -1634,17 +1634,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6shrug",
-            "Contoh: 6shrug"
+            "tshrug",
+            "Contoh: tshrug"
           ]
         },
         {
-          "name": "6sleepy",
+          "name": "tsleepy",
           "aliases": [],
           "summary": "😴 Ekspresi sleepy: mengantuk.",
-          "usage": "6sleepy",
+          "usage": "tsleepy",
           "examples": [
-            "6sleepy"
+            "tsleepy"
           ],
           "required": [],
           "optional": [],
@@ -1652,17 +1652,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6sleepy",
-            "Contoh: 6sleepy"
+            "tsleepy",
+            "Contoh: tsleepy"
           ]
         },
         {
-          "name": "6smile",
+          "name": "tsmile",
           "aliases": [],
           "summary": "😄 Ekspresi smile: tersenyum.",
-          "usage": "6smile",
+          "usage": "tsmile",
           "examples": [
-            "6smile"
+            "tsmile"
           ],
           "required": [],
           "optional": [],
@@ -1670,17 +1670,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6smile",
-            "Contoh: 6smile"
+            "tsmile",
+            "Contoh: tsmile"
           ]
         },
         {
-          "name": "6smug",
+          "name": "tsmug",
           "aliases": [],
           "summary": "😏 Ekspresi smug: smug.",
-          "usage": "6smug",
+          "usage": "tsmug",
           "examples": [
-            "6smug"
+            "tsmug"
           ],
           "required": [],
           "optional": [],
@@ -1688,17 +1688,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6smug",
-            "Contoh: 6smug"
+            "tsmug",
+            "Contoh: tsmug"
           ]
         },
         {
-          "name": "6thumbsup",
+          "name": "tthumbsup",
           "aliases": [],
           "summary": "👍 Ekspresi thumbsup: memberi thumbs up.",
-          "usage": "6thumbsup",
+          "usage": "tthumbsup",
           "examples": [
-            "6thumbsup"
+            "tthumbsup"
           ],
           "required": [],
           "optional": [],
@@ -1706,17 +1706,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6thumbsup",
-            "Contoh: 6thumbsup"
+            "tthumbsup",
+            "Contoh: tthumbsup"
           ]
         },
         {
-          "name": "6wag",
+          "name": "twag",
           "aliases": [],
           "summary": "🐕 Ekspresi wag: menggoyangkan ekor.",
-          "usage": "6wag",
+          "usage": "twag",
           "examples": [
-            "6wag"
+            "twag"
           ],
           "required": [],
           "optional": [],
@@ -1724,17 +1724,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6wag",
-            "Contoh: 6wag"
+            "twag",
+            "Contoh: twag"
           ]
         },
         {
-          "name": "6thinking",
+          "name": "tthinking",
           "aliases": [],
           "summary": "🤔 Ekspresi thinking: berpikir.",
-          "usage": "6thinking",
+          "usage": "tthinking",
           "examples": [
-            "6thinking"
+            "tthinking"
           ],
           "required": [],
           "optional": [],
@@ -1742,17 +1742,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6thinking",
-            "Contoh: 6thinking"
+            "tthinking",
+            "Contoh: tthinking"
           ]
         },
         {
-          "name": "6triggered",
+          "name": "ttriggered",
           "aliases": [],
           "summary": "😡 Ekspresi triggered: triggered.",
-          "usage": "6triggered",
+          "usage": "ttriggered",
           "examples": [
-            "6triggered"
+            "ttriggered"
           ],
           "required": [],
           "optional": [],
@@ -1760,17 +1760,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6triggered",
-            "Contoh: 6triggered"
+            "ttriggered",
+            "Contoh: ttriggered"
           ]
         },
         {
-          "name": "6teehee",
+          "name": "tteehee",
           "aliases": [],
           "summary": "😋 Ekspresi teehee: teehee.",
-          "usage": "6teehee",
+          "usage": "tteehee",
           "examples": [
-            "6teehee"
+            "tteehee"
           ],
           "required": [],
           "optional": [],
@@ -1778,17 +1778,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6teehee",
-            "Contoh: 6teehee"
+            "tteehee",
+            "Contoh: tteehee"
           ]
         },
         {
-          "name": "6deredere",
+          "name": "tderedere",
           "aliases": [],
           "summary": "🥰 Ekspresi deredere: deredere.",
-          "usage": "6deredere",
+          "usage": "tderedere",
           "examples": [
-            "6deredere"
+            "tderedere"
           ],
           "required": [],
           "optional": [],
@@ -1796,17 +1796,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6deredere",
-            "Contoh: 6deredere"
+            "tderedere",
+            "Contoh: tderedere"
           ]
         },
         {
-          "name": "6thonsking",
+          "name": "tthonsking",
           "aliases": [],
           "summary": "🤨 Ekspresi thonsking: thonsking.",
-          "usage": "6thonsking",
+          "usage": "tthonsking",
           "examples": [
-            "6thonsking"
+            "tthonsking"
           ],
           "required": [],
           "optional": [],
@@ -1814,17 +1814,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6thonsking",
-            "Contoh: 6thonsking"
+            "tthonsking",
+            "Contoh: tthonsking"
           ]
         },
         {
-          "name": "6scoff",
+          "name": "tscoff",
           "aliases": [],
           "summary": "😒 Ekspresi scoff: scoff.",
-          "usage": "6scoff",
+          "usage": "tscoff",
           "examples": [
-            "6scoff"
+            "tscoff"
           ],
           "required": [],
           "optional": [],
@@ -1832,17 +1832,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6scoff",
-            "Contoh: 6scoff"
+            "tscoff",
+            "Contoh: tscoff"
           ]
         },
         {
-          "name": "6happy",
+          "name": "thappy",
           "aliases": [],
           "summary": "😁 Ekspresi happy: bahagia.",
-          "usage": "6happy",
+          "usage": "thappy",
           "examples": [
-            "6happy"
+            "thappy"
           ],
           "required": [],
           "optional": [],
@@ -1850,17 +1850,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6happy",
-            "Contoh: 6happy"
+            "thappy",
+            "Contoh: thappy"
           ]
         },
         {
-          "name": "6thumbs",
+          "name": "tthumbs",
           "aliases": [],
           "summary": "👍 Ekspresi thumbs: thumbs up.",
-          "usage": "6thumbs",
+          "usage": "tthumbs",
           "examples": [
-            "6thumbs"
+            "tthumbs"
           ],
           "required": [],
           "optional": [],
@@ -1868,17 +1868,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6thumbs",
-            "Contoh: 6thumbs"
+            "tthumbs",
+            "Contoh: tthumbs"
           ]
         },
         {
-          "name": "6grin",
+          "name": "tgrin",
           "aliases": [],
           "summary": "😁 Ekspresi grin: grin.",
-          "usage": "6grin",
+          "usage": "tgrin",
           "examples": [
-            "6grin"
+            "tgrin"
           ],
           "required": [],
           "optional": [],
@@ -1886,8 +1886,8 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6grin",
-            "Contoh: 6grin"
+            "tgrin",
+            "Contoh: tgrin"
           ]
         }
       ]
@@ -1899,13 +1899,13 @@
       "blurb": "Aksi sosial ke member lain dengan GIF.",
       "commands": [
         {
-          "name": "6cuddle",
+          "name": "tcuddle",
           "aliases": [],
           "summary": "🤗 Memeluk member lain dengan GIF.",
-          "usage": "6cuddle [@user]",
+          "usage": "tcuddle [@user]",
           "examples": [
-            "6cuddle",
-            "6cuddle @friend"
+            "tcuddle",
+            "tcuddle @friend"
           ],
           "required": [],
           "optional": [],
@@ -1913,19 +1913,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6cuddle [@user]",
-            "Contoh: 6cuddle",
-            "Contoh: 6cuddle @friend"
+            "tcuddle [@user]",
+            "Contoh: tcuddle",
+            "Contoh: tcuddle @friend"
           ]
         },
         {
-          "name": "6hug",
+          "name": "thug",
           "aliases": [],
           "summary": "🫂 Memeluk member lain dengan GIF.",
-          "usage": "6hug [@user]",
+          "usage": "thug [@user]",
           "examples": [
-            "6hug",
-            "6hug @friend"
+            "thug",
+            "thug @friend"
           ],
           "required": [],
           "optional": [],
@@ -1933,19 +1933,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6hug [@user]",
-            "Contoh: 6hug",
-            "Contoh: 6hug @friend"
+            "thug [@user]",
+            "Contoh: thug",
+            "Contoh: thug @friend"
           ]
         },
         {
-          "name": "6kiss",
+          "name": "tkiss",
           "aliases": [],
           "summary": "😘 Mencium member lain dengan GIF.",
-          "usage": "6kiss [@user]",
+          "usage": "tkiss [@user]",
           "examples": [
-            "6kiss",
-            "6kiss @friend"
+            "tkiss",
+            "tkiss @friend"
           ],
           "required": [],
           "optional": [],
@@ -1953,19 +1953,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6kiss [@user]",
-            "Contoh: 6kiss",
-            "Contoh: 6kiss @friend"
+            "tkiss [@user]",
+            "Contoh: tkiss",
+            "Contoh: tkiss @friend"
           ]
         },
         {
-          "name": "6lick",
+          "name": "tlick",
           "aliases": [],
           "summary": "👅 Menjilat member lain dengan GIF.",
-          "usage": "6lick [@user]",
+          "usage": "tlick [@user]",
           "examples": [
-            "6lick",
-            "6lick @friend"
+            "tlick",
+            "tlick @friend"
           ],
           "required": [],
           "optional": [],
@@ -1973,19 +1973,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6lick [@user]",
-            "Contoh: 6lick",
-            "Contoh: 6lick @friend"
+            "tlick [@user]",
+            "Contoh: tlick",
+            "Contoh: tlick @friend"
           ]
         },
         {
-          "name": "6nom",
+          "name": "tnom",
           "aliases": [],
           "summary": "😋 Menggigit member lain dengan GIF.",
-          "usage": "6nom [@user]",
+          "usage": "tnom [@user]",
           "examples": [
-            "6nom",
-            "6nom @friend"
+            "tnom",
+            "tnom @friend"
           ],
           "required": [],
           "optional": [],
@@ -1993,19 +1993,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6nom [@user]",
-            "Contoh: 6nom",
-            "Contoh: 6nom @friend"
+            "tnom [@user]",
+            "Contoh: tnom",
+            "Contoh: tnom @friend"
           ]
         },
         {
-          "name": "6pat",
+          "name": "tpat",
           "aliases": [],
           "summary": "🫳 Mengelus member lain dengan GIF.",
-          "usage": "6pat [@user]",
+          "usage": "tpat [@user]",
           "examples": [
-            "6pat",
-            "6pat @friend"
+            "tpat",
+            "tpat @friend"
           ],
           "required": [],
           "optional": [],
@@ -2013,19 +2013,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6pat [@user]",
-            "Contoh: 6pat",
-            "Contoh: 6pat @friend"
+            "tpat [@user]",
+            "Contoh: tpat",
+            "Contoh: tpat @friend"
           ]
         },
         {
-          "name": "6poke",
+          "name": "tpoke",
           "aliases": [],
           "summary": "👉 Mencolek member lain dengan GIF.",
-          "usage": "6poke [@user]",
+          "usage": "tpoke [@user]",
           "examples": [
-            "6poke",
-            "6poke @friend"
+            "tpoke",
+            "tpoke @friend"
           ],
           "required": [],
           "optional": [],
@@ -2033,19 +2033,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6poke [@user]",
-            "Contoh: 6poke",
-            "Contoh: 6poke @friend"
+            "tpoke [@user]",
+            "Contoh: tpoke",
+            "Contoh: tpoke @friend"
           ]
         },
         {
-          "name": "6slap",
+          "name": "tslap",
           "aliases": [],
           "summary": "🖐️ Menampar member lain dengan GIF.",
-          "usage": "6slap [@user]",
+          "usage": "tslap [@user]",
           "examples": [
-            "6slap",
-            "6slap @friend"
+            "tslap",
+            "tslap @friend"
           ],
           "required": [],
           "optional": [],
@@ -2053,19 +2053,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6slap [@user]",
-            "Contoh: 6slap",
-            "Contoh: 6slap @friend"
+            "tslap [@user]",
+            "Contoh: tslap",
+            "Contoh: tslap @friend"
           ]
         },
         {
-          "name": "6stare",
+          "name": "tstare",
           "aliases": [],
           "summary": "👀 Menatap member lain dengan GIF.",
-          "usage": "6stare [@user]",
+          "usage": "tstare [@user]",
           "examples": [
-            "6stare",
-            "6stare @friend"
+            "tstare",
+            "tstare @friend"
           ],
           "required": [],
           "optional": [],
@@ -2073,19 +2073,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6stare [@user]",
-            "Contoh: 6stare",
-            "Contoh: 6stare @friend"
+            "tstare [@user]",
+            "Contoh: tstare",
+            "Contoh: tstare @friend"
           ]
         },
         {
-          "name": "6highfive",
+          "name": "thighfive",
           "aliases": [],
           "summary": "🙌 Tos member lain dengan GIF.",
-          "usage": "6highfive [@user]",
+          "usage": "thighfive [@user]",
           "examples": [
-            "6highfive",
-            "6highfive @friend"
+            "thighfive",
+            "thighfive @friend"
           ],
           "required": [],
           "optional": [],
@@ -2093,19 +2093,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6highfive [@user]",
-            "Contoh: 6highfive",
-            "Contoh: 6highfive @friend"
+            "thighfive [@user]",
+            "Contoh: thighfive",
+            "Contoh: thighfive @friend"
           ]
         },
         {
-          "name": "6bite",
+          "name": "tbite",
           "aliases": [],
           "summary": "🦷 Menggigit member lain dengan GIF.",
-          "usage": "6bite [@user]",
+          "usage": "tbite [@user]",
           "examples": [
-            "6bite",
-            "6bite @friend"
+            "tbite",
+            "tbite @friend"
           ],
           "required": [],
           "optional": [],
@@ -2113,19 +2113,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6bite [@user]",
-            "Contoh: 6bite",
-            "Contoh: 6bite @friend"
+            "tbite [@user]",
+            "Contoh: tbite",
+            "Contoh: tbite @friend"
           ]
         },
         {
-          "name": "6greet",
+          "name": "tgreet",
           "aliases": [],
           "summary": "👋 Menyapa member lain dengan GIF.",
-          "usage": "6greet [@user]",
+          "usage": "tgreet [@user]",
           "examples": [
-            "6greet",
-            "6greet @friend"
+            "tgreet",
+            "tgreet @friend"
           ],
           "required": [],
           "optional": [],
@@ -2133,19 +2133,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6greet [@user]",
-            "Contoh: 6greet",
-            "Contoh: 6greet @friend"
+            "tgreet [@user]",
+            "Contoh: tgreet",
+            "Contoh: tgreet @friend"
           ]
         },
         {
-          "name": "6punch",
+          "name": "tpunch",
           "aliases": [],
           "summary": "👊 Meninju member lain dengan GIF.",
-          "usage": "6punch [@user]",
+          "usage": "tpunch [@user]",
           "examples": [
-            "6punch",
-            "6punch @friend"
+            "tpunch",
+            "tpunch @friend"
           ],
           "required": [],
           "optional": [],
@@ -2153,19 +2153,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6punch [@user]",
-            "Contoh: 6punch",
-            "Contoh: 6punch @friend"
+            "tpunch [@user]",
+            "Contoh: tpunch",
+            "Contoh: tpunch @friend"
           ]
         },
         {
-          "name": "6handholding",
+          "name": "thandholding",
           "aliases": [],
           "summary": "🤝 Menggandeng tangan member lain dengan GIF.",
-          "usage": "6handholding [@user]",
+          "usage": "thandholding [@user]",
           "examples": [
-            "6handholding",
-            "6handholding @friend"
+            "thandholding",
+            "thandholding @friend"
           ],
           "required": [],
           "optional": [],
@@ -2173,19 +2173,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6handholding [@user]",
-            "Contoh: 6handholding",
-            "Contoh: 6handholding @friend"
+            "thandholding [@user]",
+            "Contoh: thandholding",
+            "Contoh: thandholding @friend"
           ]
         },
         {
-          "name": "6tickle",
+          "name": "ttickle",
           "aliases": [],
           "summary": "🪶 Menggelitik member lain dengan GIF.",
-          "usage": "6tickle [@user]",
+          "usage": "ttickle [@user]",
           "examples": [
-            "6tickle",
-            "6tickle @friend"
+            "ttickle",
+            "ttickle @friend"
           ],
           "required": [],
           "optional": [],
@@ -2193,19 +2193,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6tickle [@user]",
-            "Contoh: 6tickle",
-            "Contoh: 6tickle @friend"
+            "ttickle [@user]",
+            "Contoh: ttickle",
+            "Contoh: ttickle @friend"
           ]
         },
         {
-          "name": "6hold",
+          "name": "thold",
           "aliases": [],
           "summary": "🫴 Menggenggam member lain dengan GIF.",
-          "usage": "6hold [@user]",
+          "usage": "thold [@user]",
           "examples": [
-            "6hold",
-            "6hold @friend"
+            "thold",
+            "thold @friend"
           ],
           "required": [],
           "optional": [],
@@ -2213,19 +2213,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6hold [@user]",
-            "Contoh: 6hold",
-            "Contoh: 6hold @friend"
+            "thold [@user]",
+            "Contoh: thold",
+            "Contoh: thold @friend"
           ]
         },
         {
-          "name": "6pats",
+          "name": "tpats",
           "aliases": [],
           "summary": "🫳 Mengelus member lain dengan GIF.",
-          "usage": "6pats [@user]",
+          "usage": "tpats [@user]",
           "examples": [
-            "6pats",
-            "6pats @friend"
+            "tpats",
+            "tpats @friend"
           ],
           "required": [],
           "optional": [],
@@ -2233,19 +2233,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6pats [@user]",
-            "Contoh: 6pats",
-            "Contoh: 6pats @friend"
+            "tpats [@user]",
+            "Contoh: tpats",
+            "Contoh: tpats @friend"
           ]
         },
         {
-          "name": "6wave",
+          "name": "twave",
           "aliases": [],
           "summary": "👋 Melambai member lain dengan GIF.",
-          "usage": "6wave [@user]",
+          "usage": "twave [@user]",
           "examples": [
-            "6wave",
-            "6wave @friend"
+            "twave",
+            "twave @friend"
           ],
           "required": [],
           "optional": [],
@@ -2253,19 +2253,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6wave [@user]",
-            "Contoh: 6wave",
-            "Contoh: 6wave @friend"
+            "twave [@user]",
+            "Contoh: twave",
+            "Contoh: twave @friend"
           ]
         },
         {
-          "name": "6boop",
+          "name": "tboop",
           "aliases": [],
           "summary": "👉 Boop hidung member lain dengan GIF.",
-          "usage": "6boop [@user]",
+          "usage": "tboop [@user]",
           "examples": [
-            "6boop",
-            "6boop @friend"
+            "tboop",
+            "tboop @friend"
           ],
           "required": [],
           "optional": [],
@@ -2273,19 +2273,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6boop [@user]",
-            "Contoh: 6boop",
-            "Contoh: 6boop @friend"
+            "tboop [@user]",
+            "Contoh: tboop",
+            "Contoh: tboop @friend"
           ]
         },
         {
-          "name": "6snuggle",
+          "name": "tsnuggle",
           "aliases": [],
           "summary": "🛌 Snuggle member lain dengan GIF.",
-          "usage": "6snuggle [@user]",
+          "usage": "tsnuggle [@user]",
           "examples": [
-            "6snuggle",
-            "6snuggle @friend"
+            "tsnuggle",
+            "tsnuggle @friend"
           ],
           "required": [],
           "optional": [],
@@ -2293,19 +2293,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6snuggle [@user]",
-            "Contoh: 6snuggle",
-            "Contoh: 6snuggle @friend"
+            "tsnuggle [@user]",
+            "Contoh: tsnuggle",
+            "Contoh: tsnuggle @friend"
           ]
         },
         {
-          "name": "6bully",
+          "name": "tbully",
           "aliases": [],
           "summary": "😈 Mengganggu member lain dengan GIF.",
-          "usage": "6bully [@user]",
+          "usage": "tbully [@user]",
           "examples": [
-            "6bully",
-            "6bully @friend"
+            "tbully",
+            "tbully @friend"
           ],
           "required": [],
           "optional": [],
@@ -2313,9 +2313,9 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6bully [@user]",
-            "Contoh: 6bully",
-            "Contoh: 6bully @friend"
+            "tbully [@user]",
+            "Contoh: tbully",
+            "Contoh: tbully @friend"
           ]
         }
       ]
@@ -2327,19 +2327,19 @@
       "blurb": "Info bot, link, prefix, moderator tools, saran, shards, math, dan warna.",
       "commands": [
         {
-          "name": "6help",
+          "name": "thelp",
           "aliases": [
-            "6commands",
-            "6h",
-            "6?"
+            "tcommands",
+            "th",
+            "t?"
           ],
           "summary": "Command list interaktif, detail per command, pencarian, dan kategori.",
-          "usage": "6help [command|kategori|keyword]",
+          "usage": "thelp [command|kategori|keyword]",
           "examples": [
-            "6help",
-            "6help cash",
-            "6help economy",
-            "6help sell"
+            "thelp",
+            "thelp cash",
+            "thelp economy",
+            "thelp sell"
           ],
           "required": [],
           "optional": [],
@@ -2347,20 +2347,20 @@
           "permission": "Everyone",
           "note": "Gunakan menu kategori di bawah embed atau `/help` untuk versi slash.",
           "subcommands": [
-            "6help — buka pusat bantuan interaktif",
-            "6help <command> — detail satu command (contoh: 6help cash)",
-            "6help <kategori> — daftar command per kategori (contoh: 6help economy)",
-            "6help <keyword> — cari command berdasarkan kata kunci",
+            "thelp — buka pusat bantuan interaktif",
+            "thelp <command> — detail satu command (contoh: thelp cash)",
+            "thelp <kategori> — daftar command per kategori (contoh: thelp economy)",
+            "thelp <keyword> — cari command berdasarkan kata kunci",
             "/help [command] — versi slash command"
           ]
         },
         {
-          "name": "6ping",
+          "name": "tping",
           "aliases": [],
           "summary": "Cek latency WebSocket dan uptime bot.",
-          "usage": "6ping",
+          "usage": "tping",
           "examples": [
-            "6ping"
+            "tping"
           ],
           "required": [],
           "optional": [],
@@ -2368,17 +2368,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6ping",
-            "Contoh: 6ping"
+            "tping",
+            "Contoh: tping"
           ]
         },
         {
-          "name": "6stats",
+          "name": "tstats",
           "aliases": [],
           "summary": "Statistik bot dan server.",
-          "usage": "6stats",
+          "usage": "tstats",
           "examples": [
-            "6stats"
+            "tstats"
           ],
           "required": [],
           "optional": [],
@@ -2386,17 +2386,17 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6stats",
-            "Contoh: 6stats"
+            "tstats",
+            "Contoh: tstats"
           ]
         },
         {
-          "name": "6link",
+          "name": "tlink",
           "aliases": [],
           "summary": "Tautan website, help center, dan dashboard 666.",
-          "usage": "6link",
+          "usage": "tlink",
           "examples": [
-            "6link"
+            "tlink"
           ],
           "required": [],
           "optional": [],
@@ -2404,19 +2404,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6link",
-            "Contoh: 6link"
+            "tlink",
+            "Contoh: tlink"
           ]
         },
         {
-          "name": "6guildlink",
+          "name": "tguildlink",
           "aliases": [
-            "6serverlink"
+            "tserverlink"
           ],
           "summary": "Buat link invite server ini atau tampilkan support server.",
-          "usage": "6guildlink",
+          "usage": "tguildlink",
           "examples": [
-            "6guildlink"
+            "tguildlink"
           ],
           "required": [],
           "optional": [],
@@ -2424,18 +2424,18 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6guildlink",
-            "Contoh: 6guildlink"
+            "tguildlink",
+            "Contoh: tguildlink"
           ]
         },
         {
-          "name": "6disable",
+          "name": "tdisable",
           "aliases": [],
           "summary": "Aktif/nonaktifkan command di server ini (admin).",
-          "usage": "6disable <command> • 6disable enable <command>",
+          "usage": "tdisable <command> • tdisable enable <command>",
           "examples": [
-            "6disable hunt",
-            "6disable enable hunt"
+            "tdisable hunt",
+            "tdisable enable hunt"
           ],
           "required": [],
           "optional": [],
@@ -2443,19 +2443,19 @@
           "permission": "Manage Server",
           "note": null,
           "subcommands": [
-            "6disable <command> • 6disable enable <command>",
-            "Contoh: 6disable hunt",
-            "Contoh: 6disable enable hunt"
+            "tdisable <command> • tdisable enable <command>",
+            "Contoh: tdisable hunt",
+            "Contoh: tdisable enable hunt"
           ]
         },
         {
-          "name": "6censor",
+          "name": "tcensor",
           "aliases": [],
           "summary": "Kelola filter kata server (admin).",
-          "usage": "6censor on|off|add <kata>|remove <kata>|list",
+          "usage": "tcensor on|off|add <kata>|remove <kata>|list",
           "examples": [
-            "6censor on",
-            "6censor add badword"
+            "tcensor on",
+            "tcensor add badword"
           ],
           "required": [],
           "optional": [],
@@ -2463,20 +2463,20 @@
           "permission": "Manage Server",
           "note": null,
           "subcommands": [
-            "6censor on|off|add <kata>|remove <kata>|list",
-            "Contoh: 6censor on",
-            "Contoh: 6censor add badword"
+            "tcensor on|off|add <kata>|remove <kata>|list",
+            "Contoh: tcensor on",
+            "Contoh: tcensor add badword"
           ]
         },
         {
-          "name": "6patron",
+          "name": "tpatron",
           "aliases": [
-            "6donate"
+            "tdonate"
           ],
           "summary": "Info patron/donasi dan benefit tanpa klaim palsu.",
-          "usage": "6patron",
+          "usage": "tpatron",
           "examples": [
-            "6patron"
+            "tpatron"
           ],
           "required": [],
           "optional": [],
@@ -2484,19 +2484,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6patron",
-            "Contoh: 6patron"
+            "tpatron",
+            "Contoh: tpatron"
           ]
         },
         {
-          "name": "6announcement",
+          "name": "tannouncement",
           "aliases": [
-            "6announce"
+            "tannounce"
           ],
           "summary": "Kirim pengumuman embed dan set channel announcement (admin).",
-          "usage": "6announcement <teks>",
+          "usage": "tannouncement <teks>",
           "examples": [
-            "6announcement Maintenance malam ini"
+            "tannouncement Maintenance malam ini"
           ],
           "required": [],
           "optional": [],
@@ -2504,18 +2504,18 @@
           "permission": "Manage Server",
           "note": null,
           "subcommands": [
-            "6announcement <teks>",
-            "Contoh: 6announcement Maintenance malam ini"
+            "tannouncement <teks>",
+            "Contoh: tannouncement Maintenance malam ini"
           ]
         },
         {
-          "name": "6rules",
+          "name": "trules",
           "aliases": [],
           "summary": "Tampilkan atau set rules server (admin).",
-          "usage": "6rules • 6rules set <rule1> | <rule2>",
+          "usage": "trules • trules set <rule1> | <rule2>",
           "examples": [
-            "6rules",
-            "6rules set Hormati semua orang | No spam"
+            "trules",
+            "trules set Hormati semua orang | No spam"
           ],
           "required": [],
           "optional": [],
@@ -2523,20 +2523,20 @@
           "permission": "Everyone (set: Manage Server)",
           "note": null,
           "subcommands": [
-            "6rules • 6rules set <rule1> | <rule2>",
-            "Contoh: 6rules",
-            "Contoh: 6rules set Hormati semua orang | No spam"
+            "trules • trules set <rule1> | <rule2>",
+            "Contoh: trules",
+            "Contoh: trules set Hormati semua orang | No spam"
           ]
         },
         {
-          "name": "6suggest",
+          "name": "tsuggest",
           "aliases": [
-            "6suggestion"
+            "tsuggestion"
           ],
           "summary": "Kirim saran untuk server/bot. Admin dapat menandai status.",
-          "usage": "6suggest <ide> • 6suggest accept|reject|implemented <id>",
+          "usage": "tsuggest <ide> • tsuggest accept|reject|implemented <id>",
           "examples": [
-            "6suggest tambah command fish"
+            "tsuggest tambah command fish"
           ],
           "required": [],
           "optional": [],
@@ -2544,19 +2544,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6suggest <ide> • 6suggest accept|reject|implemented <id>",
-            "Contoh: 6suggest tambah command fish"
+            "tsuggest <ide> • tsuggest accept|reject|implemented <id>",
+            "Contoh: tsuggest tambah command fish"
           ]
         },
         {
-          "name": "6shards",
+          "name": "tshards",
           "aliases": [
-            "6shard"
+            "tshard"
           ],
           "summary": "Lihat jumlah shards dan kegunaannya.",
-          "usage": "6shards [@user]",
+          "usage": "tshards [@user]",
           "examples": [
-            "6shards"
+            "tshards"
           ],
           "required": [],
           "optional": [],
@@ -2564,19 +2564,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6shards [@user]",
-            "Contoh: 6shards"
+            "tshards [@user]",
+            "Contoh: tshards"
           ]
         },
         {
-          "name": "6math",
+          "name": "tmath",
           "aliases": [
-            "6calc"
+            "tcalc"
           ],
           "summary": "Kalkulator aman untuk ekspresi matematika.",
-          "usage": "6math <ekspresi>",
+          "usage": "tmath <ekspresi>",
           "examples": [
-            "6math (12+3)*4^2"
+            "tmath (12+3)*4^2"
           ],
           "required": [],
           "optional": [],
@@ -2584,19 +2584,19 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6math <ekspresi>",
-            "Contoh: 6math (12+3)*4^2"
+            "tmath <ekspresi>",
+            "Contoh: tmath (12+3)*4^2"
           ]
         },
         {
-          "name": "6color",
+          "name": "tcolor",
           "aliases": [
-            "6colour"
+            "tcolour"
           ],
           "summary": "Preview warna dari kode hex.",
-          "usage": "6color <#RRGGBB>",
+          "usage": "tcolor <#RRGGBB>",
           "examples": [
-            "6color #ff5a00"
+            "tcolor #ff5a00"
           ],
           "required": [],
           "optional": [],
@@ -2604,18 +2604,18 @@
           "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6color <#RRGGBB>",
-            "Contoh: 6color #ff5a00"
+            "tcolor <#RRGGBB>",
+            "Contoh: tcolor #ff5a00"
           ]
         },
         {
-          "name": "6prefix",
+          "name": "tprefix",
           "aliases": [],
-          "summary": "Lihat atau ubah prefix tambahan server (admin). `6` selalu aktif.",
-          "usage": "6prefix [prefix]",
+          "summary": "Lihat atau ubah prefix tambahan server (admin). `t` selalu aktif.",
+          "usage": "tprefix [prefix]",
           "examples": [
-            "6prefix",
-            "6prefix !"
+            "tprefix",
+            "tprefix !"
           ],
           "required": [],
           "optional": [],
@@ -2623,20 +2623,20 @@
           "permission": "Manage Server",
           "note": null,
           "subcommands": [
-            "6prefix [prefix]",
-            "Contoh: 6prefix",
-            "Contoh: 6prefix !"
+            "tprefix [prefix]",
+            "Contoh: tprefix",
+            "Contoh: tprefix !"
           ]
         },
         {
-          "name": "6guild",
+          "name": "tguild",
           "aliases": [],
           "summary": "Create/join/leave/info/members/invite/deposit/upgrade/leaderboard/war.",
-          "usage": "6guild <subcommand> [args]",
+          "usage": "tguild <subcommand> [args]",
           "examples": [
-            "6guild create <nama>",
-            "6guild join <nama>",
-            "6guild war challenge <guild>"
+            "tguild create <nama>",
+            "tguild join <nama>",
+            "tguild war challenge <guild>"
           ],
           "required": [],
           "optional": [],
@@ -2644,15 +2644,15 @@
           "permission": "Everyone",
           "note": "Season war mengikuti setting `guild.season` (daily/weekly/monthly).",
           "subcommands": [
-            "6guild create <nama> — buat guild (biaya koin)",
-            "6guild join <nama|id> — masuk guild",
-            "6guild leave — keluar guild",
-            "6guild info / 6guild members — profil & anggota",
-            "6guild invite @user — cara invite",
-            "6guild deposit <koin> — isi bank guild",
-            "6guild upgrade — leader upgrade level",
-            "6guild leaderboard — ranking guild",
-            "6guild war [challenge <guild>|accept <id>|status|leaderboard]"
+            "tguild create <nama> — buat guild (biaya koin)",
+            "tguild join <nama|id> — masuk guild",
+            "tguild leave — keluar guild",
+            "tguild info / tguild members — profil & anggota",
+            "tguild invite @user — cara invite",
+            "tguild deposit <koin> — isi bank guild",
+            "tguild upgrade — leader upgrade level",
+            "tguild leaderboard — ranking guild",
+            "tguild war [challenge <guild>|accept <id>|status|leaderboard]"
           ]
         }
       ]

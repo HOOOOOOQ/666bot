@@ -13,11 +13,11 @@ test('every registered prefix command has a help entry or alias', () => {
 });
 
 test('help resolves command, category, alias, and keyword queries', () => {
-  assert.equal(helpView('cash').embeds[0].data.title, '📖 6cash');
-  assert.equal(helpView('6cash').embeds[0].data.title, '📖 6cash');
+  assert.equal(helpView('cash').embeds[0].data.title, '📖 tcash');
+  assert.equal(helpView('tcash').embeds[0].data.title, '📖 tcash');
   assert.match(helpView('economy').embeds[0].data.title, /ECONOMY/);
-  assert.equal(helpView('me').embeds[0].data.title, '📖 6profile');
-  assert.equal(helpView('daily').embeds[0].data.title, '📖 6daily');
+  assert.equal(helpView('me').embeds[0].data.title, '📖 tprofile');
+  assert.equal(helpView('daily').embeds[0].data.title, '📖 tdaily');
   assert.match(helpView('tidak-ada-command-ini').embeds[0].data.title, /HASIL PENCARIAN/);
   assert.match(helpView('tidak-ada-command-ini').embeds[0].data.description, /Tidak ada command/);
 });
@@ -43,7 +43,7 @@ test('category view lists every command and keeps detail subcommands', () => {
   assert.equal(view.embeds[0].data.fields.length, games.commands.length);
   const cash = helpView('cash').embeds[0].data;
   const details = cash.fields.find((field) => field.name.includes('Subcommand'));
-  assert.match(details.value, /6cash daily/);
+  assert.match(details.value, /tcash daily/);
 });
 
 test('slash /help is deployable and help interaction edits the menu', async () => {
@@ -61,5 +61,5 @@ test('slash /help is deployable and help interaction edits the menu', async () =
   const { handleHelpInteraction } = require('../src/rpg/ui/help');
   await handleHelpInteraction(interaction, 'select');
   assert.equal(captured.length, 1);
-  assert.match(captured[0].embeds[0].data.title, /6battle|BATTLE/);
+  assert.match(captured[0].embeds[0].data.title, /tbattle|BATTLE/);
 });

@@ -10,18 +10,18 @@ const { helpEmbed, reply, resolveTarget, resolveMonsterId, resolvePetId, resolve
 const { formatCoins } = require('../utils/formulas');
 
 const TRADE_HELP = [
-  '`6trade @user [koin]` — mulai trade',
-  '`6trade offer <id> coins <n> monster <id> pet <id> item <id> <qty>`',
-  '`6trade accept <id>` / `6trade decline <id>`',
-  '`6trade confirm <id>` — kedua pihak wajib confirm',
-  '`6trade cancel <id>` / `6trade status <id>`',
+  '`ttrade @user [koin]` — mulai trade',
+  '`ttrade offer <id> coins <n> monster <id> pet <id> item <id> <qty>`',
+  '`ttrade accept <id>` / `ttrade decline <id>`',
+  '`ttrade confirm <id>` — kedua pihak wajib confirm',
+  '`ttrade cancel <id>` / `ttrade status <id>`',
 ];
 const MARKET_HELP = [
-  '`6market` / `6market list [halaman]` — listing aktif',
-  '`6market sell <monster|pet|item|egg> <id> <harga>`',
-  '`6market buy <listingId>`',
-  '`6market cancel <listingId>`',
-  '`6market mine` / `6market history`',
+  '`tmarket` / `tmarket list [halaman]` — listing aktif',
+  '`tmarket sell <monster|pet|item|egg> <id> <harga>`',
+  '`tmarket buy <listingId>`',
+  '`tmarket cancel <listingId>`',
+  '`tmarket mine` / `tmarket history`',
 ];
 
 async function parseOffer(guildId, userId, args) {
@@ -49,12 +49,12 @@ async function tradeCommand(ctx) {
   const sub = (ctx.args[0] || '').toLowerCase();
   if (!sub || sub === 'help') return reply(ctx.message, helpEmbed('666 TRADE', TRADE_HELP));
   if (sub === 'accept' || sub === 'decline') {
-    if (!ctx.args[1]) throw new UserError(`Format: \`6trade ${sub} <tradeId>\`.`);
+    if (!ctx.args[1]) throw new UserError(`Format: \`ttrade ${sub} <tradeId>\`.`);
     const trade = await tradeService.respond(ctx.guildId, ctx.userId, ctx.args[1], sub === 'accept');
     return reply(ctx.message, tradeEmbed(trade, `<@${trade.initiatorId}>`, `<@${trade.targetId}>`), trade.status === 'active' ? [tradeButtons(String(trade._id), false)] : []);
   }
   if (sub === 'confirm') {
-    if (!ctx.args[1]) throw new UserError('Format: `6trade confirm <tradeId>`.');
+    if (!ctx.args[1]) throw new UserError('Format: `ttrade confirm <tradeId>`.');
     const result = await tradeService.confirm(ctx.guildId, ctx.userId, ctx.args[1]);
     const embed = new EmbedBuilder().setColor(result.waiting ? COLORS.warning : COLORS.success).setTitle(result.waiting ? '🤝 MENUNGGU CONFIRM' : '✅ TRADE SELESAI')
       .setDescription(result.waiting ? 'Konfirmasi kamu tercatat. Menunggu pihak lain confirm.' : 'Trade berhasil. Item dan koin sudah dipindahkan dengan aman.')
@@ -62,25 +62,25 @@ async function tradeCommand(ctx) {
     return reply(ctx.message, embed);
   }
   if (sub === 'cancel') {
-    if (!ctx.args[1]) throw new UserError('Format: `6trade cancel <tradeId>`.');
+    if (!ctx.args[1]) throw new UserError('Format: `ttrade cancel <tradeId>`.');
     await tradeService.cancel(ctx.guildId, ctx.userId, ctx.args[1]);
     return reply(ctx.message, new EmbedBuilder().setColor(COLORS.ash).setTitle('✖️ TRADE DIBATALKAN').setDescription('Semua item dikembalikan ke pemilik.')
       .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
   }
   if (sub === 'offer') {
-    if (!ctx.args[1]) throw new UserError('Format: `6trade offer <id> coins <n> monster <id>`');
+    if (!ctx.args[1]) throw new UserError('Format: `ttrade offer <id> coins <n> monster <id>`');
     const offer = await parseOffer(ctx.guildId, ctx.userId, ctx.args.slice(2));
     const trade = await tradeService.setOffer(ctx.guildId, ctx.userId, ctx.args[1], offer);
     return reply(ctx.message, tradeEmbed(trade, `<@${trade.initiatorId}>`, `<@${trade.targetId}>`), [tradeButtons(String(trade._id), false)]);
   }
   if (sub === 'status') {
-    if (!ctx.args[1]) throw new UserError('Format: `6trade status <tradeId>`.');
+    if (!ctx.args[1]) throw new UserError('Format: `ttrade status <tradeId>`.');
     const trade = await tradeService.get(ctx.guildId, ctx.args[1]);
     if (!trade) throw new UserError('Trade tidak ditemukan.');
     return reply(ctx.message, tradeEmbed(trade, `<@${trade.initiatorId}>`, `<@${trade.targetId}>`));
   }
   const target = await resolveTarget(ctx.message, ctx.args[0]);
-  if (!target) throw new UserError('Format: `6trade @user [koin]` atau `6trade help`.');
+  if (!target) throw new UserError('Format: `ttrade @user [koin]` atau `ttrade help`.');
   const coins = Math.max(0, Math.floor(Number(ctx.args[1]) || 0));
   const trade = await tradeService.create(ctx.guildId, ctx.userId, target.id, { coins }, ctx.message.channelId, ctx.message.id);
   return reply(ctx.message, tradeEmbed(trade, `<@${trade.initiatorId}>`, `<@${trade.targetId}>`), [tradeButtons(String(trade._id))]);
@@ -90,7 +90,7 @@ async function marketCommand(ctx) {
   const sub = (ctx.args[0] || 'list').toLowerCase();
   if (sub === 'help') return reply(ctx.message, helpEmbed('666 MARKET', MARKET_HELP));
   if (sub === 'sell') {
-    requireArgs(ctx.args, 4, '6market sell <monster|pet|item|egg> <id> <harga>');
+    requireArgs(ctx.args, 4, 'tmarket sell <monster|pet|item|egg> <id> <harga>');
     const [type, rawId, price] = ctx.args.slice(1);
     let id = rawId;
     if (type === 'monster') id = await resolveMonsterId(ctx.guildId, ctx.userId, rawId);
@@ -101,7 +101,7 @@ async function marketCommand(ctx) {
       .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
   }
   if (sub === 'buy') {
-    if (!ctx.args[1]) throw new UserError('Format: `6market buy <listingId>`.');
+    if (!ctx.args[1]) throw new UserError('Format: `tmarket buy <listingId>`.');
     const listingId = await resolveListingId(ctx.guildId, ctx.userId, ctx.args[1]);
     const result = await marketService.buy(ctx.guildId, ctx.userId, listingId);
     return reply(ctx.message, new EmbedBuilder().setColor(COLORS.success).setTitle('✅ PEMBELIAN MARKET')
@@ -109,7 +109,7 @@ async function marketCommand(ctx) {
       .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
   }
   if (sub === 'cancel') {
-    if (!ctx.args[1]) throw new UserError('Format: `6market cancel <listingId>`.');
+    if (!ctx.args[1]) throw new UserError('Format: `tmarket cancel <listingId>`.');
     const listingId = await resolveListingId(ctx.guildId, ctx.userId, ctx.args[1]);
     await marketService.cancel(ctx.guildId, ctx.userId, listingId);
     return reply(ctx.message, new EmbedBuilder().setColor(COLORS.ash).setTitle('✖️ LISTING DIBATALKAN').setDescription('Item dikembalikan ke inventory.')
@@ -132,6 +132,6 @@ async function marketCommand(ctx) {
 }
 
 module.exports = [
-  { names: ['6trade'], execute: tradeCommand, help: TRADE_HELP },
-  { names: ['6market', '6shopmarket'], execute: marketCommand, help: MARKET_HELP },
+  { names: ['ttrade'], execute: tradeCommand, help: TRADE_HELP },
+  { names: ['tmarket', 'tshopmarket'], execute: marketCommand, help: MARKET_HELP },
 ];

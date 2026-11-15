@@ -328,14 +328,14 @@ function renderCommands() {
     ${metricCard('Disabled', num(items.length - enabled), 'disembunyikan dari handler')}
   </div>
   <div class="section card"><div class="section-head"><div><h2>Command Management</h2><p>Perubahan langsung disimpan ke MongoDB dan aktif tanpa restart.</p></div></div>
-    ${table(['Command', 'Kategori', 'Status', 'Aksi'], items.map((entry) => `<tr><td class="mono">${esc(entry.name)}</td><td><span class="badge">${esc(entry.category)}</span></td><td>${entry.enabled ? '✅ ON' : '⛔ OFF'}</td><td><button class="btn ${entry.enabled ? 'ghost' : 'primary'}" data-toggle-command="${esc(entry.name.replace(/^6/, ''))}" data-enabled="${entry.enabled ? 'false' : 'true'}">${entry.enabled ? 'Disable' : 'Enable'}</button></td></tr>`))}
+    ${table(['Command', 'Kategori', 'Status', 'Aksi'], items.map((entry) => `<tr><td class="mono">${esc(entry.name)}</td><td><span class="badge">${esc(entry.category)}</span></td><td>${entry.enabled ? '✅ ON' : '⛔ OFF'}</td><td><button class="btn ${entry.enabled ? 'ghost' : 'primary'}" data-toggle-command="${esc(entry.name.replace(/^t/, ''))}" data-enabled="${entry.enabled ? 'false' : 'true'}">${entry.enabled ? 'Disable' : 'Enable'}</button></td></tr>`))}
   </div>`;
 }
 
 function renderCategories() {
   const items = state.categories || [];
   return `<div class="section"><div class="section-head"><div><h2>Category Management</h2><p>Matikan satu kategori untuk menonaktifkan semua command di dalamnya.</p></div></div>
-    <div class="grid cols-2">${items.map((category) => `<div class="card"><div class="section-head"><div><h3>${category.emoji} ${esc(category.label)}</h3><p>${esc(category.blurb)}</p></div><button class="btn ${category.enabled ? 'ghost' : 'primary'}" data-toggle-category="${esc(category.id)}" data-enabled="${category.enabled ? 'false' : 'true'}">${category.enabled ? 'Disable' : 'Enable'}</button></div><div class="sub">${num(category.commands.length)} commands • ${num(category.commands.filter((c) => c.enabled).length)} aktif</div><div class="mono" style="margin-top:8px;font-size:11px">${category.commands.map((c) => esc(c.name.replace(/^6/, ''))).join(' · ')}</div></div>`).join('')}</div>
+    <div class="grid cols-2">${items.map((category) => `<div class="card"><div class="section-head"><div><h3>${category.emoji} ${esc(category.label)}</h3><p>${esc(category.blurb)}</p></div><button class="btn ${category.enabled ? 'ghost' : 'primary'}" data-toggle-category="${esc(category.id)}" data-enabled="${category.enabled ? 'false' : 'true'}">${category.enabled ? 'Disable' : 'Enable'}</button></div><div class="sub">${num(category.commands.length)} commands • ${num(category.commands.filter((c) => c.enabled).length)} aktif</div><div class="mono" style="margin-top:8px;font-size:11px">${category.commands.map((c) => esc(c.name.replace(/^t/, ''))).join(' · ')}</div></div>`).join('')}</div>
   </div>`;
 }
 

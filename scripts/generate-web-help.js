@@ -13,7 +13,7 @@ function stripBackticks(line) {
 const payload = {
   name: '666 ULTIMATE RPG',
   tagline: 'TWO MEMBERS. ONE CONNECTION. ONE STREAK.',
-  prefix: '6',
+  prefix: 't',
   categories: catalog.CATEGORIES.map((category) => ({
     id: category.id,
     label: category.label,

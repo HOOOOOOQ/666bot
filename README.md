@@ -64,7 +64,7 @@ BEST STREAK: 45 DAYS • DUO XP: 2,800 XP
 - **Streak API opsional** — endpoint HTTP untuk uptime monitor (Pterodactyl).
 - **Test suite** — 108 test otomatis (`node --test`) termasuk render kartu PNG, meme engine PNG, dedupe log, retry, recovery, dan seluruh sistem RPG.
 - **666 ULTIMATE RPG** — economy, hunting, battle, pet, 9 gambling games, quest/achievement, trade, market, guild war, world boss, social, fun, meme generator, emotes, actions, utility, dan dashboard web. Semua additive; fitur Duo lama tidak diubah.
-- **Command List 666** — `6help` menampilkan satu embed **Command List** dengan 10 kategori (Rankings, Economy, Animals, Gambling, Fun, Social, Meme, Emotes, Actions, Utility), detail per command (usage, contoh, argumen, cooldown, permission, alias), pencarian, select menu, dan pagination data.
+- **Command List 666** — `thelp` menampilkan satu embed **Command List** dengan 10 kategori (Rankings, Economy, Animals, Gambling, Fun, Social, Meme, Emotes, Actions, Utility), detail per command (usage, contoh, argumen, cooldown, permission, alias), pencarian, select menu, dan pagination data.
 - **Dashboard RPG** — `/dashboard` dengan settings 8 grup, drop-rate editor tervalidasi, command/category management live, player detail, transaction log, dan admin key.
 
 ---
@@ -176,8 +176,8 @@ Semua konfigurasi sensitif dibaca dari `.env` — **tidak ada token/kredensial d
 | `REMINDER_MINUTE` | `0` | Menit reminder |
 | `NOTIFICATIONS_ENABLED` | `true` | Notifikasi global |
 | `AUTO_DEPLOY` | `true` | Auto-register slash command saat start |
-| `SUPPORT_SERVER_URL` | *(kosong)* | Link guild/support untuk menu `6help` dan `6guildlink` |
-| `TENOR_API_KEY` | *(demo key)* | API key Tenor untuk `6gif` |
+| `SUPPORT_SERVER_URL` | *(kosong)* | Link guild/support untuk menu `thelp` dan `tguildlink` |
+| `TENOR_API_KEY` | *(demo key)* | API key Tenor untuk `tgif` |
 | `PUBLIC_WEB_URL` | *(kosong)* | URL website publik untuk tombol website |
 | `ENABLE_API` | `true` | Aktifkan Streak API HTTP |
 | `API_PORT` | `3000` | Port API |
@@ -645,51 +645,51 @@ Contoh respons `/health`:
 
 ## 666 ULTIMATE RPG ECONOMY
 
-Expansion besar yang **additive**: seluruh fitur Duo Streak, prefix lama, `/duo`, database, dan konfigurasi lama tetap berjalan. Semua sistem baru memakai prefix **`6`** dan dapat dikonfigurasi dari dashboard web.
+Expansion besar yang **additive**: seluruh fitur Duo Streak, `/duo`, database, dan konfigurasi lama tetap berjalan. Semua sistem memakai prefix **`t`** dan dapat dikonfigurasi dari dashboard web.
 
 ### Fitur RPG
 
 | Sistem | Command | Isi |
 | --- | --- | --- |
-| Economy | `6cash` | balance, daily/weekly/monthly, work, beg, deposit, withdraw, transfer, leaderboard, inventory, shop, buy, sell, history |
-| Hunting | `6hunt` | start, inventory, collection, sell, stats, leaderboard |
-| Battle | `6battle @user` | accept, decline, stats, leaderboard; turn-based PvP + ELO + anti win-trading |
-| Pet | `6pet` | hatch, feed, equip/unequip, inventory, upgrade, stats, evolve, collection; slot aktif mengikuti settings `maxSlots` |
-| Mini Games | `6coinflip` `6dice` `6slots` `6blackjack` `6roulette` `6guess` `6trivia` `6rps` | betting, tombol interaktif, RNG crypto, house edge transparan |
-| Quest | `6quest` | daily, weekly, special, hidden, claim |
-| Achievement | `6achievement` | badge + reward sekali |
-| Rank | `6rank` | level, rank, EXP, posisi server |
-| Trade | `6trade @user` | offer, accept, decline, confirm, cancel; dua pihak wajib confirm |
-| Market | `6market` | list, sell, buy, cancel, mine, history; listing fee + market tax |
-| Guild | `6guild` | create, join, leave, info, members, invite, deposit, upgrade, leaderboard |
-| Guild War | `6guild war` | challenge, accept, status, leaderboard; season mingguan |
-| World Boss | `6boss` | status, attack, leaderboard, rewards; satu HP shared per server |
-| Profile | `6profile [@user]` | kartu profil lengkap (koin, level, hunt, battle, collection, guild, boss, trading) |
-| Help | `6help` `6h` `6?` `/help` | **Command List** embed 10 kategori, detail command, pencarian, contoh, cooldown, permission, alias, select menu, dan tombol website |
-| Social | `6profile` `6level` `6avatar` `6marry` `6ship` `6cookie` `6pray` `6curse` `6emoji` `6wallpaper` `6godify` | profil, level, hubungan, interaksi sosial persisten, avatar, dan wallpaper |
-| Fun | `68ball` `6define` `6gif` `6pic` `6translate` `6roll` `6choose` `6bell` | RNG, dictionary/GIF/translate API, gambar acak, dan pilihan |
-| Meme | `6spongebobchicken` `6slapcar` `6isthisa` `6drake` `6distractedbf` `6communismcat` `6eject` `6emergencymeeting` `6headpat` `6tradeoffer` `6waddle` | generator meme PNG canvas dengan teks custom |
-| Emotes + Actions | `6blush` … `6bully` | 40 aksi/ekspresi dengan GIF nyata |
-| Utility | `6ping` `6stats` `6link` `6guildlink` `6disable` `6censor` `6prefix` `6rules` `6suggest` `6announcement` `6shards` `6math` `6color` `6patron` | info bot, moderator tools, prefix tambahan, filter kata, saran, dan kalkulator |
-| Animals tambahan | `6zoo` `6sell` `6sacrifice` `6sim` `6inv` `6equip` `6autohunt` `6dex` `6lootbox` `6egg` `6crate` `6team` `6weapon` `6rename` `6dismantle` | koleksi, equipment, auto-hunt, dex, lootbox/crate, dan manajemen monster/pet |
-| Gambling tambahan | `6lottery` | lottery server harian dengan tiket, pot, dan draw scheduler |
+| Economy | `tcash` | balance, daily/weekly/monthly, work, beg, deposit, withdraw, transfer, leaderboard, inventory, shop, buy, sell, history |
+| Hunting | `thunt` | start, inventory, collection, sell, stats, leaderboard |
+| Battle | `tbattle @user` | accept, decline, stats, leaderboard; turn-based PvP + ELO + anti win-trading |
+| Pet | `tpet` | hatch, feed, equip/unequip, inventory, upgrade, stats, evolve, collection; slot aktif mengikuti settings `maxSlots` |
+| Mini Games | `tcoinflip` `tdice` `tslots` `tblackjack` `troulette` `tguess` `ttrivia` `trps` | betting, tombol interaktif, RNG crypto, house edge transparan |
+| Quest | `tquest` | daily, weekly, special, hidden, claim |
+| Achievement | `tachievement` | badge + reward sekali |
+| Rank | `trank` | level, rank, EXP, posisi server |
+| Trade | `ttrade @user` | offer, accept, decline, confirm, cancel; dua pihak wajib confirm |
+| Market | `tmarket` | list, sell, buy, cancel, mine, history; listing fee + market tax |
+| Guild | `tguild` | create, join, leave, info, members, invite, deposit, upgrade, leaderboard |
+| Guild War | `tguild war` | challenge, accept, status, leaderboard; season mingguan |
+| World Boss | `tboss` | status, attack, leaderboard, rewards; satu HP shared per server |
+| Profile | `tprofile [@user]` | kartu profil lengkap (koin, level, hunt, battle, collection, guild, boss, trading) |
+| Help | `thelp` `th` `t?` `/help` | **Command List** embed 10 kategori, detail command, pencarian, contoh, cooldown, permission, alias, select menu, dan tombol website |
+| Social | `tprofile` `tlevel` `tavatar` `tmarry` `tship` `tcookie` `tpray` `tcurse` `temoji` `twallpaper` `tgodify` | profil, level, hubungan, interaksi sosial persisten, avatar, dan wallpaper |
+| Fun | `t8ball` `tdefine` `tgif` `tpic` `ttranslate` `troll` `tchoose` `tbell` | RNG, dictionary/GIF/translate API, gambar acak, dan pilihan |
+| Meme | `tspongebobchicken` `tslapcar` `tisthisa` `tdrake` `tdistractedbf` `tcommunismcat` `teject` `temergencymeeting` `theadpat` `ttradeoffer` `twaddle` | generator meme PNG canvas dengan teks custom |
+| Emotes + Actions | `tblush` … `tbully` | 40 aksi/ekspresi dengan GIF nyata |
+| Utility | `tping` `tstats` `tlink` `tguildlink` `tdisable` `tcensor` `tprefix` `trules` `tsuggest` `tannouncement` `tshards` `tmath` `tcolor` `tpatron` | info bot, moderator tools, prefix tambahan, filter kata, saran, dan kalkulator |
+| Animals tambahan | `tzoo` `tsell` `tsacrifice` `tsim` `tinv` `tequip` `tautohunt` `tdex` `tlootbox` `tegg` `tcrate` `tteam` `tweapon` `trename` `tdismantle` | koleksi, equipment, auto-hunt, dex, lootbox/crate, dan manajemen monster/pet |
+| Gambling tambahan | `tlottery` | lottery server harian dengan tiket, pot, dan draw scheduler |
 
 Contoh:
 
 ```text
-6cash daily
-6hunt
-6hunt sell all
-6battle @partner
-6pet hatch egg_rare
-6coinflip heads 100
-6blackjack 250
-6trade @friend 500
-6market sell monster <id> 1500
-6guild create Nightfall
-6boss attack
-6quest claim daily_hunt_5
-6profile @member
+tcash daily
+thunt
+thunt sell all
+tbattle @partner
+tpet hatch egg_rare
+tcoinflip heads 100
+tblackjack 250
+ttrade @friend 500
+tmarket sell monster <id> 1500
+tguild create Nightfall
+tboss attack
+tquest claim daily_hunt_5
+tprofile @member
 ```
 
 ### Dashboard Web
@@ -727,7 +727,7 @@ http://HOST:API_PORT/site/
 http://HOST:API_PORT/site/help/
 ```
 
-Isinya landing page 666 Ultimate RPG, daftar fitur, quick start, dan dokumentasi command yang bisa dicari. Dokumentasi di-generate dari katalog command yang sama dengan `6help` supaya tidak pernah basi:
+Isinya landing page 666 Ultimate RPG, daftar fitur, quick start, dan dokumentasi command yang bisa dicari. Dokumentasi di-generate dari katalog command yang sama dengan `thelp` supaya tidak pernah basi:
 
 ```bash
 npm run web:build   # tulis web/commands.json dari src/rpg/help/catalog.js
@@ -779,7 +779,7 @@ Semua model terdaftar di `src/database/models/index.js` sehingga `ensureIndexes(
 src/
   database/models/rpg/       25 model Mongo (registry di index.js)
   rpg/
-    commands/                command 6-prefix modular
+    commands/                command t-prefix modular
     config/defaults.js       default settings + schema + validasi drop rate
     data/catalog.js          monster, pet, egg, item, boss, quest, achievement
     services/                economy, hunting, pet, battle, game, quest, market, trade, guild, boss, stats, settings, cooldown
@@ -824,7 +824,7 @@ Cakupan:
 - Renderer PNG profile, leaderboard, dan streak log menghasilkan buffer valid (> 10 KB).
 - Log otomatis: hanya saat increment, tidak untuk satu member, unik per hari, retry tanpa dobel, recovery setelah restart.
 - `/duo setlog` memvalidasi Manage Server + izin bot; `/duo logstatus` menghitung antrean.
-- RPG: registry/parser command `6`, economy idempotency & concurrency, cooldown terdistribusi, hunt/pet, battle simulator & tombol accept, mini games (termasuk blackjack/trivia/RPS), trade dua-confirm, market lock, guild/war, world boss, quest/achievement, validasi settings & drop rate.
+- RPG: registry/parser command `t`, economy idempotency & concurrency, cooldown terdistribusi, hunt/pet, battle simulator & tombol accept, mini games (termasuk blackjack/trivia/RPS), trade dua-confirm, market lock, guild/war, world boss, quest/achievement, validasi settings & drop rate.
 - Dashboard: static page + asset, auth 401, validasi guild ID, route API lama tetap jalan, 503 saat MongoDB down.
 
 ---
@@ -877,9 +877,9 @@ Cakupan:
 │   │   ├── logService.js         # Queue, retry, dedupe 666 DUO STREAK LOGS
 │   │   └── apiService.js
 │   ├── rpg/                       # 666 ULTIMATE RPG (commands, services, ui, data, utils)
-│   │   ├── help/catalog.js        # Sumber dokumentasi 6help + website
+│   │   ├── help/catalog.js        # Sumber dokumentasi thelp + website
 │   │   ├── ui/help.js             # Render menu bantuan interaktif
-│   │   └── commands/              # command prefix 6 (termasuk help.js)
+│   │   └── commands/              # command prefix t (termasuk help.js)
 │   ├── commands/help.js           # Slash /help
 │   ├── dashboard/                 # Dashboard web vanilla (index.html, styles.css, app.js)
 │   ├── database/

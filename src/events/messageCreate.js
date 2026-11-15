@@ -14,7 +14,8 @@ module.exports = {
     if (!message || message.author?.system || message.author?.bot) return;
     const content = String(message.content || '').trim();
     const customPrefix = message.guildId ? await serverConfigService.getCustomPrefix(message.guildId).catch(() => null) : null;
-    if (message.guildId && !content.startsWith('6') && !(customPrefix && content.startsWith(customPrefix))) {
+    const isCommand = Boolean(rpgHandler.parse(content) || (customPrefix && rpgHandler.parse(content, customPrefix)));
+    if (message.guildId && !isCommand) {
       const censored = await serverConfigService.findCensored(message.guildId, message.content).catch(() => null);
       if (censored) {
         if (message.guild?.members?.me?.permissions?.has(PermissionFlagsBits.ManageMessages)) {
@@ -31,7 +32,7 @@ module.exports = {
         return false;
       });
       if (rpgHandled) {
-        // Command prefix bukan aktivitas chat: jangan biarkan 6cash/6hunt menambah streak Duo.
+        // Command prefix bukan aktivitas chat: jangan biarkan tcash/thunt menambah streak Duo.
         log.debug(`RPG command handled for ${message.author.id}.`);
         return;
       }

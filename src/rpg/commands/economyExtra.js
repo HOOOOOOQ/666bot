@@ -12,7 +12,7 @@ const { UserError } = require('../../utils/errors');
 
 const top = define({
   name: 'top', category: 'rankings', aliases: [], description: 'Leaderboard server untuk wealth, level, hunt, battle, boss, games, atau shards.',
-  usage: '`6top [wealth|level|hunt|battle|boss|games|shards] [limit]`', examples: ['6top', '6top battle 10'],
+  usage: '`ttop [wealth|level|hunt|battle|boss|games|shards] [limit]`', examples: ['ttop', 'ttop battle 10'],
   cooldown: '3 detik', permissions: 'Everyone',
   async execute(ctx) {
     const category = (ctx.args[0] || 'wealth').toLowerCase();
@@ -31,7 +31,7 @@ const top = define({
 
 const my = define({
   name: 'my', category: 'rankings', aliases: [], description: 'Ringkasan profil, posisi server, saldo, dan progress level kamu.',
-  usage: '`6my [@user]`', examples: ['6my', '6my @friend'], permissions: 'Everyone',
+  usage: '`tmy [@user]`', examples: ['tmy', 'tmy @friend'], permissions: 'Everyone',
   async execute(ctx) {
     const target = (await resolveTarget(ctx.message, ctx.args[0]))?.id || ctx.userId;
     const data = await extraService.profileSummary(ctx.guildId, target);
@@ -47,10 +47,10 @@ const my = define({
 
 const give = define({
   name: 'give', category: 'economy', aliases: ['transfer'], description: 'Transfer 666 Coins ke member lain dengan tax server dan idempotency.',
-  usage: '`6give @user <jumlah>`', examples: ['6give @friend 500'], required: ['user', 'amount'], cooldown: '5 detik',
+  usage: '`tgive @user <jumlah>`', examples: ['tgive @friend 500'], required: ['user', 'amount'], cooldown: '5 detik',
   async execute(ctx) {
     const target = await resolveTarget(ctx.message, ctx.args[0]);
-    if (!target) throw new UserError('Tag penerima: `6give @user <jumlah>`.');
+    if (!target) throw new UserError('Tag penerima: `tgive @user <jumlah>`.');
     if (target.bot) throw new UserError('Tidak bisa transfer ke bot.');
     const amount = extraService.assertPositive(ctx.args[1], 'Jumlah');
     const economy = await settingsService.getEconomy(ctx.guildId);
@@ -62,7 +62,7 @@ const give = define({
 
 const vote = define({
   name: 'vote', category: 'economy', aliases: [], description: 'Klaim hadiah vote 666 Coins setiap 12 jam.',
-  usage: '`6vote`', examples: ['6vote'], cooldown: '12 jam', permissions: 'Everyone',
+  usage: '`tvote`', examples: ['tvote'], cooldown: '12 jam', permissions: 'Everyone',
   async execute(ctx) {
     const result = await extraService.vote(ctx.guildId, ctx.userId);
     return reply(ctx.message, ok('🗳️ VOTE REWARD', `Terima kasih sudah vote! Reward **${money(result.reward)}** masuk ke wallet.\nVote lagi dalam 12 jam.`));
@@ -71,10 +71,10 @@ const vote = define({
 
 const checklist = define({
   name: 'checklist', category: 'economy', aliases: [], description: 'Checklist quest harian dan mingguan beserta progress kamu.',
-  usage: '`6checklist`', examples: ['6checklist'], cooldown: '3 detik',
+  usage: '`tchecklist`', examples: ['tchecklist'], cooldown: '3 detik',
   async execute(ctx) {
     const items = await extraService.checklist(ctx.guildId, ctx.userId);
-    if (!items.length) return reply(ctx.message, info('✅ CHECKLIST', 'Belum ada quest. Jalankan `6quest` untuk refresh.'));
+    if (!items.length) return reply(ctx.message, info('✅ CHECKLIST', 'Belum ada quest. Jalankan `tquest` untuk refresh.'));
     const lines = items.map((q) => `${q.claimed ? '✅' : q.completed ? '🎁' : '⬜'} ${q.emoji} **${q.title}** — ${q.progress}/${q.target}${q.completed && !q.claimed ? ' • siap claim!' : ''}`);
     return reply(ctx.message, info('✅ DAILY / WEEKLY CHECKLIST', lines.join('\n')));
   },

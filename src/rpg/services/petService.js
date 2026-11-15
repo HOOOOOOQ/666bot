@@ -169,7 +169,7 @@ async function equip(guildId, userId, petId) {
   const user = await userService.ensureUser(guildId, userId);
   const active = activeIdList(user);
   if (!active.includes(String(pet._id)) && active.length >= Math.max(1, game.pets.maxSlots)) {
-    throw new UserError(`Slot pet aktif penuh (${active.length}/${game.pets.maxSlots}). Lepas salah satu dengan \`6pet unequip <id>\`.`);
+    throw new UserError(`Slot pet aktif penuh (${active.length}/${game.pets.maxSlots}). Lepas salah satu dengan \`tpet unequip <id>\`.`);
   }
   await models.RPGUser.updateOne(
     { guildId, userId },

@@ -9,10 +9,10 @@ const { helpEmbed, reply } = require('./_helpers');
 const { formatCoins } = require('../utils/formulas');
 
 const HELP = [
-  '`6boss` / `6boss status` — HP & damage leaderboard',
-  '`6boss attack` — serang boss (cooldown 30 detik)',
-  '`6boss leaderboard` — kontribusi damage',
-  '`6boss rewards` — preview reward',
+  '`tboss` / `tboss status` — HP & damage leaderboard',
+  '`tboss attack` — serang boss (cooldown 30 detik)',
+  '`tboss leaderboard` — kontribusi damage',
+  '`tboss rewards` — preview reward',
 ];
 
 async function execute(ctx) {
@@ -25,7 +25,7 @@ async function execute(ctx) {
       .setTitle(result.defeated ? '🏆 WORLD BOSS DEFEATED!' : '👹 BOSS ATTACK')
       .setDescription(`Kamu menyerang **${result.boss.name}** sebesar **${formatCoins(result.damage)}** damage!\nHP tersisa: **${formatCoins(result.hpLeft)}**\nBoss membalas: ${formatCoins(result.counterDamage)} (flavor) • Skill: **${result.skill}**`)
       .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' });
-    if (result.defeated) embed.addFields({ name: 'Reward', value: `Reward dibagikan otomatis berdasarkan kontribusi damage. Cek \`6boss leaderboard\`.` });
+    if (result.defeated) embed.addFields({ name: 'Reward', value: `Reward dibagikan otomatis berdasarkan kontribusi damage. Cek \`tboss leaderboard\`.` });
     return reply(ctx.message, embed);
   }
   if (sub === 'leaderboard' || sub === 'lb') {
@@ -44,7 +44,7 @@ async function execute(ctx) {
     const data = await bossService.getStatus(ctx.guildId);
     return reply(ctx.message, bossEmbed(data));
   }
-  throw new UserError('Subcommand boss tidak dikenal. Lihat `6boss help`.');
+  throw new UserError('Subcommand boss tidak dikenal. Lihat `tboss help`.');
 }
 
-module.exports = { names: ['6boss'], execute, help: HELP };
+module.exports = { names: ['tboss'], execute, help: HELP };

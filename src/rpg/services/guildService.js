@@ -21,7 +21,7 @@ async function create(discordGuildId, userId, name) {
   const clean = String(name || '').trim().slice(0, 32);
   if (clean.length < 3) throw new UserError('Nama guild minimal 3 karakter.');
   const existing = await models.GuildMember.findOne(memberFilter(discordGuildId, userId)).lean();
-  if (existing) throw new UserError('Kamu sudah berada di guild. Keluar dulu dengan `6guild leave`.');
+  if (existing) throw new UserError('Kamu sudah berada di guild. Keluar dulu dengan `tguild leave`.');
   const nameTaken = await models.Guild.findOne({ discordGuildId, name: clean }).lean();
   if (nameTaken) throw new UserError('Nama guild sudah dipakai.');
   await userService.ensureUser(discordGuildId, userId);

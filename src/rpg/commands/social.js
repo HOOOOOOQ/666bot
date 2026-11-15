@@ -32,7 +32,7 @@ async function targetOf(ctx, required = false) {
 const commands = [
   define({
     name: 'cookie', category: 'social', aliases: [], description: 'Beri cookie ke member lain.',
-    usage: '`6cookie [@user]`', examples: ['6cookie @friend'], cooldown: '30 detik',
+    usage: '`tcookie [@user]`', examples: ['tcookie @friend'], cooldown: '30 detik',
     async execute(ctx) {
       await socialCooldown(ctx.guildId, ctx.userId, 'cookie');
       const target = await targetOf(ctx);
@@ -43,9 +43,9 @@ const commands = [
   }),
   define({
     name: 'ship', category: 'social', aliases: ['love'], description: 'Hitung compatibility dua member secara deterministik.',
-    usage: '`6ship @user [@user2]`', examples: ['6ship @a @b'], cooldown: '10 detik',
+    usage: '`tship @user [@user2]`', examples: ['tship @a @b'], cooldown: '10 detik',
     async execute(ctx) {
-      if (!ctx.args.length) throw new UserError('Tag minimal satu member: `6ship @a @b`.');
+      if (!ctx.args.length) throw new UserError('Tag minimal satu member: `tship @a @b`.');
       const first = (await resolveTarget(ctx.message, ctx.args[0]))?.id || ctx.userId;
       const second = (await resolveTarget(ctx.message, ctx.args[1]))?.id || ctx.userId;
       if (first === second) throw new UserError('Pilih dua orang yang berbeda.');
@@ -60,7 +60,7 @@ const commands = [
   }),
   define({
     name: 'pray', category: 'social', aliases: [], description: 'Kirim doa/blessing untuk member lain.',
-    usage: '`6pray [@user]`', examples: ['6pray @friend'], cooldown: '30 detik',
+    usage: '`tpray [@user]`', examples: ['tpray @friend'], cooldown: '30 detik',
     async execute(ctx) {
       await socialCooldown(ctx.guildId, ctx.userId, 'pray');
       const target = await targetOf(ctx);
@@ -74,7 +74,7 @@ const commands = [
   }),
   define({
     name: 'curse', category: 'social', aliases: [], description: 'Lempar kutukan ringan (hanya social stats, tanpa mengurangi saldo).',
-    usage: '`6curse [@user]`', examples: ['6curse @rival'], cooldown: '30 detik',
+    usage: '`tcurse [@user]`', examples: ['tcurse @rival'], cooldown: '30 detik',
     async execute(ctx) {
       await socialCooldown(ctx.guildId, ctx.userId, 'curse');
       const target = await targetOf(ctx);
@@ -85,17 +85,17 @@ const commands = [
   }),
   define({
     name: 'marry', category: 'social', aliases: [], description: 'Propose, accept, status, atau divorce partner.',
-    usage: '`6marry @user` • `6marry accept <proposalId>` • `6marry status` • `6marry divorce`',
-    examples: ['6marry @partner', '6marry accept a1b2c3', '6marry status'], cooldown: '10 detik',
+    usage: '`tmarry @user` • `tmarry accept <proposalId>` • `tmarry status` • `tmarry divorce`',
+    examples: ['tmarry @partner', 'tmarry accept a1b2c3', 'tmarry status'], cooldown: '10 detik',
     async execute(ctx) {
       const action = (ctx.args[0] || 'status').toLowerCase();
       if (action === 'status' || (!action.startsWith('@') && !ctx.message.mentions?.users?.size && ctx.args.length === 0)) {
         const user = await userService.ensureUser(ctx.guildId, ctx.userId);
-        if (!user.partnerId) return reply(ctx.message, info('💍 MARRIAGE', 'Kamu belum menikah. Gunakan `6marry @user` untuk propose.'));
+        if (!user.partnerId) return reply(ctx.message, info('💍 MARRIAGE', 'Kamu belum menikah. Gunakan `tmarry @user` untuk propose.'));
         return reply(ctx.message, info('💍 MARRIAGE', `Kamu menikah dengan <@${user.partnerId}> sejak <t:${Math.floor(new Date(user.marriedAt || Date.now()).getTime() / 1000)}:R>.`));
       }
       if (action === 'accept') {
-        if (!ctx.args[1] || !/^[a-f0-9]{24}$/i.test(ctx.args[1])) throw new UserError('Format: `6marry accept <proposalId>`. Salin ID dari pesan proposal.');
+        if (!ctx.args[1] || !/^[a-f0-9]{24}$/i.test(ctx.args[1])) throw new UserError('Format: `tmarry accept <proposalId>`. Salin ID dari pesan proposal.');
         const proposal = await extraService.acceptMarriage(ctx.guildId, ctx.userId, ctx.args[1]);
         return reply(ctx.message, ok('💍 MARRIAGE ACCEPTED', `<@${proposal.userId}> dan <@${ctx.userId}> sekarang menikah!`));
       }
@@ -108,19 +108,19 @@ const commands = [
         return reply(ctx.message, ok('💔 DIVORCE', `Pernikahan dengan <@${partner}> berakhir.`));
       }
       const target = await resolveTarget(ctx.message, ctx.args[0]);
-      if (!target) throw new UserError('Tag orang yang ingin dinikahi: `6marry @user`.');
+      if (!target) throw new UserError('Tag orang yang ingin dinikahi: `tmarry @user`.');
       if (target.bot) throw new UserError('Tidak bisa menikahi bot.');
       const proposal = await extraService.proposeMarriage(ctx.guildId, ctx.userId, target.id);
       return reply(ctx.message, info('💍 MARRIAGE PROPOSAL',
-        `<@${ctx.userId}> melamar <@${target.id}>!\n\n<@${target.id}>, terima dengan:\n\`6marry accept ${proposal._id}\`\n\nBerlaku 1 jam.`));
+        `<@${ctx.userId}> melamar <@${target.id}>!\n\n<@${target.id}>, terima dengan:\n\`tmarry accept ${proposal._id}\`\n\nBerlaku 1 jam.`));
     },
   }),
   define({
     name: 'emoji', category: 'social', aliases: [], description: 'Tampilkan emoji besar atau info emoji.',
-    usage: '`6emoji <emoji>`', examples: ['6emoji 🔥'], cooldown: '2 detik',
+    usage: '`temoji <emoji>`', examples: ['temoji 🔥'], cooldown: '2 detik',
     async execute(ctx) {
       const value = ctx.args[0];
-      if (!value) throw new UserError('Masukkan emoji: `6emoji 🔥`.');
+      if (!value) throw new UserError('Masukkan emoji: `temoji 🔥`.');
       const embed = new EmbedBuilder().setColor(COLORS.flame).setTitle('😄 EMOJI')
         .setDescription(`# ${value}\n\n\`${value.codePointAt(0)?.toString(16).toUpperCase() || 'custom'}\``).setFooter({ text: BRAND });
       return reply(ctx.message, embed);
@@ -128,7 +128,7 @@ const commands = [
   }),
   define({
     name: 'level', category: 'social', aliases: ['lvl'], description: 'Lihat level, EXP, dan progress ke level berikutnya.',
-    usage: '`6level [@user]`', examples: ['6level', '6level @friend'], cooldown: '2 detik',
+    usage: '`tlevel [@user]`', examples: ['tlevel', 'tlevel @friend'], cooldown: '2 detik',
     async execute(ctx) {
       const target = (await targetOf(ctx))?.id || ctx.userId;
       const user = await userService.ensureUser(ctx.guildId, target);
@@ -140,7 +140,7 @@ const commands = [
   }),
   define({
     name: 'wallpaper', category: 'social', aliases: [], description: 'Ambil wallpaper acak sesuai tema.',
-    usage: '`6wallpaper [tema]`', examples: ['6wallpaper cyberpunk'], cooldown: '3 detik',
+    usage: '`twallpaper [tema]`', examples: ['twallpaper cyberpunk'], cooldown: '3 detik',
     async execute(ctx) {
       const theme = ctx.args.join(' ').trim() || 'dark,anime';
       const url = `https://loremflickr.com/1920/1080/${encodeURIComponent(theme)}?lock=${randomInt(1, 999999)}`;
@@ -149,7 +149,7 @@ const commands = [
   }),
   define({
     name: 'godify', category: 'social', aliases: ['ascend'], description: 'Buat avatar member menjadi versi 666 ascended lewat canvas API.',
-    usage: '`6godify [@user]`', examples: ['6godify', '6godify @friend'], cooldown: '5 detik',
+    usage: '`tgodify [@user]`', examples: ['tgodify', 'tgodify @friend'], cooldown: '5 detik',
     async execute(ctx) {
       const target = (await targetOf(ctx))?.id || ctx.userId;
       const member = await ctx.message.guild?.members.fetch(target).catch(() => null);
@@ -160,7 +160,7 @@ const commands = [
   }),
   define({
     name: 'avatar', category: 'social', aliases: ['av'], description: 'Tampilkan avatar member dalam ukuran besar.',
-    usage: '`6avatar [@user]`', examples: ['6avatar', '6avatar @friend'], cooldown: '2 detik',
+    usage: '`tavatar [@user]`', examples: ['tavatar', 'tavatar @friend'], cooldown: '2 detik',
     async execute(ctx) {
       const target = (await targetOf(ctx))?.id || ctx.userId;
       const member = await ctx.message.guild?.members.fetch(target).catch(() => null);

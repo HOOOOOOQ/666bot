@@ -15,16 +15,16 @@ const { rankForLevel } = require('../utils/formulas');
 const { formatCoins } = require('../utils/formulas');
 
 const HELP = [
-  '`6cash` — lihat saldo',
-  '`6cash daily|weekly|monthly` — klaim reward',
-  '`6cash work|beg` — cari koin',
-  '`6cash deposit|withdraw <jumlah|all>`',
-  '`6cash transfer @user <jumlah>`',
-  '`6cash leaderboard [wealth|level|hunt|battle|boss]`',
-  '`6cash inventory` — isi tas',
-  '`6cash shop` / `6cash buy <id> [qty]` / `6cash sell <id> [qty]`',
-  '`6cash history` — riwayat transaksi',
-  '`6cash profile [@user]` — kartu profil lengkap',
+  '`tcash` — lihat saldo',
+  '`tcash daily|weekly|monthly` — klaim reward',
+  '`tcash work|beg` — cari koin',
+  '`tcash deposit|withdraw <jumlah|all>`',
+  '`tcash transfer @user <jumlah>`',
+  '`tcash leaderboard [wealth|level|hunt|battle|boss]`',
+  '`tcash inventory` — isi tas',
+  '`tcash shop` / `tcash buy <id> [qty]` / `tcash sell <id> [qty]`',
+  '`tcash history` — riwayat transaksi',
+  '`tcash profile [@user]` — kartu profil lengkap',
 ];
 
 async function showBalance(ctx) {
@@ -61,7 +61,7 @@ async function inventory(ctx) {
   const embed = new EmbedBuilder()
     .setColor(COLORS.ember)
     .setTitle('🎒 666 INVENTORY')
-    .setDescription(lines.join('\n') || 'Tas kosong. Beli item dengan `6cash shop`.')
+    .setDescription(lines.join('\n') || 'Tas kosong. Beli item dengan `tcash shop`.')
     .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' });
   return reply(ctx.message, embed);
 }
@@ -117,7 +117,7 @@ async function execute(ctx) {
       const input = args[1];
       const user = await userService.ensureUser(ctx.guildId, ctx.userId, profile);
       const amount = input === 'all' ? user.wallet : Number(input);
-      if (!Number.isFinite(amount) || amount <= 0) throw new UserError('Format: `6cash deposit <jumlah|all>`.');
+      if (!Number.isFinite(amount) || amount <= 0) throw new UserError('Format: `tcash deposit <jumlah|all>`.');
       const result = await userService.deposit(ctx.guildId, ctx.userId, amount, `deposit:${ctx.message.id}`);
       return reply(ctx.message, new EmbedBuilder().setColor(COLORS.success).setTitle('🏦 DEPOSIT')
         .setDescription(`Deposit **${money(result.amount)}** berhasil.\n🏦 Bank: ${money(result.user.bank)} • 👛 Wallet: ${money(result.user.wallet)}`)
@@ -127,7 +127,7 @@ async function execute(ctx) {
       const input = args[1];
       const user = await userService.ensureUser(ctx.guildId, ctx.userId, profile);
       const amount = input === 'all' ? user.bank : Number(input);
-      if (!Number.isFinite(amount) || amount <= 0) throw new UserError('Format: `6cash withdraw <jumlah|all>`.');
+      if (!Number.isFinite(amount) || amount <= 0) throw new UserError('Format: `tcash withdraw <jumlah|all>`.');
       const result = await userService.withdraw(ctx.guildId, ctx.userId, amount, `withdraw:${ctx.message.id}`);
       return reply(ctx.message, new EmbedBuilder().setColor(COLORS.success).setTitle('👛 WITHDRAW')
         .setDescription(`Withdraw **${money(result.amount)}** berhasil.\n👛 Wallet: ${money(result.user.wallet)} • 🏦 Bank: ${money(result.user.bank)}`)
@@ -135,7 +135,7 @@ async function execute(ctx) {
     }
     case 'transfer':
     case 'give': {
-      if (!target) throw new UserError('Tag penerima: `6cash transfer @user <jumlah>`.');
+      if (!target) throw new UserError('Tag penerima: `tcash transfer @user <jumlah>`.');
       const amount = Number(args[2]);
       if (!Number.isFinite(amount) || amount <= 0) throw new UserError('Jumlah transfer tidak valid.');
       const result = await userService.transfer(ctx.guildId, ctx.userId, target.id, amount, `transfer:${ctx.message.id}`, undefined, { messageId: ctx.message.id });
@@ -152,14 +152,14 @@ async function execute(ctx) {
     case 'shop':
       return shop(ctx);
     case 'buy': {
-      requireArgs(args, 2, '6cash buy <itemId> [qty]');
+      requireArgs(args, 2, 'tcash buy <itemId> [qty]');
       const result = await shopService.buy(ctx.guildId, ctx.userId, args[1], Number(args[2] || 1));
       return reply(ctx.message, new EmbedBuilder().setColor(COLORS.success).setTitle('🛒 PEMBELIAN')
         .setDescription(`${result.item.emoji} **${result.item.name}** ×${result.qty}\nTotal: **${money(result.total)}**\nWallet: ${money(result.user.wallet)}`)
         .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
     }
     case 'sell': {
-      requireArgs(args, 2, '6cash sell <itemId> [qty]');
+      requireArgs(args, 2, 'tcash sell <itemId> [qty]');
       const result = await shopService.sell(ctx.guildId, ctx.userId, args[1], Number(args[2] || 1));
       return reply(ctx.message, new EmbedBuilder().setColor(COLORS.success).setTitle('💱 JUAL ITEM')
         .setDescription(`${result.item.emoji} **${result.item.name}** ×${result.qty}\nDapat: **${money(result.total)}**`)
@@ -176,8 +176,8 @@ async function execute(ctx) {
     case 'help':
       return reply(ctx.message, helpEmbed('666 CASH', HELP));
     default:
-      throw new UserError(`Subcommand \`${sub}\` tidak dikenal. Lihat \`6cash help\`.`);
+      throw new UserError(`Subcommand \`${sub}\` tidak dikenal. Lihat \`tcash help\`.`);
   }
 }
 
-module.exports = { names: ['6cash', '6economy'], execute, help: HELP };
+module.exports = { names: ['tcash', 'teconomy'], execute, help: HELP };

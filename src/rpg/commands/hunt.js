@@ -10,12 +10,12 @@ const { helpEmbed, reply, resolveMonsterId, requireArgs } = require('./_helpers'
 const { formatCoins, xpForLevel } = require('../utils/formulas');
 
 const HELP = [
-  '`6hunt` — cari monster (cooldown)',
-  '`6hunt inventory [halaman]` — kandang monster',
-  '`6hunt collection` — koleksi spesies',
-  '`6hunt sell <id|all>` — jual monster/duplikat',
-  '`6hunt stats` — statistik hunting',
-  '`6hunt leaderboard` — pemburu terbaik',
+  '`thunt` — cari monster (cooldown)',
+  '`thunt inventory [halaman]` — kandang monster',
+  '`thunt collection` — koleksi spesies',
+  '`thunt sell <id|all>` — jual monster/duplikat',
+  '`thunt stats` — statistik hunting',
+  '`thunt leaderboard` — pemburu terbaik',
 ];
 
 async function stats(ctx) {
@@ -57,7 +57,7 @@ async function execute(ctx) {
       return reply(ctx.message, collectionEmbed(await huntingService.collection(ctx.guildId, ctx.userId), 'MONSTER'));
     case 'sell': {
       const input = ctx.args[1];
-      if (!input) throw new UserError('Format: `6hunt sell <id|all>`.');
+      if (!input) throw new UserError('Format: `thunt sell <id|all>`.');
       if (input === 'all' || input === 'duplicates') {
         const result = await huntingService.sellAllDuplicates(ctx.guildId, ctx.userId);
         return reply(ctx.message, new EmbedBuilder().setColor(COLORS.success).setTitle('💱 JUAL DUPLIKAT')
@@ -83,8 +83,8 @@ async function execute(ctx) {
     case 'help':
       return reply(ctx.message, helpEmbed('666 HUNTING', HELP));
     default:
-      throw new UserError(`Subcommand \`${sub}\` tidak dikenal. Lihat \`6hunt help\`.`);
+      throw new UserError(`Subcommand \`${sub}\` tidak dikenal. Lihat \`thunt help\`.`);
   }
 }
 
-module.exports = { names: ['6hunt'], execute, help: HELP };
+module.exports = { names: ['thunt'], execute, help: HELP };

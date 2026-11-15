@@ -16,7 +16,7 @@ const { UserError } = require('../../utils/errors');
 
 const zoo = define({
   name: 'zoo', category: 'animals', aliases: [], description: 'Lihat kandang monster dan koleksi pet kamu.',
-  usage: '`6zoo`', examples: ['6zoo'], cooldown: '2 detik',
+  usage: '`tzoo`', examples: ['tzoo'], cooldown: '2 detik',
   async execute(ctx) {
     const data = await extraService.zoo(ctx.guildId, ctx.userId);
     const monsters = data.monsters.slice(0, 8).map((m) => `${getRarity(m.rarity).emoji} **${m.name}** • Lv ${m.level} • \`${String(m._id).slice(-6)}\``).join('\n') || 'Belum ada monster.';
@@ -28,9 +28,9 @@ const zoo = define({
 
 const sell = define({
   name: 'sell', category: 'animals', aliases: [], description: 'Jual monster, item shop, atau semua duplikat monster.',
-  usage: '`6sell <monsterId|itemId|all>`', examples: ['6sell all', '6sell a1b2c3'], cooldown: '3 detik',
+  usage: '`tsell <monsterId|itemId|all>`', examples: ['tsell all', 'tsell a1b2c3'], cooldown: '3 detik',
   async execute(ctx) {
-    if (!ctx.args[0]) throw new UserError('Format: `6sell <id|all>`.');
+    if (!ctx.args[0]) throw new UserError('Format: `tsell <id|all>`.');
     if (SHOP_MAP[ctx.args[0].toLowerCase()]) {
       const result = await shopService.sell(ctx.guildId, ctx.userId, ctx.args[0].toLowerCase(), Number(ctx.args[1] || 1));
       return reply(ctx.message, ok('💱 ITEM TERJUAL', `${result.item.emoji} **${result.item.name}** ×${result.qty}\nDapat: **${money(result.total)}**`));
@@ -47,9 +47,9 @@ const sell = define({
 
 const sacrifice = define({
   name: 'sacrifice', category: 'animals', aliases: [], description: 'Korbankan monster untuk koin dan XP instan. Monster akan dihapus permanen.',
-  usage: '`6sacrifice <id>`', examples: ['6sacrifice a1b2c3'], cooldown: '3 detik', required: ['monster id'],
+  usage: '`tsacrifice <id>`', examples: ['tsacrifice a1b2c3'], cooldown: '3 detik', required: ['monster id'],
   async execute(ctx) {
-    requireArgs(ctx.args, 1, '6sacrifice <id>');
+    requireArgs(ctx.args, 1, 'tsacrifice <id>');
     const id = await resolveMonsterId(ctx.guildId, ctx.userId, ctx.args[0]);
     const result = await extraService.sacrifice(ctx.guildId, ctx.userId, id);
     return reply(ctx.message, ok('🩸 SACRIFICE', `**${result.monster.name}** dikorbankan.\n+${money(result.coins)} coins • +${formatCoins(result.xp)} XP`));
@@ -58,7 +58,7 @@ const sacrifice = define({
 
 const sim = define({
   name: 'sim', category: 'animals', aliases: ['simulate'], description: 'Simulasikan battle melawan monster liar tanpa mempertaruhkan apa pun.',
-  usage: '`6sim`', examples: ['6sim'], cooldown: '3 detik',
+  usage: '`tsim`', examples: ['tsim'], cooldown: '3 detik',
   async execute(ctx) {
     const result = await extraService.simulate(ctx.guildId, ctx.userId);
     return reply(ctx.message, info('🧪 BATTLE SIMULATION',
@@ -70,7 +70,7 @@ const sim = define({
 
 const inv = define({
   name: 'inv', category: 'animals', aliases: ['inventory'], description: 'Inventory gabungan: item, monster, dan pet.',
-  usage: '`6inv`', examples: ['6inv'], cooldown: '2 detik',
+  usage: '`tinv`', examples: ['tinv'], cooldown: '2 detik',
   async execute(ctx) {
     const data = await extraService.inventory(ctx.guildId, ctx.userId);
     const items = data.items.map((entry) => `${SHOP_MAP[entry.itemId]?.emoji || '📦'} **${SHOP_MAP[entry.itemId]?.name || entry.itemId}** × ${entry.qty}`).join('\n') || 'Belum ada item.';
@@ -83,9 +83,9 @@ const inv = define({
 
 const equip = define({
   name: 'equip', category: 'animals', aliases: [], description: 'Pasang pet ke slot aktif atau equip weapon.',
-  usage: '`6equip <petId|weaponId>`', examples: ['6equip a1b2c3'], required: ['pet id'], cooldown: '2 detik',
+  usage: '`tequip <petId|weaponId>`', examples: ['tequip a1b2c3'], required: ['pet id'], cooldown: '2 detik',
   async execute(ctx) {
-    requireArgs(ctx.args, 1, '6equip <petId>');
+    requireArgs(ctx.args, 1, 'tequip <petId>');
     const input = ctx.args[0].toLowerCase();
     if (WEAPON_MAP[input]) {
       const result = await extraService.equipWeapon(ctx.guildId, ctx.userId, input);
@@ -99,14 +99,14 @@ const equip = define({
 
 const autohunt = define({
   name: 'autohunt', category: 'animals', aliases: [], description: 'Aktifkan auto-hunt. Scheduler akan hunt otomatis setiap ±5 menit.',
-  usage: '`6autohunt [on|off|status]`', examples: ['6autohunt on', '6autohunt status'], cooldown: '3 detik',
+  usage: '`tautohunt [on|off|status]`', examples: ['tautohunt on', 'tautohunt status'], cooldown: '3 detik',
   async execute(ctx) {
     const action = (ctx.args[0] || 'status').toLowerCase();
     if (action === 'status') {
       const doc = await models.AutoHunt.findOne({ guildId: ctx.guildId, userId: ctx.userId }).lean();
-      return reply(ctx.message, info('🤖 AUTO HUNT', doc ? `Status: **${doc.enabled ? 'ON' : 'OFF'}**\nRuns: ${doc.totalRuns || 0}\nLast: ${doc.lastResult || '—'}` : 'Belum pernah diaktifkan. Gunakan `6autohunt on`.'));
+      return reply(ctx.message, info('🤖 AUTO HUNT', doc ? `Status: **${doc.enabled ? 'ON' : 'OFF'}**\nRuns: ${doc.totalRuns || 0}\nLast: ${doc.lastResult || '—'}` : 'Belum pernah diaktifkan. Gunakan `tautohunt on`.'));
     }
-    if (!['on', 'off', 'enable', 'disable'].includes(action)) throw new UserError('Gunakan `6autohunt on|off|status`.');
+    if (!['on', 'off', 'enable', 'disable'].includes(action)) throw new UserError('Gunakan `tautohunt on|off|status`.');
     const enabled = action === 'on' || action === 'enable';
     const doc = await extraService.toggleAutoHunt(ctx.guildId, ctx.userId, enabled, ctx.message.channelId);
     return reply(ctx.message, ok('🤖 AUTO HUNT', `Auto-hunt sekarang **${doc.enabled ? 'ON' : 'OFF'}**.\nBerjalan setiap ±5 menit selama bot online.`));
@@ -115,7 +115,7 @@ const autohunt = define({
 
 const dex = define({
   name: 'dex', category: 'animals', aliases: ['encyclopedia'], description: 'Ensiklopedia monster dan pet beserta status koleksi.',
-  usage: '`6dex [monster|pet]`', examples: ['6dex', '6dex pet'], cooldown: '3 detik',
+  usage: '`tdex [monster|pet]`', examples: ['tdex', 'tdex pet'], cooldown: '3 detik',
   async execute(ctx) {
     const data = await extraService.dex(ctx.guildId, ctx.userId);
     const kind = (ctx.args[0] || 'monster').toLowerCase();
@@ -123,13 +123,13 @@ const dex = define({
     const owned = source.filter((entry) => entry.owned).length;
     const lines = source.slice(0, 30).map((entry) => `${entry.owned ? '✅' : '▫️'} ${getRarity(entry.rarity).emoji} **${entry.name}**`);
     return reply(ctx.message, info(`📖 ${kind === 'pet' ? 'PET' : 'MONSTER'} DEX`,
-      `${owned}/${source.length} terkoleksi\n${lines.join('\n')}\n\nGunakan \`6dex pet\` untuk koleksi pet.`));
+      `${owned}/${source.length} terkoleksi\n${lines.join('\n')}\n\nGunakan \`tdex pet\` untuk koleksi pet.`));
   },
 });
 
 const lootbox = define({
   name: 'lootbox', category: 'animals', aliases: [], description: 'Beli dan buka lootbox berisi koin, shards, item, atau egg.',
-  usage: '`6lootbox`', examples: ['6lootbox'], cooldown: '3 detik',
+  usage: '`tlootbox`', examples: ['tlootbox'], cooldown: '3 detik',
   async execute(ctx) {
     const result = await extraService.openLootbox(ctx.guildId, ctx.userId, 'lootbox');
     return reply(ctx.message, ok('🎁 LOOTBOX', describeBox(result)));
@@ -138,7 +138,7 @@ const lootbox = define({
 
 const crate = define({
   name: 'crate', category: 'animals', aliases: [], description: 'Buka crate dengan hadiah lebih besar dan peluang item langka.',
-  usage: '`6crate`', examples: ['6crate'], cooldown: '3 detik',
+  usage: '`tcrate`', examples: ['tcrate'], cooldown: '3 detik',
   async execute(ctx) {
     const result = await extraService.openLootbox(ctx.guildId, ctx.userId, 'crate');
     return reply(ctx.message, ok('📦 CRATE', describeBox(result)));
@@ -148,13 +148,13 @@ const crate = define({
 function describeBox(result) {
   if (result.type === 'coins') return `Kamu mendapat **${money(result.amount)}** coins!`;
   if (result.type === 'shards') return `Kamu mendapat **${result.amount} shards**!`;
-  if (result.type === 'egg') return `Kamu mendapat **${result.name}**! Gunakan \`6egg\` untuk menetas.`;
-  return `Kamu mendapat **${result.name}**! Cek dengan \`6inv\`.`;
+  if (result.type === 'egg') return `Kamu mendapat **${result.name}**! Gunakan \`tegg\` untuk menetas.`;
+  return `Kamu mendapat **${result.name}**! Cek dengan \`tinv\`.`;
 }
 
 const egg = define({
   name: 'egg', category: 'animals', aliases: [], description: 'Hatch egg pet. Tanpa argumen akan menampilkan daftar egg.',
-  usage: '`6egg [basic|rare|legendary]`', examples: ['6egg', '6egg rare'], cooldown: '1.5 detik',
+  usage: '`tegg [basic|rare|legendary]`', examples: ['tegg', 'tegg rare'], cooldown: '1.5 detik',
   async execute(ctx) {
     const input = (ctx.args[0] || '').toLowerCase();
     if (!input) {
@@ -169,19 +169,19 @@ const egg = define({
 
 const team = define({
   name: 'team', category: 'animals', aliases: [], description: 'Lihat tim pet aktif dan bonus stat mereka.',
-  usage: '`6team`', examples: ['6team'], cooldown: '2 detik',
+  usage: '`tteam`', examples: ['tteam'], cooldown: '2 detik',
   async execute(ctx) {
     const user = await userService.ensureUser(ctx.guildId, ctx.userId);
     const pets = await petService.activePets(ctx.guildId, ctx.userId, user);
     if (!pets.length) throw new UserError('Belum ada pet aktif. Hatch dan equip pet dulu.');
     const lines = pets.map((pet, index) => `**${index + 1}.** ${getRarity(pet.rarity).emoji} **${pet.name}** Lv ${pet.level} • ATK ${pet.attack} • DEF ${pet.defense} • SPD ${pet.speed}`).join('\n');
-    return reply(ctx.message, info('🐾 ACTIVE TEAM', `${lines}\n\nGabungkan slot dengan \`6pet equip\` dan \`6pet unequip\`.`));
+    return reply(ctx.message, info('🐾 ACTIVE TEAM', `${lines}\n\nGabungkan slot dengan \`tpet equip\` dan \`tpet unequip\`.`));
   },
 });
 
 const weapon = define({
   name: 'weapon', category: 'animals', aliases: [], description: 'Lihat, equip, atau unequip weapon untuk bonus battle.',
-  usage: '`6weapon [list|equip <id>|unequip]`', examples: ['6weapon list', '6weapon equip iron_sword'], cooldown: '2 detik',
+  usage: '`tweapon [list|equip <id>|unequip]`', examples: ['tweapon list', 'tweapon equip iron_sword'], cooldown: '2 detik',
   async execute(ctx) {
     const action = (ctx.args[0] || 'list').toLowerCase();
     if (action === 'list') {
@@ -191,7 +191,7 @@ const weapon = define({
       return reply(ctx.message, info('🗡️ WEAPONS', `${lines}${equipped}`));
     }
     if (action === 'equip') {
-      requireArgs(ctx.args, 2, '6weapon equip <id>');
+      requireArgs(ctx.args, 2, 'tweapon equip <id>');
       const result = await extraService.equipWeapon(ctx.guildId, ctx.userId, ctx.args[1]);
       return reply(ctx.message, ok('🗡️ WEAPON EQUIPPED', `${result.weapon.emoji} **${result.weapon.name}** terpasang.`));
     }
@@ -199,15 +199,15 @@ const weapon = define({
       const result = await extraService.equipWeapon(ctx.guildId, ctx.userId, null);
       return reply(ctx.message, ok('🗡️ WEAPON UNEQUIPPED', `**${result.weapon.name}** dikembalikan ke inventory.`));
     }
-    throw new UserError('Gunakan `6weapon list|equip <id>|unequip`.');
+    throw new UserError('Gunakan `tweapon list|equip <id>|unequip`.');
   },
 });
 
 const rename = define({
   name: 'rename', category: 'animals', aliases: [], description: 'Ganti nama monster atau pet dengan biaya 500 coins.',
-  usage: '`6rename <monster|pet> <id> <nama baru>`', examples: ['6rename pet a1b2c3 Kuro'], cooldown: '3 detik',
+  usage: '`trename <monster|pet> <id> <nama baru>`', examples: ['trename pet a1b2c3 Kuro'], cooldown: '3 detik',
   async execute(ctx) {
-    requireArgs(ctx.args, 3, '6rename <monster|pet> <id> <nama baru>');
+    requireArgs(ctx.args, 3, 'trename <monster|pet> <id> <nama baru>');
     const type = ctx.args[0].toLowerCase();
     const id = type === 'pet' ? await resolvePetId(ctx.guildId, ctx.userId, ctx.args[1]) : await resolveMonsterId(ctx.guildId, ctx.userId, ctx.args[1]);
     const result = await extraService.rename(ctx.guildId, ctx.userId, type, id, ctx.args.slice(2).join(' '));
@@ -217,9 +217,9 @@ const rename = define({
 
 const dismantle = define({
   name: 'dismantle', category: 'animals', aliases: [], description: 'Bongkar monster atau pet menjadi shards.',
-  usage: '`6dismantle <monster|pet> <id>`', examples: ['6dismantle monster a1b2c3'], cooldown: '3 detik',
+  usage: '`tdismantle <monster|pet> <id>`', examples: ['tdismantle monster a1b2c3'], cooldown: '3 detik',
   async execute(ctx) {
-    requireArgs(ctx.args, 2, '6dismantle <monster|pet> <id>');
+    requireArgs(ctx.args, 2, 'tdismantle <monster|pet> <id>');
     const type = ctx.args[0].toLowerCase();
     const id = type === 'pet' ? await resolvePetId(ctx.guildId, ctx.userId, ctx.args[1]) : await resolveMonsterId(ctx.guildId, ctx.userId, ctx.args[1]);
     const result = await extraService.dismantle(ctx.guildId, ctx.userId, type, id);

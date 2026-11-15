@@ -65,7 +65,7 @@ async function nekoGif(endpoint) {
 function actionCommand(name, endpoint, emoji, verb) {
   return define({
     name, category: 'actions', aliases: [], description: `${emoji} ${verb[0].toUpperCase() + verb.slice(1)} member lain dengan GIF.`,
-    usage: `\`6${name} [@user]\``, examples: [`6${name}`, `6${name} @friend`], cooldown: '5 detik',
+    usage: `\`t${name} [@user]\``, examples: [`t${name}`, `t${name} @friend`], cooldown: '5 detik',
     async execute(ctx) {
       const target = ctx.args[0] ? await resolveTarget(ctx.message, ctx.args[0]) : null;
       const url = await nekoGif(endpoint);
@@ -79,7 +79,7 @@ function actionCommand(name, endpoint, emoji, verb) {
 function emoteCommand(name, endpoint, emoji, verb) {
   return define({
     name, category: 'emotes', aliases: [], description: `${emoji} Ekspresi ${name}: ${verb}.`,
-    usage: `\`6${name}\``, examples: [`6${name}`], cooldown: '4 detik',
+    usage: `\`t${name}\``, examples: [`t${name}`], cooldown: '4 detik',
     async execute(ctx) {
       const url = await nekoGif(endpoint);
       const lines = [`<@${ctx.userId}> ${verb}.`, 'Tetap chill, 666 di sini.', 'Semangat untuk grind berikutnya.'];

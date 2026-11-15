@@ -38,7 +38,7 @@
   function renderPreview(catalog) {
     const target = document.getElementById('commandPreview');
     if (!target) return;
-    const preferred = ['6cash', '6hunt', '6battle', '6pet', '6market', '6boss'];
+    const preferred = ['tcash', 'thunt', 'tbattle', 'tpet', 'tmarket', 'tboss'];
     const commands = catalog.categories.flatMap((category) => category.commands);
     const selected = preferred.map((name) => commands.find((command) => command.name === name)).filter(Boolean);
     target.innerHTML = selected.map((command) => `

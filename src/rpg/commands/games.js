@@ -9,14 +9,14 @@ const { helpEmbed, reply, resolveTarget } = require('./_helpers');
 const { formatCoins } = require('../utils/formulas');
 
 const HELP = {
-  coinflip: ['`6coinflip heads|tails <bet>` — lempar koin adil 50/50'],
-  dice: ['`6dice <1-6> <bet>` — tebak dadu, bayaran 6x'],
-  slots: ['`6slots <bet>` — 3 reel, triple up to 200x'],
-  roulette: ['`6roulette <red|black|green|0-36> <bet>`'],
-  blackjack: ['`6blackjack <bet>` — hit/stand melawan dealer'],
-  guess: ['`6guess <1-10> <bet>` — tebak angka, bayaran 10x'],
-  trivia: ['`6trivia <bet>` — jawab pertanyaan via tombol'],
-  rps: ['`6rps <rock|paper|scissors> <bet>` — lawan bot', '`6rps @user <choice> <bet>` — tantang pemain'],
+  coinflip: ['`tcoinflip heads|tails <bet>` — lempar koin adil 50/50'],
+  dice: ['`tdice <1-6> <bet>` — tebak dadu, bayaran tx'],
+  slots: ['`tslots <bet>` — 3 reel, triple up to 200x'],
+  roulette: ['`troulette <red|black|green|0-36> <bet>`'],
+  blackjack: ['`tblackjack <bet>` — hit/stand melawan dealer'],
+  guess: ['`tguess <1-10> <bet>` — tebak angka, bayaran 10x'],
+  trivia: ['`ttrivia <bet>` — jawab pertanyaan via tombol'],
+  rps: ['`trps <rock|paper|scissors> <bet>` — lawan bot', '`trps @user <choice> <bet>` — tantang pemain'],
 };
 
 function resultEmbed(title, result, description) {
@@ -30,7 +30,7 @@ function resultEmbed(title, result, description) {
 
 function parseBet(value) {
   const bet = Math.floor(Number(value));
-  if (!Number.isFinite(bet) || bet <= 0) throw new UserError('Bet harus angka positif. Contoh: `6coinflip heads 100`.');
+  if (!Number.isFinite(bet) || bet <= 0) throw new UserError('Bet harus angka positif. Contoh: `tcoinflip heads 100`.');
   return bet;
 }
 
@@ -118,14 +118,14 @@ async function executeRps(ctx) {
 }
 
 const modules = {
-  '6coinflip': { execute: executeCoinflip, help: HELP.coinflip },
-  '6dice': { execute: executeDice, help: HELP.dice },
-  '6slots': { execute: executeSlots, help: HELP.slots },
-  '6roulette': { execute: executeRoulette, help: HELP.roulette },
-  '6blackjack': { execute: executeBlackjack, help: HELP.blackjack },
-  '6guess': { execute: executeGuess, help: HELP.guess },
-  '6trivia': { execute: executeTrivia, help: HELP.trivia },
-  '6rps': { execute: executeRps, help: HELP.rps },
+  'tcoinflip': { execute: executeCoinflip, help: HELP.coinflip },
+  'tdice': { execute: executeDice, help: HELP.dice },
+  'tslots': { execute: executeSlots, help: HELP.slots },
+  'troulette': { execute: executeRoulette, help: HELP.roulette },
+  'tblackjack': { execute: executeBlackjack, help: HELP.blackjack },
+  'tguess': { execute: executeGuess, help: HELP.guess },
+  'ttrivia': { execute: executeTrivia, help: HELP.trivia },
+  'trps': { execute: executeRps, help: HELP.rps },
 };
 
 function make(name) {

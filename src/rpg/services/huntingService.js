@@ -27,7 +27,7 @@ async function hunt(guildId, userId, profile = {}, requestId = null) {
   const cfg = game.hunting;
   if (!cfg.enabled) throw new UserError('Hunting sedang dinonaktifkan admin.');
   const existing = await models.Monster.countDocuments({ guildId, userId });
-  if (existing >= cfg.maxMonsters) throw new UserError(`Kandang penuh (${existing}/${cfg.maxMonsters}). Jual monster dulu dengan \`6hunt sell\`.`);
+  if (existing >= cfg.maxMonsters) throw new UserError(`Kandang penuh (${existing}/${cfg.maxMonsters}). Jual monster dulu dengan \`thunt sell\`.`);
 
   await userService.ensureUser(guildId, userId, profile);
   const cd = await cooldownService.claim(guildId, userId, 'hunt', cfg.cooldownSec * 1000);
