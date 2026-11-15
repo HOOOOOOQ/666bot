@@ -1,18 +1,19 @@
 'use strict';
 
-const { EmbedBuilder } = require('discord.js');
-const { COLORS, progressBar } = require('../../ui/theme');
 const { UserError } = require('../../utils/errors');
 const userService = require('../services/userService');
 const settingsService = require('../services/settingsService');
 const shopService = require('../services/shopService');
 const profileService = require('../services/profileService');
 const {
-  cashEmbed, dailyEmbed, shopEmbed, leaderboardEmbed, transactionHistoryEmbed, money, profileEmbed,
+  shopEmbed, money, profileEmbed, inventoryEmbed,
 } = require('../ui/embeds');
 const { helpEmbed, reply, resolveTarget, profileOf, requireArgs } = require('./_helpers');
-const { rankForLevel } = require('../utils/formulas');
-const { formatCoins } = require('../utils/formulas');
+const {
+  balanceView, rewardView, workView, begView, amount: formatAmount,
+} = require('../ui/responseViews');
+const { richText, leaderboard: leaderboardResponse, paginationButtons, profileCard, embed } = require('../ui/response');
+const { rankForLevel, formatCoins } = require('../utils/formulas');
 
 const HELP = [
   '`tcash` — lihat saldo',
@@ -33,7 +34,7 @@ async function showBalance(ctx) {
     settingsService.getEconomy(ctx.guildId),
   ]);
   const position = await userService.getPosition(ctx.guildId, ctx.userId, 'wallet', user.wallet || 0);
-  return reply(ctx.message, cashEmbed({ user, economy, rank: rankForLevel(user.level || 1), position }));
+  return reply(ctx.message, balanceView({ user, economy, rank: rankForLevel(user.level || 1), position }));
 }
 
 async function leaderboard(ctx, category = 'wealth') {
@@ -48,7 +49,8 @@ async function leaderboard(ctx, category = 'wealth') {
     boss: (u) => `${formatCoins(u.totalBossDamage)} dmg`,
     games: (u) => `${formatCoins(u.gameWins)} wins`,
   };
-  return reply(ctx.message, leaderboardEmbed(`🏆 LEADERBOARD • ${category.toUpperCase()}`, docs, labels[category] || labels.wealth));
+  const lines = docs.map((doc, index) => `**#${index + 1}** <@${doc.userId}> — ${(labels[category] || labels.wealth)(doc)}`).join('\n') || 'Belum ada data.';
+  return reply(ctx.message, leaderboardResponse(`🏆 **LEADERBOARD • ${category.toUpperCase()}**\n${lines}`));
 }
 
 async function shop(ctx) {
@@ -56,28 +58,24 @@ async function shop(ctx) {
 }
 
 async function inventory(ctx) {
-  const items = await shopService.inventory(ctx.guildId, ctx.userId);
-  const lines = items.map((i) => `${i.item?.emoji || '📦'} **${i.item?.name || i.itemId}** ×${i.qty} • jual ${formatCoins(i.sellPrice)}`);
-  const embed = new EmbedBuilder()
-    .setColor(COLORS.ember)
-    .setTitle('🎒 666 INVENTORY')
-    .setDescription(lines.join('\n') || 'Tas kosong. Beli item dengan `tcash shop`.')
-    .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' });
-  return reply(ctx.message, embed);
+  const all = await shopService.inventory(ctx.guildId, ctx.userId);
+  const perPage = 8;
+  const pages = Math.max(1, Math.ceil(all.length / perPage));
+  const page = Math.min(pages, Math.max(1, Math.floor(Number(ctx.args[1]) || 1)));
+  const items = all.slice((page - 1) * perPage, page * perPage);
+  return reply(ctx.message, embed(inventoryEmbed({ items, page, pages, total: all.length }), pages > 1 ? [paginationButtons({ ownerId: ctx.userId, page, pages })] : []));
 }
 
 async function profile(ctx, target) {
   const data = await profileService.profile(ctx.guildId, target.id, profileOf(target));
-  return reply(ctx.message, profileEmbed(data, profileOf(target).avatar));
+  return reply(ctx.message, profileCard(profileEmbed(data, profileOf(target).avatar)));
 }
 
 async function execute(ctx) {
   const { args } = ctx;
   const sub = (args[0] || '').toLowerCase();
-  if (sub !== 'help') {
-    const economy = await settingsService.getEconomy(ctx.guildId);
-    if (!economy.enabled) throw new UserError('Economy sedang dinonaktifkan admin.');
-  }
+  const economy = sub === 'help' ? null : await settingsService.getEconomy(ctx.guildId);
+  if (economy && !economy.enabled) throw new UserError('Economy sedang dinonaktifkan admin.');
   const profile = ctx.profile;
   const target = await resolveTarget(ctx.message, args[1]);
 
@@ -89,29 +87,23 @@ async function execute(ctx) {
       return showBalance(ctx);
     case 'daily': {
       const result = await userService.claimDaily(ctx.guildId, ctx.userId, profile);
-      return reply(ctx.message, dailyEmbed({ ...result, type: 'Daily' }));
+      return reply(ctx.message, rewardView({ ...result, type: 'Daily', userId: ctx.userId, currency: economy.currencyName }));
     }
     case 'weekly': {
       const result = await userService.claimWeekly(ctx.guildId, ctx.userId, profile);
-      return reply(ctx.message, dailyEmbed({ ...result, type: 'Weekly' }));
+      return reply(ctx.message, rewardView({ ...result, type: 'Weekly', userId: ctx.userId, currency: economy.currencyName }));
     }
     case 'monthly': {
       const result = await userService.claimMonthly(ctx.guildId, ctx.userId, profile);
-      return reply(ctx.message, dailyEmbed({ ...result, type: 'Monthly' }));
+      return reply(ctx.message, rewardView({ ...result, type: 'Monthly', userId: ctx.userId, currency: economy.currencyName }));
     }
     case 'work': {
       const result = await userService.work(ctx.guildId, ctx.userId, profile);
-      const embed = new EmbedBuilder().setColor(COLORS.success).setTitle('💼 KERJA')
-        .setDescription(`Kamu bekerja dan mendapat **${money(result.reward)}**.\nWallet: ${money(result.user.wallet)}`)
-        .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' });
-      return reply(ctx.message, embed);
+      return reply(ctx.message, workView({ ...result, userId: ctx.userId, cooldownSec: economy.workCooldownSec, currency: economy.currencyName }));
     }
     case 'beg': {
       const result = await userService.beg(ctx.guildId, ctx.userId, profile);
-      const embed = new EmbedBuilder().setColor(COLORS.warning).setTitle('🙏 MENGEMIS')
-        .setDescription(`Seseorang memberimu **${money(result.reward)}**.\nWallet: ${money(result.user.wallet)}`)
-        .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' });
-      return reply(ctx.message, embed);
+      return reply(ctx.message, begView({ ...result, userId: ctx.userId, cooldownSec: economy.begCooldownSec, currency: economy.currencyName }));
     }
     case 'deposit': {
       const input = args[1];
@@ -119,9 +111,7 @@ async function execute(ctx) {
       const amount = input === 'all' ? user.wallet : Number(input);
       if (!Number.isFinite(amount) || amount <= 0) throw new UserError('Format: `tcash deposit <jumlah|all>`.');
       const result = await userService.deposit(ctx.guildId, ctx.userId, amount, `deposit:${ctx.message.id}`);
-      return reply(ctx.message, new EmbedBuilder().setColor(COLORS.success).setTitle('🏦 DEPOSIT')
-        .setDescription(`Deposit **${money(result.amount)}** berhasil.\n🏦 Bank: ${money(result.user.bank)} • 👛 Wallet: ${money(result.user.wallet)}`)
-        .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
+      return reply(ctx.message, richText(`🏦 | Deposit ${formatAmount(result.amount, economy.currencyName)} berhasil.\n🏦 Bank: ${formatAmount(result.user.bank, economy.currencyName)} • 👛 Wallet: ${formatAmount(result.user.wallet, economy.currencyName)}`));
     }
     case 'withdraw': {
       const input = args[1];
@@ -129,9 +119,7 @@ async function execute(ctx) {
       const amount = input === 'all' ? user.bank : Number(input);
       if (!Number.isFinite(amount) || amount <= 0) throw new UserError('Format: `tcash withdraw <jumlah|all>`.');
       const result = await userService.withdraw(ctx.guildId, ctx.userId, amount, `withdraw:${ctx.message.id}`);
-      return reply(ctx.message, new EmbedBuilder().setColor(COLORS.success).setTitle('👛 WITHDRAW')
-        .setDescription(`Withdraw **${money(result.amount)}** berhasil.\n👛 Wallet: ${money(result.user.wallet)} • 🏦 Bank: ${money(result.user.bank)}`)
-        .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
+      return reply(ctx.message, richText(`👛 | Withdraw ${formatAmount(result.amount, economy.currencyName)} berhasil.\n👛 Wallet: ${formatAmount(result.user.wallet, economy.currencyName)} • 🏦 Bank: ${formatAmount(result.user.bank, economy.currencyName)}`));
     }
     case 'transfer':
     case 'give': {
@@ -139,9 +127,7 @@ async function execute(ctx) {
       const amount = Number(args[2]);
       if (!Number.isFinite(amount) || amount <= 0) throw new UserError('Jumlah transfer tidak valid.');
       const result = await userService.transfer(ctx.guildId, ctx.userId, target.id, amount, `transfer:${ctx.message.id}`, undefined, { messageId: ctx.message.id });
-      return reply(ctx.message, new EmbedBuilder().setColor(result.duplicate ? COLORS.warning : COLORS.success).setTitle('💸 TRANSFER')
-        .setDescription(result.duplicate ? 'Transfer ini sudah diproses sebelumnya (anti double).' : `Kirim **${money(amount)}** ke <@${target.id}>.\nPajak: ${money(result.tax)} • Diterima: **${money(result.net)}**\nWallet kamu: ${money(result.user.wallet)}`)
-        .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
+      return reply(ctx.message, richText(result.duplicate ? '💸 | Transfer ini sudah diproses sebelumnya (anti double).' : `💸 | Kirim ${formatAmount(amount, economy.currencyName)} ke <@${target.id}>.\nPajak: ${formatAmount(result.tax, economy.currencyName)} • Diterima: ${formatAmount(result.net, economy.currencyName)}\n👛 Wallet kamu: ${formatAmount(result.user.wallet, economy.currencyName)}`));
     }
     case 'leaderboard':
     case 'lb':
@@ -154,20 +140,17 @@ async function execute(ctx) {
     case 'buy': {
       requireArgs(args, 2, 'tcash buy <itemId> [qty]');
       const result = await shopService.buy(ctx.guildId, ctx.userId, args[1], Number(args[2] || 1));
-      return reply(ctx.message, new EmbedBuilder().setColor(COLORS.success).setTitle('🛒 PEMBELIAN')
-        .setDescription(`${result.item.emoji} **${result.item.name}** ×${result.qty}\nTotal: **${money(result.total)}**\nWallet: ${money(result.user.wallet)}`)
-        .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
+      return reply(ctx.message, richText(`🛒 | ${result.item.emoji} **${result.item.name}** ×${result.qty}\nTotal: ${formatAmount(result.total, economy.currencyName)}\n👛 Wallet: ${formatAmount(result.user.wallet, economy.currencyName)}`));
     }
     case 'sell': {
       requireArgs(args, 2, 'tcash sell <itemId> [qty]');
       const result = await shopService.sell(ctx.guildId, ctx.userId, args[1], Number(args[2] || 1));
-      return reply(ctx.message, new EmbedBuilder().setColor(COLORS.success).setTitle('💱 JUAL ITEM')
-        .setDescription(`${result.item.emoji} **${result.item.name}** ×${result.qty}\nDapat: **${money(result.total)}**`)
-        .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
+      return reply(ctx.message, richText(`💱 | ${result.item.emoji} **${result.item.name}** ×${result.qty}\nDapat: ${formatAmount(result.total, economy.currencyName)}`));
     }
     case 'history': {
       const docs = await userService.history(ctx.guildId, ctx.userId, 15);
-      return reply(ctx.message, transactionHistoryEmbed(docs));
+      const lines = docs.map((t) => `\`${new Date(t.createdAt).toISOString().slice(5, 10)}\` ${t.type} • **${t.amount > 0 ? '+' : ''}${formatCoins(t.amount)}** ${t.status === 'completed' ? '✅' : '⏳'}`);
+      return reply(ctx.message, richText(`📜 **TRANSACTION HISTORY**\n${lines.join('\n') || 'Belum ada transaksi.'}`));
     }
     case 'profile': {
       if (target) return profile(ctx, target);

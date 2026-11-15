@@ -6,7 +6,11 @@ const battleService = require('./services/battleService');
 const tradeService = require('./services/tradeService');
 const gameService = require('./services/minigameService');
 const { handleHelpInteraction } = require('./ui/help');
-const { battleResultEmbed, tradeEmbed, blackjackButtons, BRAND, money } = require('./ui/embeds');
+const { tradeEmbed, blackjackButtons, triviaButtons, rpsButtons, inventoryEmbed, monsterListEmbed, BRAND, money } = require('./ui/embeds');
+const { battleResultView, blackjackView, triviaView, mineView } = require('./ui/responseViews');
+const { toPayload, paginationButtons } = require('./ui/response');
+const shopService = require('./services/shopService');
+const huntingService = require('./services/huntingService');
 const { createLogger } = require('../utils/logger');
 const { UserError } = require('../utils/errors');
 
@@ -26,15 +30,12 @@ async function handleBattle(interaction, action, id) {
       username: interaction.user.username,
       avatar: interaction.user.displayAvatarURL?.({ extension: 'png' }),
     });
-    await interaction.editReply({ embeds: [battleResultEmbed(result)], components: [] });
+    await interaction.editReply({ ...toPayload(battleResultView(result)) });
     return;
   }
   if (action === 'decline') {
     await battleService.decline(interaction.guildId, interaction.user.id, id);
-    await interaction.editReply({
-      embeds: [new EmbedBuilder().setColor(COLORS.ash).setTitle('❌ TANTANGAN DITOLAK').setDescription('Tantangan battle ditolak.').setFooter({ text: BRAND })],
-      components: [],
-    });
+    await interaction.editReply({ content: '❌ | Tantangan battle ditolak.', embeds: [], components: [] });
   }
 }
 
@@ -68,66 +69,112 @@ async function handleTrade(interaction, action, id) {
 
 async function handleBlackjack(interaction, action, id) {
   const result = await gameService.blackjackAction(interaction.guildId, interaction.user.id, id, action);
-  if (!result.finished) {
-    const embed = new EmbedBuilder()
-      .setColor(COLORS.flame)
-      .setTitle('🃏 BLACKJACK')
-      .addFields(
-        { name: `Kamu (${result.playerValue})`, value: fmtCards(result.player), inline: true },
-        { name: `Dealer (${result.dealerValue})`, value: fmtCards(result.dealer, true), inline: true },
-      )
-      .setFooter({ text: BRAND });
-    await interaction.editReply({ embeds: [embed], components: [blackjackButtons(id)] });
-    return;
-  }
-  const embed = new EmbedBuilder()
-    .setColor(result.result === 'win' ? COLORS.success : result.result === 'push' ? COLORS.warning : COLORS.error)
-    .setTitle(result.result === 'win' ? '🏆 BLACKJACK WIN' : result.result === 'push' ? '🤝 PUSH' : '💀 BLACKJACK LOSE')
-    .addFields(
-      { name: `Kamu (${result.playerValue})`, value: fmtCards(result.player), inline: true },
-      { name: `Dealer (${result.dealerValue})`, value: fmtCards(result.dealer), inline: true },
-    )
-    .setDescription(`Payout: **${money(result.payout)}**`)
-    .setFooter({ text: BRAND });
-  await interaction.editReply({ embeds: [embed], components: [] });
+  const view = blackjackView({
+    userId: interaction.user.id,
+    playerValue: result.playerValue,
+    dealerValue: result.finished ? result.dealerValue : 0,
+    playerText: fmtCards(result.player),
+    dealerText: result.finished ? fmtCards(result.dealer) : '🂠 🂠',
+    finished: result.finished,
+    payout: result.payout,
+    bet: result.bet,
+    result: result.result,
+  });
+  await interaction.editReply({
+    ...toPayload(view),
+    components: result.finished ? [] : [blackjackButtons(id)],
+  });
 }
 
 async function handleTrivia(interaction, id, index) {
   const result = await gameService.answerTrivia(interaction.guildId, interaction.user.id, id, Number(index));
-  const embed = new EmbedBuilder()
-    .setColor(result.correct ? COLORS.success : COLORS.error)
-    .setTitle(result.correct ? '✅ TRIVIA BENAR' : '❌ TRIVIA SALAH')
-    .setDescription(`**${result.question}**\nJawaban: **${result.options[result.answer]}**\nPayout: **${money(result.amount)}**`)
-    .setFooter({ text: BRAND });
-  await interaction.editReply({ embeds: [embed], components: [] });
+  const view = triviaView({
+    userId: interaction.user.id,
+    question: result.question,
+    options: result.options,
+    answer: result.answer,
+    correct: result.correct,
+    amount: result.amount,
+    finished: true,
+  });
+  await interaction.editReply({ ...toPayload(view), components: [] });
 }
 
 async function handleRps(interaction, id, choice) {
   const result = await gameService.rpsChoose(interaction.guildId, interaction.user.id, id, choice);
   if (result.waiting) {
+    await interaction.editReply({ content: `✊ | Kamu memilih **${result.mine || 'secara rahasia'}**. Menunggu lawan memilih.`, embeds: [], components: [rpsButtons(id)] });
+    return;
+  }
+  const choices = result.choices || {};
+  const keys = Object.keys(choices);
+  await interaction.editReply({
+    content: result.winner
+      ? `🏆 | <@${result.winner}> **MENANG!** Payout: **${money(result.pot)}**\nPilihan: **${choices[keys[0]] || '—'}** vs **${choices[keys[1]] || '—'}**`
+      : `🤝 | Seri! Bet dikembalikan ke kedua pemain.\nPilihan: **${choices[keys[0]] || '—'}** vs **${choices[keys[1]] || '—'}**`,
+    embeds: [],
+    components: [],
+  });
+}
+
+async function handleMine(interaction, action, sessionId, index) {
+  const userId = interaction.user.id;
+  if (action === 'reveal') {
+    const result = await gameService.revealMine(interaction.guildId, userId, sessionId, index);
+    const ended = Boolean(result.hit) || result.session?.status !== 'active';
     await interaction.editReply({
-      embeds: [new EmbedBuilder().setColor(COLORS.warning).setTitle('✊ MENUNGGU LAWAN')
-        .setDescription(`Kamu memilih **${result.mine || 'secara rahasia'}**. Menunggu lawan memilih.`)
-        .setFooter({ text: BRAND })],
+      ...toPayload(mineView({
+        sessionId,
+        userId,
+        state: result.state,
+        ended,
+        result: result.hit ? 'hit' : null,
+      })),
     });
     return;
   }
-  const embed = new EmbedBuilder()
-    .setColor(result.winner ? COLORS.success : COLORS.warning)
-    .setTitle('✊✋✌️ RPS RESULT')
-    .setDescription(result.winner ? `<@${result.winner}> MENANG! Payout: **${money(result.pot)}**` : 'Seri! Bet dikembalikan ke kedua pemain.')
-    .addFields(
-      { name: 'Pilihan A', value: result.choices?.[Object.keys(result.choices)[0]] || '—', inline: true },
-      { name: 'Pilihan B', value: result.choices?.[Object.keys(result.choices)[1]] || '—', inline: true },
-    )
-    .setFooter({ text: BRAND });
-  await interaction.editReply({ embeds: [embed], components: [] });
+  if (action === 'cash') {
+    const result = await gameService.cashOutMines(interaction.guildId, userId, sessionId);
+    await interaction.editReply({
+      ...toPayload(mineView({
+        sessionId,
+        userId,
+        state: { ...result.state, reward: result.reward },
+        ended: true,
+        result: 'cashout',
+      })),
+    });
+    return;
+  }
+  throw new UserError('Aksi mines tidak dikenali.');
+}
+
+async function handleInventory(interaction, ownerId, page) {
+  if (String(interaction.user.id) !== String(ownerId)) throw new UserError('Inventory ini bukan milikmu.');
+  const all = await shopService.inventory(interaction.guildId, ownerId);
+  const perPage = 8;
+  const pages = Math.max(1, Math.ceil(all.length / perPage));
+  const current = Math.min(pages, Math.max(1, Number(page) || 1));
+  const items = all.slice((current - 1) * perPage, current * perPage);
+  await interaction.editReply({
+    embeds: [inventoryEmbed({ items, page: current, pages, total: all.length })],
+    components: pages > 1 ? [paginationButtons({ ownerId, page: current, pages })] : [],
+  });
+}
+
+async function handleHuntInventory(interaction, ownerId, page) {
+  if (String(interaction.user.id) !== String(ownerId)) throw new UserError('Kandang ini bukan milikmu.');
+  const data = await huntingService.inventory(interaction.guildId, ownerId, Number(page) || 1, 8);
+  await interaction.editReply({
+    embeds: [monsterListEmbed(data)],
+    components: data.pages > 1 ? [paginationButtons({ prefix: 'huntinv', ownerId, page: data.page, pages: data.pages })] : [],
+  });
 }
 
 async function handleRPGInteraction(interaction) {
   if (!isRPGInteraction(interaction.customId)) return false;
   const parts = interaction.customId.split(':');
-  const [, feature, action, id] = parts;
+  const [, feature, action, id, extra] = parts;
   await interaction.deferUpdate().catch(() => {});
   try {
     if (feature === 'help') await handleHelpInteraction(interaction, action);
@@ -136,6 +183,10 @@ async function handleRPGInteraction(interaction) {
     else if (feature === 'bj') await handleBlackjack(interaction, action, id);
     else if (feature === 'trivia') await handleTrivia(interaction, action, id);
     else if (feature === 'rps') await handleRps(interaction, action, id);
+    else if (feature === 'inv') await handleInventory(interaction, action, id);
+    else if (feature === 'huntinv') await handleHuntInventory(interaction, action, id);
+    else if (feature === 'mine') await handleMine(interaction, action, id, extra);
+    else throw new UserError('Tombol ini tidak dikenali.');
     return true;
   } catch (error) {
     const isUser = error instanceof UserError;

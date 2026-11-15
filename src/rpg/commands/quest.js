@@ -1,11 +1,11 @@
 'use strict';
 
-const { EmbedBuilder } = require('discord.js');
-const { COLORS } = require('../../ui/theme');
+const { progressBar } = require('../../ui/theme');
 const { UserError } = require('../../utils/errors');
 const questService = require('../services/questService');
-const { questEmbed, rankEmbed, money } = require('../ui/embeds');
+const { money } = require('../ui/embeds');
 const { helpEmbed, reply } = require('./_helpers');
+const { richText } = require('../ui/response');
 
 const HELP = [
   '`tquest` / `tquest list` — quest harian & mingguan',
@@ -21,14 +21,12 @@ async function execute(ctx) {
   if (sub === 'claim' || sub === 'klaim') {
     if (!ctx.args[1]) throw new UserError('Format: `tquest claim <questId>`.');
     const result = await questService.claim(ctx.guildId, ctx.userId, ctx.args[1]);
-    return reply(ctx.message, new EmbedBuilder().setColor(COLORS.success).setTitle('🎁 QUEST CLAIMED')
-      .setDescription(`${result.quest.emoji} **${result.quest.title}**\nReward: ${money(result.coins)} • ${result.xp} XP`)
-      .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
+    return reply(ctx.message, richText(`🎁 **QUEST CLAIMED**\n${result.quest.emoji} **${result.quest.title}**\nReward: ${money(result.coins)} • ${result.xp} XP`));
   }
   const all = await questService.list(ctx.guildId, ctx.userId);
-  if (sub === 'daily') return reply(ctx.message, questEmbed(all.filter((q) => q.type === 'daily')));
-  if (sub === 'weekly') return reply(ctx.message, questEmbed(all.filter((q) => q.type === 'weekly')));
-  return reply(ctx.message, questEmbed(all));
+  const selected = sub === 'daily' ? all.filter((q) => q.type === 'daily') : sub === 'weekly' ? all.filter((q) => q.type === 'weekly') : all;
+  const render = (q) => `${q.claimed ? '✅' : q.completed ? '🎁' : q.emoji} **${q.title}** — ${progressBar(q.progress, q.target, 8)} ${q.progress}/${q.target}${q.claimed ? ' • claimed' : q.completed ? ' • siap claim' : ''}`;
+  return reply(ctx.message, richText(`📜 **666 QUEST** — klaim dengan \`tquest claim <id>\`\n${selected.map(render).join('\n') || 'Belum ada quest.'}`.slice(0, 1900)));
 }
 
 module.exports = { names: ['tquest'], execute, help: HELP };

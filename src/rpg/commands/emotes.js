@@ -1,11 +1,9 @@
 'use strict';
 
-const { EmbedBuilder } = require('discord.js');
 const { define, fetchJson } = require('./_factory');
 const { reply, resolveTarget } = require('./_helpers');
-const { COLORS } = require('../../ui/theme');
-const { BRAND } = require('../ui/embeds');
 const { pick } = require('../utils/rng');
+const { gif } = require('../ui/response');
 
 const EMOTES = [
   ['blush', 'blush', '😊', 'merona karena malu'],
@@ -69,9 +67,8 @@ function actionCommand(name, endpoint, emoji, verb) {
     async execute(ctx) {
       const target = ctx.args[0] ? await resolveTarget(ctx.message, ctx.args[0]) : null;
       const url = await nekoGif(endpoint);
-      const text = target ? `<@${ctx.userId}> ${verb} <@${target.id}>!` : `<@${ctx.userId}> ${verb} udara.`;
-      const embed = new EmbedBuilder().setColor(COLORS.flame).setTitle(`${emoji} ${name.toUpperCase()}`).setDescription(text).setImage(url).setFooter({ text: BRAND });
-      return reply(ctx.message, embed);
+      const text = target ? `**${emoji} <@${ctx.userId}> ${verb} <@${target.id}>!**` : `**${emoji} <@${ctx.userId}> ${verb} udara.**`;
+      return reply(ctx.message, gif(text, url));
     },
   });
 }
@@ -82,9 +79,8 @@ function emoteCommand(name, endpoint, emoji, verb) {
     usage: `\`t${name}\``, examples: [`t${name}`], cooldown: '4 detik',
     async execute(ctx) {
       const url = await nekoGif(endpoint);
-      const lines = [`<@${ctx.userId}> ${verb}.`, 'Tetap chill, 666 di sini.', 'Semangat untuk grind berikutnya.'];
-      const embed = new EmbedBuilder().setColor(COLORS.ember).setTitle(`${emoji} ${name.toUpperCase()}`).setDescription(pick(lines)).setImage(url).setFooter({ text: BRAND });
-      return reply(ctx.message, embed);
+      const lines = [`**${emoji} <@${ctx.userId}> ${verb}.**`, 'Tetap chill, 666 di sini.', 'Semangat untuk grind berikutnya.'];
+      return reply(ctx.message, gif(pick(lines), url));
     },
   });
 }

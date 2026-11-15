@@ -943,6 +943,25 @@
             "trps <rock|paper|scissors> <bet> — lawan bot",
             "trps @user <choice> <bet> — tantang pemain"
           ]
+        },
+        {
+          "name": "tmine",
+          "aliases": [],
+          "summary": "Mines 3x3 dengan poin virtual, tombol interaktif, dan reward EXP tanpa taruhan saldo.",
+          "usage": "tmine [points]",
+          "examples": [
+            "tmine",
+            "tmine 3000"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": "Buka minimal satu kotak aman lalu Cash Out. Tiga mine mengakhiri sesi.",
+          "subcommands": [
+            "tmine [points] — mines 3x3 dengan poin virtual (tanpa taruhan saldo)",
+            "Buka kotak aman, hindari 3 mine, lalu Cash Out untuk EXP."
+          ]
         }
       ]
     },

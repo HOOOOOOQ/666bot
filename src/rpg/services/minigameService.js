@@ -207,6 +207,111 @@ async function answerTrivia(guildId, userId, sessionId, optionIndex) {
   return { correct, amount, answer: session.state.answer, options: session.state.options, question: session.state.question };
 }
 
+const MINE_GRID = 9;
+const MINE_COUNT = 3;
+const MINE_MAX_POINTS = 10000;
+
+function mineMultiplier(safeCount) {
+  return Math.round((1 + Math.max(0, safeCount) * 0.25) * 100) / 100;
+}
+
+function mineReward(points, safeCount) {
+  return Math.min(1000, Math.max(1, Math.round((points * mineMultiplier(safeCount)) / 10)));
+}
+
+async function createMines(guildId, userId, points, channelId, requestId) {
+  const game = await settingsService.getGame(guildId);
+  if (!game.minigames.enabled) throw new UserError('Mini games sedang dinonaktifkan admin.');
+  const value = Math.floor(Number(points));
+  if (!Number.isInteger(value) || value <= 0 || value > MINE_MAX_POINTS) {
+    throw new UserError(`Points mines harus 1-${formatCoins(MINE_MAX_POINTS)}.`);
+  }
+  await claimGameCooldown(guildId, userId, 'mines');
+  const key = `game:mines:${guildId}:${userId}:${requestId || Date.now()}`;
+  const mines = shuffle(Array.from({ length: MINE_GRID }, (_, index) => index)).slice(0, MINE_COUNT);
+  let session;
+  try {
+    session = await models.GameSession.create({
+      guildId, channelId: channelId || null, userId, game: 'mines', bet: value,
+      status: 'active',
+      state: { mines, revealed: [], points: value, hit: null },
+      idempotencyKey: key,
+      expiresAt: new Date(Date.now() + 180000),
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      const existing = await models.GameSession.findOne({ guildId, userId, game: 'mines', status: 'active' }).sort({ createdAt: -1 }).lean();
+      if (existing) return { session: existing, state: existing.state };
+    }
+    throw error;
+  }
+  return { session, state: session.state };
+}
+
+async function revealMine(guildId, userId, sessionId, index) {
+  const cell = Math.floor(Number(index));
+  if (!Number.isInteger(cell) || cell < 0 || cell >= MINE_GRID) throw new UserError('Pilih kotak mines yang valid.');
+  const session = await models.GameSession.findOne({ _id: sessionId, guildId, userId, game: 'mines' }).lean();
+  if (!session) throw new UserError('Sesi mines tidak ditemukan.');
+  if (session.status !== 'active') throw new UserError('Sesi mines sudah selesai.');
+  if (new Date(session.expiresAt).getTime() < Date.now()) {
+    await models.GameSession.updateOne({ _id: sessionId }, { $set: { status: 'expired' } });
+    throw new UserError('Sesi mines sudah kedaluwarsa.');
+  }
+  const state = { ...(session.state || {}) };
+  const revealed = [...new Set(state.revealed || [])];
+  if (revealed.includes(cell)) return { session, state, unchanged: true };
+  if ((state.mines || []).includes(cell)) {
+    const hitState = { ...state, revealed: [...revealed, cell], hit: cell };
+    const updated = await models.GameSession.findOneAndUpdate(
+      { _id: sessionId, status: 'active' },
+      { $set: { status: 'completed', winnerId: null, payout: 0, state: hitState } },
+      { new: true },
+    );
+    if (!updated) throw new UserError('Sesi mines sudah diproses.');
+    await record(guildId, userId, 'mines', session.bet, false, 0, {
+      hit: cell, revealed: hitState.revealed, points: state.points,
+    }, `${session.idempotencyKey}:result`);
+    return { session: updated, state: hitState, hit: true };
+  }
+  await models.GameSession.updateOne(
+    { _id: sessionId, status: 'active' },
+    { $addToSet: { 'state.revealed': cell } },
+  );
+  const updated = await models.GameSession.findOne({ _id: sessionId }).lean();
+  if (!updated) throw new UserError('Sesi mines tidak ditemukan.');
+  if (updated.status !== 'active') {
+    return { session: updated, state: updated.state || state, hit: Boolean(updated.state?.hit) };
+  }
+  return { session: updated, state: updated.state || { ...state, revealed: [...revealed, cell] }, safe: true };
+}
+
+async function cashOutMines(guildId, userId, sessionId) {
+  const session = await models.GameSession.findOne({ _id: sessionId, guildId, userId, game: 'mines' }).lean();
+  if (!session) throw new UserError('Sesi mines tidak ditemukan.');
+  if (session.status !== 'active') throw new UserError('Sesi mines sudah selesai.');
+  if (new Date(session.expiresAt).getTime() < Date.now()) {
+    await models.GameSession.updateOne({ _id: sessionId }, { $set: { status: 'expired' } });
+    throw new UserError('Sesi mines sudah kedaluwarsa.');
+  }
+  const state = session.state || {};
+  const safeCount = (state.revealed || []).length;
+  if (safeCount < 1) throw new UserError('Buka minimal satu kotak aman sebelum cash out.');
+  const multiplier = mineMultiplier(safeCount);
+  const reward = mineReward(state.points || session.bet, safeCount);
+  const completed = await models.GameSession.findOneAndUpdate(
+    { _id: sessionId, status: 'active' },
+    { $set: { status: 'completed', winnerId: userId, payout: reward } },
+    { new: true },
+  );
+  if (!completed) throw new UserError('Sesi mines sudah diproses.');
+  await userService.addXp(guildId, userId, reward, 'xp');
+  await record(guildId, userId, 'mines', session.bet, true, reward, {
+    safeCount, multiplier, points: state.points, mines: state.mines, revealed: state.revealed,
+  }, `${session.idempotencyKey}:result`);
+  return { session: completed, state, safeCount, multiplier, reward };
+}
+
 function handValue(cards) {
   let total = 0;
   let aces = 0;
@@ -277,10 +382,10 @@ async function blackjackAction(guildId, userId, sessionId, action) {
       const completed = await models.GameSession.findOneAndUpdate({ _id: sessionId, status: 'active' }, { $set: { status: 'completed', state } }, { new: true });
       if (!completed) throw new UserError('Sesi sudah diproses.');
       await record(guildId, userId, 'blackjack', session.bet, false, 0, { bust: true, playerValue }, `${session.idempotencyKey}:result`);
-      return { finished: true, result: 'bust', playerValue, dealerValue: handValue(state.dealer), player: state.player, dealer: state.dealer, payout: 0 };
+      return { finished: true, result: 'bust', playerValue, dealerValue: handValue(state.dealer), player: state.player, dealer: state.dealer, payout: 0, bet: session.bet };
     }
     await models.GameSession.updateOne({ _id: sessionId, status: 'active' }, { $set: { state } });
-    return { finished: false, playerValue, dealerValue: handValue(state.dealer), player: state.player, dealer: state.dealer, drawn: card };
+    return { finished: false, playerValue, dealerValue: handValue(state.dealer), player: state.player, dealer: state.dealer, drawn: card, bet: session.bet };
   }
   if (action !== 'stand') throw new UserError('Aksi harus `hit` atau `stand`.');
   while (handValue(state.dealer) < 17) state.dealer.push(state.deck.pop());
@@ -297,7 +402,7 @@ async function blackjackAction(guildId, userId, sessionId, action) {
   if (!completed) throw new UserError('Sesi sudah diproses.');
   if (amount > 0) await settleWin(guildId, userId, amount, 'blackjack', session.idempotencyKey, { tie });
   await record(guildId, userId, 'blackjack', session.bet, won, amount, { playerValue, dealerValue, tie }, `${session.idempotencyKey}:result`);
-  return { finished: true, result: tie ? 'push' : won ? 'win' : 'lose', playerValue, dealerValue, player: state.player, dealer: state.dealer, payout: amount };
+  return { finished: true, result: tie ? 'push' : won ? 'win' : 'lose', playerValue, dealerValue, player: state.player, dealer: state.dealer, payout: amount, bet: session.bet };
 }
 
 async function rps(guildId, userId, choice, bet, requestId) {
@@ -349,6 +454,21 @@ async function rpsChoose(guildId, userId, sessionId, choice) {
   if (!session) throw new UserError('Sesi RPS tidak ditemukan.');
   if (![session.userId, session.opponentId].includes(userId)) throw new UserError('Kamu bukan bagian dari sesi ini.');
   if (session.status === 'completed') throw new UserError('Sesi RPS sudah selesai.');
+  if (session.status === 'expired') throw new UserError('Sesi RPS sudah kedaluwarsa.');
+  if (new Date(session.expiresAt).getTime() < Date.now()) {
+    const expired = await models.GameSession.findOneAndUpdate(
+      { _id: sessionId, status: { $in: ['pending', 'active'] } },
+      { $set: { status: 'expired' } },
+      { new: true },
+    );
+    if (expired) {
+      await userService.addCoins(guildId, session.userId, session.bet, 'rps_expired_refund', `${session.idempotencyKey}:refund:expired:a`, { game: 'rps' }).catch(() => {});
+      if (session.status === 'active') {
+        await userService.addCoins(guildId, session.opponentId, session.bet, 'rps_expired_refund', `${session.idempotencyKey}:refund:expired:b`, { game: 'rps' }).catch(() => {});
+      }
+    }
+    throw new UserError('Sesi RPS sudah kedaluwarsa. Stake dikembalikan.');
+  }
   if (session.choices?.[userId]) throw new UserError('Kamu sudah memilih.');
   if (session.status === 'pending' && userId === session.opponentId) {
     await userService.spendCoins(guildId, userId, session.bet, 'bet_rps', `${session.idempotencyKey}:opponent:stake`, { game: 'rps' });
@@ -398,5 +518,12 @@ module.exports = {
   rps,
   rpsChallenge,
   rpsChoose,
+  createMines,
+  revealMine,
+  cashOutMines,
+  mineMultiplier,
+  mineReward,
+  MINE_GRID,
+  MINE_COUNT,
   payout,
 };
