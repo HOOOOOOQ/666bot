@@ -154,34 +154,61 @@ function extractEqualityFields(filter) {
   return fields;
 }
 
+
+function readPath(doc, pathStr) {
+  return String(pathStr).split('.').reduce((current, part) => (current == null ? undefined : current[part]), doc);
+}
+
+function writePath(doc, pathStr, value) {
+  const parts = String(pathStr).split('.');
+  let current = doc;
+  for (let i = 0; i < parts.length - 1; i += 1) {
+    const part = parts[i];
+    if (current[part] === null || typeof current[part] !== 'object') current[part] = {};
+    current = current[part];
+  }
+  current[parts[parts.length - 1]] = clone(value);
+}
+
+function deletePath(doc, pathStr) {
+  const parts = String(pathStr).split('.');
+  let current = doc;
+  for (let i = 0; i < parts.length - 1; i += 1) {
+    current = current?.[parts[i]];
+    if (current === null || typeof current !== 'object') return;
+  }
+  delete current[parts[parts.length - 1]];
+}
+
 function applyUpdate(doc, update, isInsert = false) {
   let changed = false;
 
   if (update.$setOnInsert && isInsert) {
     for (const [key, value] of Object.entries(update.$setOnInsert)) {
-      doc[key] = clone(value);
+      writePath(doc, key, value);
       changed = true;
     }
   }
 
   if (update.$set) {
     for (const [key, value] of Object.entries(update.$set)) {
-      if (!equalsValue(doc[key], value) || (doc[key] === undefined && value !== undefined)) changed = true;
-      doc[key] = clone(value);
+      const current = readPath(doc, key);
+      if (!equalsValue(current, value) || (current === undefined && value !== undefined)) changed = true;
+      writePath(doc, key, value);
     }
   }
 
   if (update.$inc) {
     for (const [key, value] of Object.entries(update.$inc)) {
-      doc[key] = (Number(doc[key]) || 0) + Number(value);
+      writePath(doc, key, (Number(readPath(doc, key)) || 0) + Number(value));
       changed = true;
     }
   }
 
   if (update.$max) {
     for (const [key, value] of Object.entries(update.$max)) {
-      if (doc[key] === undefined || compareValues(value, doc[key]) > 0) {
-        doc[key] = clone(value);
+      if (readPath(doc, key) === undefined || compareValues(value, readPath(doc, key)) > 0) {
+        writePath(doc, key, value);
         changed = true;
       }
     }
@@ -189,8 +216,8 @@ function applyUpdate(doc, update, isInsert = false) {
 
   if (update.$min) {
     for (const [key, value] of Object.entries(update.$min)) {
-      if (doc[key] === undefined || compareValues(value, doc[key]) < 0) {
-        doc[key] = clone(value);
+      if (readPath(doc, key) === undefined || compareValues(value, readPath(doc, key)) < 0) {
+        writePath(doc, key, value);
         changed = true;
       }
     }
@@ -198,7 +225,7 @@ function applyUpdate(doc, update, isInsert = false) {
 
   if (update.$unset) {
     for (const key of Object.keys(update.$unset)) {
-      delete doc[key];
+      deletePath(doc, key);
       changed = true;
     }
   }
@@ -208,6 +235,33 @@ function applyUpdate(doc, update, isInsert = false) {
       if (!Array.isArray(doc[key])) doc[key] = [];
       doc[key].push(clone(value?.$each ? value.$each : value));
       changed = true;
+    }
+  }
+
+  if (update.$addToSet) {
+    for (const [key, value] of Object.entries(update.$addToSet)) {
+      const current = readPath(doc, key);
+      const list = Array.isArray(current) ? current : [];
+      const values = value?.$each ? value.$each : [value];
+      for (const item of values) {
+        if (!list.some((entry) => equalsValue(entry, item))) {
+          list.push(clone(item));
+          changed = true;
+        }
+      }
+      writePath(doc, key, list);
+    }
+  }
+
+  if (update.$pull) {
+    for (const [key, value] of Object.entries(update.$pull)) {
+      const current = readPath(doc, key);
+      if (!Array.isArray(current)) continue;
+      const next = current.filter((entry) => !equalsValue(entry, value));
+      if (next.length !== current.length) {
+        writePath(doc, key, next);
+        changed = true;
+      }
     }
   }
 
@@ -295,6 +349,7 @@ class FakeModel {
     for (const rule of this.unique) {
       const result = rule.keys(doc);
       if (Array.isArray(result)) keys.push(...result.filter(Boolean));
+      else if (result) keys.push(result);
     }
     return keys;
   }

@@ -61,6 +61,18 @@ const config = {
     key: envString('API_KEY'),
   },
 
+  web: {
+    enabled: envBool('ENABLE_DASHBOARD', true),
+    adminKey: envString('DASHBOARD_ADMIN_KEY') || envString('API_KEY') || '666-admin',
+    defaultGuildId: envString('GUILD_ID') || null,
+    sessionHours: Math.max(1, envInt('DASHBOARD_SESSION_HOURS', 12)),
+    publicUrl: (() => {
+      const value = envString('PUBLIC_WEB_URL');
+      if (!value) return null;
+      try { return new URL(value).toString(); } catch { return null; }
+    })(),
+  },
+
   logging: {
     level: envString('LOG_LEVEL', 'info').toLowerCase(),
     toFile: envBool('LOG_TO_FILE', false),

@@ -37,7 +37,8 @@ BEST STREAK: 45 DAYS • DUO XP: 2,800 XP
 17. [Security & Reliability](#security--reliability)
 18. [Streak API (HTTP)](#streak-api-http)
 19. [Testing](#testing)
-20. [Struktur Project](#struktur-project)
+20. [666 Ultimate RPG Economy](#666-ultimate-rpg-economy)
+21. [Struktur Project](#struktur-project)
 21. [Troubleshooting](#troubleshooting)
 22. [Checklist Deployment](#checklist-deployment)
 
@@ -57,11 +58,13 @@ BEST STREAK: 45 DAYS • DUO XP: 2,800 XP
 - **Leaderboard** — current streak, best streak, total XP, total days. Pagination tombol.
 - **History** — riwayat joined, completed, broken, reward, ended. Pagination tombol.
 - **Server Config** — `/duo config` untuk timezone, channel notifikasi, jam reminder, cooldown, minimum panjang pesan.
-- **MongoDB** — 8 collection terpisah, unique index, partial index, TTL index, validasi schema.
+- **MongoDB** — 8 collection inti + 25 collection RPG, unique index, partial index, TTL index, validasi schema.
 - **Restart-safe** — streak, aktivitas, reward, konfigurasi, dan antrean log tetap konsisten setelah restart.
 - **Graceful shutdown** — flush antrean log & notifikasi, tutup API, tutup koneksi MongoDB.
 - **Streak API opsional** — endpoint HTTP untuk uptime monitor (Pterodactyl).
-- **Test suite** — 48 test otomatis (`node --test`) termasuk render kartu PNG, dedupe log, retry, dan recovery setelah restart.
+- **Test suite** — 99 test otomatis (`node --test`) termasuk render kartu PNG, dedupe log, retry, recovery, dan seluruh sistem RPG.
+- **666 ULTIMATE RPG** — economy, hunting, battle, pet, 8 mini games, quest/achievement, trade, market, guild war, world boss, profile, dan dashboard web. Semua additive; fitur Duo lama tidak diubah.
+- **Dashboard RPG** — `/dashboard` dengan settings 8 grup, drop-rate editor tervalidasi, statistik live, transaction log, dan admin key.
 
 ---
 
@@ -303,7 +306,7 @@ Jika tidak memakai API: `ENABLE_API=false`.
 - Aktifkan **Start on Boot**.
 - Bot menangani `SIGTERM`/`SIGINT` dengan graceful shutdown (aman saat restart dari panel).
 - `uncaughtException` akan menutup proses dengan kode error, lalu panel menjalankan ulang otomatis.
-- Rendering memakai **@napi-rs/canvas** yang sudah menyertakan binary prebuilt — tidak perlu `libcairo`, `pango`, atau `ffmpeg` di container. Font dan background plate ikut di repository (`src/assets`), jadi hasil render identik di Pterodactyl.
+- Rendering memakai **@napi-rs/canvas** yang sudah menyertakan binary prebuilt — tidak perlu `libcairo` atau `pango` di container. Font dan background plate ikut di repository (`src/assets`), jadi hasil render identik di Pterodactyl.
 - Render kartu memakai ~1–3 MB per gambar dan CPU singkat (< 1 detik). Cache avatar 250 entri / 15 menit; aman untuk RAM 512 MB.
 - Untuk menghemat resource, biarkan `LOG_LEVEL=info` dan `LOG_TO_FILE=false`.
 
@@ -634,6 +637,155 @@ Contoh respons `/health`:
 
 ---
 
+---
+
+## 666 ULTIMATE RPG ECONOMY
+
+Expansion besar yang **additive**: seluruh fitur Duo Streak, prefix lama, `/duo`, database, dan konfigurasi lama tetap berjalan. Semua sistem baru memakai prefix **`6`** dan dapat dikonfigurasi dari dashboard web.
+
+### Fitur RPG
+
+| Sistem | Command | Isi |
+| --- | --- | --- |
+| Economy | `6cash` | balance, daily/weekly/monthly, work, beg, deposit, withdraw, transfer, leaderboard, inventory, shop, buy, sell, history |
+| Hunting | `6hunt` | start, inventory, collection, sell, stats, leaderboard |
+| Battle | `6battle @user` | accept, decline, stats, leaderboard; turn-based PvP + ELO + anti win-trading |
+| Pet | `6pet` | hatch, feed, equip/unequip, inventory, upgrade, stats, evolve, collection; slot aktif mengikuti settings `maxSlots` |
+| Mini Games | `6coinflip` `6dice` `6slots` `6blackjack` `6roulette` `6guess` `6trivia` `6rps` | betting, tombol interaktif, RNG crypto, house edge transparan |
+| Quest | `6quest` | daily, weekly, special, hidden, claim |
+| Achievement | `6achievement` | badge + reward sekali |
+| Rank | `6rank` | level, rank, EXP, posisi server |
+| Trade | `6trade @user` | offer, accept, decline, confirm, cancel; dua pihak wajib confirm |
+| Market | `6market` | list, sell, buy, cancel, mine, history; listing fee + market tax |
+| Guild | `6guild` | create, join, leave, info, members, invite, deposit, upgrade, leaderboard |
+| Guild War | `6guild war` | challenge, accept, status, leaderboard; season mingguan |
+| World Boss | `6boss` | status, attack, leaderboard, rewards; satu HP shared per server |
+| Profile | `6profile [@user]` | kartu profil lengkap (koin, level, hunt, battle, collection, guild, boss, trading) |
+| Help | `6help` `6h` `6?` `/help` | pusat bantuan interaktif: menu kategori, detail command, pencarian, contoh, dan tombol website |
+
+Contoh:
+
+```text
+6cash daily
+6hunt
+6hunt sell all
+6battle @partner
+6pet hatch egg_rare
+6coinflip heads 100
+6blackjack 250
+6trade @friend 500
+6market sell monster <id> 1500
+6guild create Nightfall
+6boss attack
+6quest claim daily_hunt_5
+6profile @member
+```
+
+### Dashboard Web
+
+Dashboard tersedia dari HTTP server yang sama dengan API:
+
+```text
+http://HOST:API_PORT/dashboard
+```
+
+Halaman: `/dashboard/economy`, `/dashboard/hunting`, `/dashboard/pets`, `/dashboard/battle`, `/dashboard/minigames`, `/dashboard/quests`, `/dashboard/market`, `/dashboard/guilds`, `/dashboard/worldboss`, `/dashboard/statistics`, `/dashboard/settings`, `/dashboard/drop-rates`, `/dashboard/transactions`.
+
+Masuk dengan:
+
+- **Admin Key** — nilai `DASHBOARD_ADMIN_KEY` (fallback `API_KEY`; default development `666-admin` — ganti di production). Key ditukar dengan session token HMAC berumur `DASHBOARD_SESSION_HOURS` (default 12 jam), jadi key mentah tidak disimpan di browser.
+- **Guild ID** — Discord server ID yang ingin dikelola.
+
+Dashboard membaca MongoDB secara live, refresh otomatis setiap 30 detik, dan mendukung:
+
+- editor settings 8 grup: **Economy, Hunting, Pets, Battle, Mini Games, Market, Guild, World Boss**;
+- validasi angka/min/max dan relasi (mis. `maxBet >= minBet`);
+- perubahan langsung berlaku tanpa restart (cache settings 5 detik antar instance);
+- **drop-rate editor** dengan input %, visualisasi distribusi, validasi total tepat 100%, reset default, preview, dan riwayat perubahan;
+- transaction log + filter, statistik agregat, chart 7 hari;
+- admin permission check pada setiap endpoint dashboard (`x-admin-key` atau `Authorization: Bearer <session>`); endpoint `POST /api/dashboard/session` menukar admin key menjadi token berumur terbatas.
+
+### Website publik + Pusat Bantuan
+
+Website statis siap deploy ada di `web/` dan juga disajikan oleh bot di:
+
+```text
+http://HOST:API_PORT/site/
+http://HOST:API_PORT/site/help/
+```
+
+Isinya landing page 666 Ultimate RPG, daftar fitur, quick start, dan dokumentasi command yang bisa dicari. Dokumentasi di-generate dari katalog command yang sama dengan `6help` supaya tidak pernah basi:
+
+```bash
+npm run web:build   # tulis web/commands.json dari src/rpg/help/catalog.js
+npm run web:check   # gagal jika commands.json stale (cocok untuk CI)
+```
+
+Deploy terpisah ke Vercel: jadikan folder `web` sebagai Root Directory project, tanpa build command. `web/vercel.json` sudah mengatur clean URL dan cache asset. Setelah dapat domain Vercel, isi `PUBLIC_WEB_URL` di `.env` bot agar tombol **Buka Website** muncul di menu `/help`.
+
+### Login dashboard
+
+```text
+POST /api/dashboard/session  { "adminKey": "..." }
+→ { "ok": true, "data": { "token": "<expiry>.<hmac>", "expiresAt": "..." } }
+```
+
+Kirim token pada request berikutnya: `Authorization: Bearer <token>`. Raw `x-admin-key` tetap didukung untuk integrasi/CLI. Session HMAC memakai `DASHBOARD_ADMIN_KEY`; mengganti key otomatis membatalkan semua session lama.
+
+### Environment tambahan
+
+```env
+ENABLE_DASHBOARD=true
+DASHBOARD_ADMIN_KEY=ganti-dengan-key-rahasia
+DASHBOARD_SESSION_HOURS=12
+PUBLIC_WEB_URL=https://domain-website-kamu.vercel.app
+```
+
+### MongoDB collections baru
+
+`economy_users`, `economy_transactions`, `hunting_users`, `hunting_monsters`, `monster_collection`, `pets`, `pet_collection`, `battles`, `game_sessions`, `game_history`, `quests`, `achievements`, `market_listings`, `market_transactions`, `trade_sessions`, `guilds`, `guild_members`, `guild_wars`, `world_bosses`, `world_boss_sessions`, `world_boss_contributions`, `economy_settings`, `game_settings`, `game_cooldowns`, `settings_history`.
+
+Semua model terdaftar di `src/database/models/index.js` sehingga `ensureIndexes()` membuat index saat boot (`autoIndex` tetap `false`). Index unik dipakai untuk anti double reward: user per guild, idempotency transaksi, cooldown `(guild,user,scope)`, progress quest, kontribusi boss, dan satu world boss aktif per guild.
+
+### Multi-bot & keamanan
+
+- Cooldown terdistribusi di `game_cooldowns` (unique index + TTL), bukan hanya memory.
+- Setiap mutasi saldo memakai **idempotency key** unik; dua instance tidak bisa memberi reward yang sama dua kali.
+- Daily/weekly/monthly memakai conditional atomic update (`lastDailyDay != hari-ini`).
+- Battle accept, market buy, trade execute, world-boss damage memakai conditional atomic update.
+- Trade mengunci item (`lockedBy`) dan mewajibkan konfirmasi kedua pihak; pembayaran dilakukan setelah validasi.
+- Market memakai urutan lock listing → debit buyer → credit seller → pindah item, dengan kompensasi/refund bila langkah gagal.
+- `withTransaction()` memakai MongoDB transaction bila replica set tersedia, lalu fallback aman untuk standalone.
+- Anti win-trading: matchup berulang dalam 24 jam mengurangi/menghapus reward.
+- RNG memakai `crypto.randomInt` di `src/rpg/utils/rng.js`; tidak ada manipulasi hasil tersembunyi. House edge mini games transparan di settings.
+- Dashboard write endpoint mewajibkan `x-admin-key`; CORS dan method dibatasi; body JSON dibatasi 1 MB.
+
+### Struktur modul RPG
+
+```text
+src/
+  database/models/rpg/       25 model Mongo (registry di index.js)
+  rpg/
+    commands/                command 6-prefix modular
+    config/defaults.js       default settings + schema + validasi drop rate
+    data/catalog.js          monster, pet, egg, item, boss, quest, achievement
+    services/                economy, hunting, pet, battle, game, quest, market, trade, guild, boss, stats, settings, cooldown
+    ui/embeds.js             666 embeds, progress bar, tombol
+    utils/                   RNG crypto, formula, periode, transaksi DB
+    handler.js               prefix parser + error handling
+    interactions.js          tombol rpg:
+    scheduler.js             boss spawn, expiry, war finalize
+  dashboard/                 dashboard web (HTML/CSS/JS vanilla)
+```
+
+### Test
+
+```bash
+npm test
+```
+
+Test suite sekarang mencakup fitur lama + RPG: registry command, parser prefix, validasi drop rate/settings, formula, RNG, battle simulator, blackjack, economy idempotency/concurrency, cooldown terdistribusi, hunt/pet, battle atomic, mini game, world boss, guild, trade dua-confirm, market, command render, tombol interaksi, dan dashboard API/static.
+
 ## Testing
 
 Test suite berjalan **tanpa MongoDB dan tanpa token Discord** — memakai in-memory database yang meniru Mongoose + unique index.
@@ -659,6 +811,8 @@ Cakupan:
 - Renderer PNG profile, leaderboard, dan streak log menghasilkan buffer valid (> 10 KB).
 - Log otomatis: hanya saat increment, tidak untuk satu member, unik per hari, retry tanpa dobel, recovery setelah restart.
 - `/duo setlog` memvalidasi Manage Server + izin bot; `/duo logstatus` menghitung antrean.
+- RPG: registry/parser command `6`, economy idempotency & concurrency, cooldown terdistribusi, hunt/pet, battle simulator & tombol accept, mini games (termasuk blackjack/trivia/RPS), trade dua-confirm, market lock, guild/war, world boss, quest/achievement, validasi settings & drop rate.
+- Dashboard: static page + asset, auth 401, validasi guild ID, route API lama tetap jalan, 503 saat MongoDB down.
 
 ---
 
@@ -709,9 +863,16 @@ Cakupan:
 │   │   ├── cardService.js        # Render PNG + cache avatar
 │   │   ├── logService.js         # Queue, retry, dedupe 666 DUO STREAK LOGS
 │   │   └── apiService.js
+│   ├── rpg/                       # 666 ULTIMATE RPG (commands, services, ui, data, utils)
+│   │   ├── help/catalog.js        # Sumber dokumentasi 6help + website
+│   │   ├── ui/help.js             # Render menu bantuan interaktif
+│   │   └── commands/              # command prefix 6 (termasuk help.js)
+│   ├── commands/help.js           # Slash /help
+│   ├── dashboard/                 # Dashboard web vanilla (index.html, styles.css, app.js)
 │   ├── database/
 │   │   ├── connection.js
 │   │   └── models/
+│   │       ├── rpg/              # 25 model RPG (RPGUser, Guild, WorldBoss, ...)
 │   │       ├── Duo.js
 │   │       ├── Invitation.js
 │   │       ├── DailyActivity.js
@@ -741,6 +902,8 @@ Cakupan:
 │       ├── errors.js
 │       ├── cooldown.js
 │       └── members.js
+├── web/                          # Landing page + pusat bantuan statis (Vercel-ready)
+├── scripts/generate-web-help.js  # Generate web/commands.json dari katalog
 ├── tests/
 │   ├── duoFlow.test.js
 │   ├── commands.test.js
@@ -748,7 +911,14 @@ Cakupan:
 │   ├── embeds.test.js
 │   ├── time.test.js
 │   ├── validators.test.js
-│   └── helpers/fakeDb.js
+│   ├── rpg.test.js
+│   ├── rpgEconomy.test.js
+│   ├── rpgGameplay.test.js
+│   ├── rpgCommands.test.js
+│   ├── rpgInteractions.test.js
+│   ├── dashboard.test.js
+│   ├── helpers/fakeDb.js
+│   └── helpers/rpgFakeDb.js
 ├── .env.example
 ├── .gitignore
 ├── package.json
@@ -773,6 +943,10 @@ Cakupan:
 | API tidak bisa diakses | Set `API_HOST=0.0.0.0`, buka allocation di Pterodactyl, cek firewall. |
 | Bot restart terus | Cek log panel: biasanya token salah, MongoDB tidak reachable, atau Node < 22. |
 | Command error "Cooldown" | Cooldown internal 2–3 detik antar pemakaian command. |
+| Dashboard 401 | Isi Admin Key = `DASHBOARD_ADMIN_KEY`; jika kosong, fallback `API_KEY` atau default `666-admin`. |
+| Dashboard 503 `database_unavailable` | MongoDB belum tersambung; cek `MONGODB_URI` dan log koneksi. |
+| Settings tidak berubah di instance lain | Cache settings 5 detik; tunggu refresh atau restart. Pastikan hanya satu sumber `DASHBOARD_ADMIN_KEY`. |
+| `E11000` pada transaksi/quest | Unique idempotency index aktif; jangan menghapus index, justru ini pengaman double reward. |
 
 ---
 
@@ -789,6 +963,9 @@ Cakupan:
 - [ ] Channel notifikasi diset (opsional).
 - [ ] `/duo setlog #channel` dijalankan dan `/duo logstatus` menunjukkan channel aktif.
 - [ ] Port API dialokasikan (jika `ENABLE_API=true`).
+- [ ] `ENABLE_DASHBOARD=true` dan `DASHBOARD_ADMIN_KEY` kuat (bukan default `666-admin`).
+- [ ] Buka `/dashboard`, login, cek settings & drop-rate.
+- [ ] MongoDB memakai replica set bila ingin transaksi market/trade rollback penuh.
 - [ ] Test lulus: `npm test`.
 - [ ] Uji alur nyata: invite → accept → chat dua member → cek `/duo profile`, `/duo leaderboard`, dan log otomatis di channel.
 
