@@ -5,6 +5,7 @@ const { COLORS } = require('../ui/theme');
 const battleService = require('./services/battleService');
 const tradeService = require('./services/tradeService');
 const gameService = require('./services/minigameService');
+const { handleHelpInteraction } = require('./ui/help');
 const { battleResultEmbed, tradeEmbed, blackjackButtons, BRAND, money } = require('./ui/embeds');
 const { createLogger } = require('../utils/logger');
 const { UserError } = require('../utils/errors');
@@ -129,7 +130,8 @@ async function handleRPGInteraction(interaction) {
   const [, feature, action, id] = parts;
   await interaction.deferUpdate().catch(() => {});
   try {
-    if (feature === 'battle') await handleBattle(interaction, action, id);
+    if (feature === 'help') await handleHelpInteraction(interaction, action);
+    else if (feature === 'battle') await handleBattle(interaction, action, id);
     else if (feature === 'trade') await handleTrade(interaction, action, id);
     else if (feature === 'bj') await handleBlackjack(interaction, action, id);
     else if (feature === 'trivia') await handleTrivia(interaction, action, id);

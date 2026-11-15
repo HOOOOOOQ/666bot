@@ -168,12 +168,12 @@ module.exports = {
         await handleChatInputCommand(interaction);
         return;
       }
-      if (interaction.isButton()) {
+      if (interaction.isButton() || interaction.isStringSelectMenu()) {
         if (isRPGInteraction(interaction.customId)) {
           await handleRPGInteraction(interaction);
           return;
         }
-        await handleButton(interaction);
+        if (interaction.isButton()) await handleButton(interaction);
       }
     } catch (error) {
       await respondError(interaction, error);

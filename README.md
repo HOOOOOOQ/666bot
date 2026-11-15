@@ -62,7 +62,7 @@ BEST STREAK: 45 DAYS • DUO XP: 2,800 XP
 - **Restart-safe** — streak, aktivitas, reward, konfigurasi, dan antrean log tetap konsisten setelah restart.
 - **Graceful shutdown** — flush antrean log & notifikasi, tutup API, tutup koneksi MongoDB.
 - **Streak API opsional** — endpoint HTTP untuk uptime monitor (Pterodactyl).
-- **Test suite** — 91 test otomatis (`node --test`) termasuk render kartu PNG, dedupe log, retry, recovery, dan seluruh sistem RPG.
+- **Test suite** — 98 test otomatis (`node --test`) termasuk render kartu PNG, dedupe log, retry, recovery, dan seluruh sistem RPG.
 - **666 ULTIMATE RPG** — economy, hunting, battle, pet, 8 mini games, quest/achievement, trade, market, guild war, world boss, profile, dan dashboard web. Semua additive; fitur Duo lama tidak diubah.
 - **Dashboard RPG** — `/dashboard` dengan settings 8 grup, drop-rate editor tervalidasi, statistik live, transaction log, dan admin key.
 
@@ -661,7 +661,7 @@ Expansion besar yang **additive**: seluruh fitur Duo Streak, prefix lama, `/duo`
 | Guild War | `6guild war` | challenge, accept, status, leaderboard; season mingguan |
 | World Boss | `6boss` | status, attack, leaderboard, rewards; satu HP shared per server |
 | Profile | `6profile [@user]` | kartu profil lengkap (koin, level, hunt, battle, collection, guild, boss, trading) |
-| Help | `6help` | daftar seluruh command |
+| Help | `6help` `6h` `6?` `/help` | pusat bantuan interaktif: menu kategori, detail command, pencarian, contoh, dan tombol website |
 
 Contoh:
 
@@ -705,6 +705,24 @@ Dashboard membaca MongoDB secara live, refresh otomatis setiap 30 detik, dan men
 - transaction log + filter, statistik agregat, chart 7 hari;
 - admin permission check pada setiap endpoint dashboard (`x-admin-key` atau `Authorization: Bearer <session>`); endpoint `POST /api/dashboard/session` menukar admin key menjadi token berumur terbatas.
 
+### Website publik + Pusat Bantuan
+
+Website statis siap deploy ada di `web/` dan juga disajikan oleh bot di:
+
+```text
+http://HOST:API_PORT/site/
+http://HOST:API_PORT/site/help/
+```
+
+Isinya landing page 666 Ultimate RPG, daftar fitur, quick start, dan dokumentasi command yang bisa dicari. Dokumentasi di-generate dari katalog command yang sama dengan `6help` supaya tidak pernah basi:
+
+```bash
+npm run web:build   # tulis web/commands.json dari src/rpg/help/catalog.js
+npm run web:check   # gagal jika commands.json stale (cocok untuk CI)
+```
+
+Deploy terpisah ke Vercel: jadikan folder `web` sebagai Root Directory project, tanpa build command. `web/vercel.json` sudah mengatur clean URL dan cache asset. Setelah dapat domain Vercel, isi `PUBLIC_WEB_URL` di `.env` bot agar tombol **Buka Website** muncul di menu `/help`.
+
 ### Login dashboard
 
 ```text
@@ -720,6 +738,7 @@ Kirim token pada request berikutnya: `Authorization: Bearer <token>`. Raw `x-adm
 ENABLE_DASHBOARD=true
 DASHBOARD_ADMIN_KEY=ganti-dengan-key-rahasia
 DASHBOARD_SESSION_HOURS=12
+PUBLIC_WEB_URL=https://domain-website-kamu.vercel.app
 ```
 
 ### MongoDB collections baru
@@ -845,6 +864,10 @@ Cakupan:
 │   │   ├── logService.js         # Queue, retry, dedupe 666 DUO STREAK LOGS
 │   │   └── apiService.js
 │   ├── rpg/                       # 666 ULTIMATE RPG (commands, services, ui, data, utils)
+│   │   ├── help/catalog.js        # Sumber dokumentasi 6help + website
+│   │   ├── ui/help.js             # Render menu bantuan interaktif
+│   │   └── commands/              # command prefix 6 (termasuk help.js)
+│   ├── commands/help.js           # Slash /help
 │   ├── dashboard/                 # Dashboard web vanilla (index.html, styles.css, app.js)
 │   ├── database/
 │   │   ├── connection.js
@@ -879,6 +902,8 @@ Cakupan:
 │       ├── errors.js
 │       ├── cooldown.js
 │       └── members.js
+├── web/                          # Landing page + pusat bantuan statis (Vercel-ready)
+├── scripts/generate-web-help.js  # Generate web/commands.json dari katalog
 ├── tests/
 │   ├── duoFlow.test.js
 │   ├── commands.test.js

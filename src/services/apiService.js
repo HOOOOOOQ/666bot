@@ -21,6 +21,15 @@ const guildService = require('../rpg/services/guildService');
 const models = require('../database/models');
 
 const DASHBOARD_DIR = path.join(__dirname, '..', 'dashboard');
+const WEB_DIR = path.join(__dirname, '..', '..', 'web');
+const WEB_TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'application/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.txt': 'text/plain; charset=utf-8',
+  '.ttf': 'font/ttf',
+};
 const STATIC_FILES = {
   '/dashboard/assets/styles.css': ['styles.css', 'text/css; charset=utf-8'],
   '/dashboard/assets/app.js': ['app.js', 'application/javascript; charset=utf-8'],
@@ -164,6 +173,74 @@ async function dashboardData(guildId) {
   const topBattlers = await models.RPGUser.find(guildId ? { guildId } : {}).sort({ battleRating: -1 }).limit(10).lean().catch(() => []);
   const topBoss = await models.WorldBossContribution.find(guildId ? { guildId } : {}).sort({ damage: -1 }).limit(10).lean().catch(() => []);
   return { overview, charts, topPlayers, topHunters, topBattlers, topBoss, guilds, listings: listings.listings || [], boss, transactions, recentBattles, recentGames, quests };
+}
+
+async function serveWebAsset(res, relativePath, cacheControl = 'public, max-age=300') {
+  const base = path.resolve(WEB_DIR);
+  const target = path.resolve(base, relativePath);
+  if (target !== base && !target.startsWith(`${base}${path.sep}`)) {
+    sendJson(res, 403, { ok: false, error: 'forbidden' });
+    return;
+  }
+  const ext = path.extname(target).toLowerCase();
+  const type = WEB_TYPES[ext];
+  if (!type) {
+    sendJson(res, 404, { ok: false, error: 'asset_not_found' });
+    return;
+  }
+  try {
+    const content = await fs.readFile(target);
+    res.writeHead(200, {
+      'Content-Type': type,
+      'Cache-Control': cacheControl,
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+    });
+    res.end(content);
+  } catch {
+    sendJson(res, 404, { ok: false, error: 'asset_not_found' });
+  }
+}
+
+async function handleWebRequest(req, res, pathName, rawPath = pathName) {
+  if (!config.web.enabled) return false;
+  if (pathName !== '/site' && !pathName.startsWith('/site/')) return false;
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    sendJson(res, 405, { ok: false, error: 'method_not_allowed' });
+    return true;
+  }
+  if (rawPath === '/site') {
+    res.writeHead(301, { Location: '/site/' });
+    res.end();
+    return true;
+  }
+  if (rawPath === '/site/' || pathName === '/site/' || pathName === '/site/index.html') {
+    await serveWebAsset(res, 'index.html', 'no-cache');
+    return true;
+  }
+  if (rawPath === '/site/help/') {
+    await serveWebAsset(res, path.join('help', 'index.html'), 'no-cache');
+    return true;
+  }
+  if (rawPath === '/site/help' || pathName === '/site/help') {
+    res.writeHead(301, { Location: '/site/help/' });
+    res.end();
+    return true;
+  }
+  if (pathName === '/site/commands.json') {
+    await serveWebAsset(res, 'commands.json', 'no-cache');
+    return true;
+  }
+  if (pathName === '/site/robots.txt') {
+    await serveWebAsset(res, 'robots.txt', 'public, max-age=3600');
+    return true;
+  }
+  if (pathName.startsWith('/site/assets/')) {
+    await serveWebAsset(res, path.join('assets', pathName.slice('/site/assets/'.length)));
+    return true;
+  }
+  sendJson(res, 404, { ok: false, error: 'not_found' });
+  return true;
 }
 
 async function handleDashboardRequest(req, res, url, pathName) {
@@ -344,8 +421,10 @@ async function handleRequest(req, res) {
   }
 
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-  const path = url.pathname.replace(/\/+$/, '') || '/';
+  const rawPath = url.pathname || '/';
+  const path = rawPath.replace(/\/+$/, '') || '/';
 
+  if (await handleWebRequest(req, res, path, rawPath)) return;
   if (await handleDashboardRequest(req, res, url, path)) return;
 
   if (req.method !== 'GET') {

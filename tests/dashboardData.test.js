@@ -80,3 +80,35 @@ test('dashboard transaction and player endpoints return arrays', async () => {
   assert.equal(players.res.statusCode, 200);
   assert.equal(JSON.parse(players.res.body).data.length, 1);
 });
+
+test('public website is served by the bot API without auth', async () => {
+  const home = request('GET', '/site/');
+  await home.done;
+  assert.equal(home.res.statusCode, 200);
+  assert.match(home.res.headers['Content-Type'], /text\/html/);
+  assert.match(home.res.body, /666 ULTIMATE RPG/);
+
+  const help = request('GET', '/site/help/');
+  await help.done;
+  assert.equal(help.res.statusCode, 200);
+  assert.match(help.res.body, /PUSAT BANTUAN/);
+
+  const css = request('GET', '/site/assets/style.css');
+  await css.done;
+  assert.equal(css.res.statusCode, 200);
+  assert.match(css.res.headers['Content-Type'], /text\/css/);
+
+  const catalog = request('GET', '/site/commands.json');
+  await catalog.done;
+  assert.equal(catalog.res.statusCode, 200);
+  assert.ok(JSON.parse(catalog.res.body).categories.length >= 10);
+});
+
+test('public website rejects traversal and unknown files', async () => {
+  const traversal = request('GET', '/site/assets/../../package.json');
+  await traversal.done;
+  assert.notEqual(traversal.res.statusCode, 200);
+  const missing = request('GET', '/site/nope.txt');
+  await missing.done;
+  assert.equal(missing.res.statusCode, 404);
+});
