@@ -11,21 +11,21 @@ const { simulateBattle } = require('../src/rpg/services/battleService');
 const { handValue } = require('../src/rpg/services/minigameService');
 const { parse } = require('../src/rpg/handler');
 
-test('all required 6-prefix commands are registered', () => {
+test('all required t-prefix commands are registered', () => {
   const required = [
-    '6cash', '6hunt', '6battle', '6pet', '6quest', '6trade', '6market', '6guild', '6boss',
-    '6coinflip', '6dice', '6slots', '6blackjack', '6roulette', '6guess', '6trivia', '6rps',
-    '6achievement', '6rank',
+    'tcash', 'thunt', 'tbattle', 'tpet', 'tquest', 'ttrade', 'tmarket', 'tguild', 'tboss',
+    'tcoinflip', 'tdice', 'tslots', 'tblackjack', 'troulette', 'tguess', 'ttrivia', 'trps',
+    'tachievement', 'trank',
   ];
   for (const name of required) assert.ok(commands.get(name), `${name} harus terdaftar`);
 });
 
-test('prefix parser only reacts to registered 6 commands', () => {
-  assert.equal(parse('6cash daily').token, '6cash');
-  assert.equal(parse('6CASH daily').token, '6cash');
+test('prefix parser only reacts to registered t commands', () => {
+  assert.equal(parse('tcash daily').token, 'tcash');
+  assert.equal(parse('tCASH daily').token, 'tcash');
   assert.equal(parse('!cash daily'), null);
-  assert.equal(parse('6unknown'), null);
-  assert.deepEqual(parse('6cash balance now').args, ['balance', 'now']);
+  assert.equal(parse('tunknown'), null);
+  assert.deepEqual(parse('tcash balance now').args, ['balance', 'now']);
 });
 
 test('drop-rate tables are valid and can be validated / rejected', () => {

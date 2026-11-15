@@ -44,7 +44,7 @@ function overviewEmbed(client = null) {
     .setTitle('Command List')
     .setDescription(
       `Here is the list of commands!\n\n` +
-      `For more info on a specific command, use\n\`6help {command}\`\n\n` +
+      `For more info on a specific command, use\n\`thelp {command}\`\n\n` +
       `Need more help? Come join our guild\n[Join 666 Guild](${guildLink()})`,
     )
     .setFooter({ text: `${BRAND} • ${new Set(ENTRIES.map((entry) => entry.name)).size} commands` });
@@ -64,7 +64,7 @@ function categoryEmbed(category) {
     .setColor(COLORS.ember || COLORS.flame)
     .setTitle(`${category.emoji} ${category.label.toUpperCase()} • COMMANDS`)
     .setDescription(`${category.blurb}\n${divider()}`)
-    .setFooter({ text: `${BRAND} • 6help <command> untuk detail` });
+    .setFooter({ text: `${BRAND} • thelp <command> untuk detail` });
   for (const entry of category.commands) {
     embed.addFields({
       name: `${entry.name}${entry.aliases?.length ? `  ·  ${entry.aliases.join(' / ')}` : ''}`,
@@ -97,7 +97,7 @@ function commandEmbed(input) {
   if (entry.aliases?.length) embed.addFields({ name: '🔗 Aliases', value: clip(entry.aliases.map((alias) => `\`${alias}\``).join(' ')), inline: false });
   if (entry.note) embed.addFields({ name: 'ℹ️ Note', value: clip(entry.note), inline: false });
   if (category) embed.addFields({ name: '🗂️ Category', value: `${category.emoji} ${category.label}`, inline: true });
-  return embed.setFooter({ text: `${BRAND} • 6help untuk kembali` });
+  return embed.setFooter({ text: `${BRAND} • thelp untuk kembali` });
 }
 
 function searchEmbed(term, results) {
@@ -107,7 +107,7 @@ function searchEmbed(term, results) {
     .setDescription(
       results.length
         ? results.map(commandLine).join('\n')
-        : 'Tidak ada command yang cocok. Coba `6help` untuk melihat semua kategori.',
+        : 'Tidak ada command yang cocok. Coba `thelp` untuk melihat semua kategori.',
     )
     .setFooter({ text: BRAND });
   return embed;

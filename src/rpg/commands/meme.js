@@ -11,7 +11,7 @@ function memeCommand(id, description, example) {
   const template = TEMPLATES[id];
   return define({
     name: id, category: 'meme', aliases: [], description,
-    usage: `\`6${id} [teks atas | teks bawah]\``, examples: [`6${id}${example ? ` ${example}` : ''}`], cooldown: '5 detik',
+    usage: `\`t${id} [teks atas | teks bawah]\``, examples: [`t${id}${example ? ` ${example}` : ''}`], cooldown: '5 detik',
     async execute(ctx) {
       const parts = ctx.args.join(' ').split('|').map((part) => part.trim()).filter(Boolean);
       const buffer = await renderMeme(id, parts, {

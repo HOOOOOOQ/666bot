@@ -31,7 +31,7 @@ function cashEmbed({ user, economy, rank, position }) {
       { name: '🔥 Daily Streak', value: `${user.dailyStreak || 0} hari`, inline: true },
       { name: '🎯 Hunt Level', value: `${user.huntLevel || 1}`, inline: true },
     )
-    .setDescription(`**${economy?.currencyName || '666 Coins'}** adalah mata uang resmi server ini.\nGunakan \`6cash help\` untuk semua perintah.`);
+    .setDescription(`**${economy?.currencyName || '666 Coins'}** adalah mata uang resmi server ini.\nGunakan \`tcash help\` untuk semua perintah.`);
 }
 
 function dailyEmbed({ reward, streak, bonus, user, type = 'Daily' }) {
@@ -57,7 +57,7 @@ function huntEmbed(result, economy) {
     );
   if (result.itemDrop) e.addFields({ name: '🎒 Item Drop', value: result.itemDrop, inline: true });
   if (result.levelsGained) e.addFields({ name: '⬆️ Hunt Level', value: `Naik **${result.levelsGained}** level → **${result.level}**`, inline: false });
-  e.setFooter({ text: `${BRAND} • simpan dengan 6hunt inventory` });
+  e.setFooter({ text: `${BRAND} • simpan dengan thunt inventory` });
   return e;
 }
 
@@ -66,7 +66,7 @@ function monsterListEmbed({ monsters, page, pages, total }, economy) {
     const rarity = getRarity(m.rarity);
     return `\`${String(m._id).slice(-6)}\` ${m.shiny ? '✨' : rarity.emoji} **${m.name}** • ${rarity.label} • HP ${m.hp} • jual ${money(m.sellValue)}`;
   });
-  return base('🐾 KANDANG MONSTER', lines.length ? lines.join('\n') : 'Kandang kosong. Hunt dulu dengan `6hunt`.', COLORS.blood)
+  return base('🐾 KANDANG MONSTER', lines.length ? lines.join('\n') : 'Kandang kosong. Hunt dulu dengan `thunt`.', COLORS.blood)
     .setFooter({ text: `${BRAND} • halaman ${page}/${pages} • total ${total}` });
 }
 
@@ -112,7 +112,7 @@ function petEmbed(pet, rarity) {
 
 function petListEmbed(pets) {
   const lines = pets.map((p) => `\`${String(p._id).slice(-6)}\` ${getRarity(p.rarity).emoji} **${p.name}** Lv.${p.level}${p.evolved ? ' 🌟' : ''}`);
-  return base('🐾 PET INVENTORY', lines.join('\n') || 'Belum punya pet. Hatch dengan `6pet hatch`.', COLORS.ember);
+  return base('🐾 PET INVENTORY', lines.join('\n') || 'Belum punya pet. Hatch dengan `tpet hatch`.', COLORS.ember);
 }
 
 function gameEmbed(title, result, color = COLORS.flame) {
@@ -126,7 +126,7 @@ function questEmbed(quests) {
   const weekly = quests.filter((q) => q.type === 'weekly');
   const other = quests.filter((q) => !['daily', 'weekly'].includes(q.type) && !(q.hidden && !q.completed));
   const render = (list) => list.map((q) => `${q.claimed ? '✅' : q.completed ? '🎁' : q.emoji} **${q.title}** — ${progressBar(q.progress, q.target, 8)} ${q.progress}/${q.target}${q.claimed ? ' • claimed' : q.completed ? ' • siap claim' : ''}`).join('\n') || '—';
-  return base('📜 666 QUEST', 'Selesaikan misi, klaim reward dengan `6quest claim <id>`.', COLORS.ember)
+  return base('📜 666 QUEST', 'Selesaikan misi, klaim reward dengan `tquest claim <id>`.', COLORS.ember)
     .addFields(
       { name: '☀️ Daily', value: render(daily).slice(0, 1024), inline: false },
       { name: '📅 Weekly', value: render(weekly).slice(0, 1024), inline: false },
@@ -150,7 +150,7 @@ function rankEmbed(rankData) {
 }
 
 function shopEmbed(items) {
-  return base('🛒 666 SHOP', 'Beli dengan `6cash buy <id> [qty]`.', COLORS.flame)
+  return base('🛒 666 SHOP', 'Beli dengan `tcash buy <id> [qty]`.', COLORS.flame)
     .addFields({ name: 'Item', value: items.map((i) => `${i.emoji} **${i.id}** — ${money(i.price)}\n${i.description}`).join('\n').slice(0, 4000) });
 }
 
@@ -181,7 +181,7 @@ function guildEmbed({ guild, member, members }) {
 }
 
 function warEmbed({ war, challenger, defender }) {
-  if (!war) return base('⚔️ GUILD WAR', 'Tidak ada war aktif. Leader bisa deklarasi dengan `6guild war challenge <guild>`.', COLORS.ash);
+  if (!war) return base('⚔️ GUILD WAR', 'Tidak ada war aktif. Leader bisa deklarasi dengan `tguild war challenge <guild>`.', COLORS.ash);
   return base('⚔️ GUILD WAR', `Status: **${war.status}** • Season ${war.season}`, COLORS.blood)
     .addFields(
       { name: challenger?.name || 'Challenger', value: `${war.challengerPoints} poin`, inline: true },
@@ -194,7 +194,7 @@ function bossEmbed({ boss, contributors, totalDamage }) {
   if (!boss) return base('👹 WORLD BOSS', 'Belum ada boss aktif. Scheduler akan spawn otomatis.', COLORS.ash);
   const hpPct = percentage(boss.hp, boss.hpMax);
   const lines = (contributors || []).slice(0, 10).map((c, i) => `**#${i + 1}** <@${c.userId}> — ${formatCoins(c.damage)} damage`).join('\n');
-  const e = base(`👹 ${boss.name}`, `${progressBar(boss.hp, boss.hpMax, 18)} **${formatCoins(boss.hp)} / ${formatCoins(boss.hpMax)} HP** (${hpPct}%)\nSerang dengan \`6boss attack\`.`, boss.status === 'defeated' ? COLORS.success : COLORS.blood)
+  const e = base(`👹 ${boss.name}`, `${progressBar(boss.hp, boss.hpMax, 18)} **${formatCoins(boss.hp)} / ${formatCoins(boss.hpMax)} HP** (${hpPct}%)\nSerang dengan \`tboss attack\`.`, boss.status === 'defeated' ? COLORS.success : COLORS.blood)
     .addFields(
       { name: '⚔️ ATK / 🛡️ DEF', value: `${boss.attack} / ${boss.defense}`, inline: true },
       { name: '⏳ Ends', value: `<t:${Math.floor(new Date(boss.endsAt).getTime() / 1000)}:R>`, inline: true },

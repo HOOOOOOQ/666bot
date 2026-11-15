@@ -17,12 +17,12 @@ function profileOf(message) {
   };
 }
 
-function parse(content, prefix = '6') {
+function parse(content, prefix = 't') {
   const trimmed = String(content || '').trim();
   if (!trimmed.startsWith(prefix)) return null;
   const [rawToken, ...args] = trimmed.slice(prefix.length).split(/\s+/);
   if (!rawToken) return null;
-  const token = `6${rawToken.replace(/^6/, '').toLowerCase()}`;
+  const token = `t${rawToken.toLowerCase()}`;
   const command = commands.get(token);
   if (!command) return null;
   return { token, args, command, prefix };
@@ -31,16 +31,16 @@ function parse(content, prefix = '6') {
 async function handleMessage(message) {
   if (!message || message.author?.bot || message.author?.system) return false;
   if (!message.guildId) return false;
-  let prefix = '6';
-  if (!String(message.content || '').trim().startsWith('6')) {
+  let prefix = 't';
+  if (!String(message.content || '').trim().startsWith('t')) {
     const custom = await serverConfigService.getCustomPrefix(message.guildId).catch(() => null);
     if (!custom || !String(message.content || '').trim().startsWith(custom)) return false;
     prefix = custom;
   }
   const parsed = parse(message.content, prefix);
   if (!parsed) return false;
-  const bare = parsed.token.replace(/^6/, '');
-  const canonical = parsed.command?.meta?.name ? parsed.command.meta.name.replace(/^6/, '') : bare;
+  const bare = parsed.token.replace(/^t/, '');
+  const canonical = parsed.command?.meta?.name ? parsed.command.meta.name.replace(/^t/, '') : bare;
   const [enabled, canonicalEnabled] = await Promise.all([
     serverConfigService.isCommandEnabled(message.guildId, bare).catch(() => true),
     canonical === bare ? Promise.resolve(true) : serverConfigService.isCommandEnabled(message.guildId, canonical).catch(() => true),

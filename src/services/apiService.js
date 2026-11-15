@@ -385,9 +385,9 @@ async function handleDashboardRequest(req, res, url, pathName) {
         return true;
       }).map((entry) => ({
         name: entry.name,
-        bare: entry.name.replace(/^6/, ''),
+        bare: entry.name.replace(/^t/, ''),
         category: entry.category,
-        enabled: !disabled.has(entry.name.replace(/^6/, '')),
+        enabled: !disabled.has(entry.name.replace(/^t/, '')),
       }));
       sendJson(res, 200, { ok: true, data: { commands, disabledCommands: cfg.disabledCommands || [], customPrefix: cfg.customPrefix || null } });
       return true;
@@ -405,8 +405,8 @@ async function handleDashboardRequest(req, res, url, pathName) {
       const disabled = new Set(cfg.disabledCommands || []);
       const categories = CATEGORIES.map((category) => ({
         id: category.id, label: category.label, emoji: category.emoji, blurb: category.blurb,
-        commands: category.commands.map((entry) => ({ name: entry.name, enabled: !disabled.has(entry.name.replace(/^6/, '')) })),
-        enabled: category.commands.every((entry) => !disabled.has(entry.name.replace(/^6/, ''))),
+        commands: category.commands.map((entry) => ({ name: entry.name, enabled: !disabled.has(entry.name.replace(/^t/, '')) })),
+        enabled: category.commands.every((entry) => !disabled.has(entry.name.replace(/^t/, ''))),
       }));
       sendJson(res, 200, { ok: true, data: categories });
       return true;
@@ -417,7 +417,7 @@ async function handleDashboardRequest(req, res, url, pathName) {
       const category = CATEGORIES.find((entry) => entry.id === body.category);
       if (!category) return sendJson(res, 404, { ok: false, error: 'category_not_found' }), true;
       for (const entry of category.commands) {
-        await serverConfigService.toggleCommand(guildId, entry.name.replace(/^6/, ''), body.enabled !== false);
+        await serverConfigService.toggleCommand(guildId, entry.name.replace(/^t/, ''), body.enabled !== false);
       }
       sendJson(res, 200, { ok: true, data: { category: category.id, enabled: body.enabled !== false } });
       return true;

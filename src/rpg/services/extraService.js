@@ -188,7 +188,7 @@ async function equipWeapon(guildId, userId, itemId) {
     return { weapon: old, unequipped: true };
   }
   const weapon = WEAPON_MAP[String(itemId)];
-  if (!weapon) throw new UserError('Weapon tidak ditemukan. Lihat `6weapon list`.');
+  if (!weapon) throw new UserError('Weapon tidak ditemukan. Lihat `tweapon list`.');
   const user = await userService.ensureUser(guildId, userId);
   await userService.removeItem(guildId, userId, weapon.id, 1);
   try {

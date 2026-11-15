@@ -83,7 +83,7 @@ function safeMath(expression) {
 const commands = [
   define({
     name: 'ping', category: 'utility', aliases: [], description: 'Cek latency WebSocket dan uptime bot.',
-    usage: '`6ping`', examples: ['6ping'], cooldown: '3 detik',
+    usage: '`tping`', examples: ['tping'], cooldown: '3 detik',
     async execute(ctx) {
       const client = ctx.message.client;
       const dbState = models.RPGUser.db?.readyState === 1 ? 'connected' : 'disconnected';
@@ -92,7 +92,7 @@ const commands = [
   }),
   define({
     name: 'stats', category: 'utility', aliases: [], description: 'Statistik bot dan server.',
-    usage: '`6stats`', examples: ['6stats'], cooldown: '5 detik',
+    usage: '`tstats`', examples: ['tstats'], cooldown: '5 detik',
     async execute(ctx) {
       const client = ctx.message.client;
       const users = client.guilds.cache.reduce((sum, guild) => sum + (guild.memberCount || 0), 0);
@@ -104,43 +104,46 @@ const commands = [
   }),
   define({
     name: 'link', category: 'utility', aliases: [], description: 'Tautan website, help center, dan dashboard 666.',
-    usage: '`6link`', examples: ['6link'], cooldown: '2 detik',
+    usage: '`tlink`', examples: ['tlink'], cooldown: '2 detik',
     async execute(ctx) {
       return reply(ctx.message, info('🔗 666 LINKS', `[Website](${siteUrl()}/)\n[Help Center](${siteUrl()}/help/)\n[Commands JSON](${siteUrl()}/commands.json)\n[Source](${webUrl()})`));
     },
   }),
   define({
     name: 'guildlink', category: 'utility', aliases: ['serverlink'], description: 'Buat link invite server ini atau tampilkan support server.',
-    usage: '`6guildlink`', examples: ['6guildlink'], cooldown: '5 detik',
+    usage: '`tguildlink`', examples: ['tguildlink'], cooldown: '5 detik',
     async execute(ctx) {
       const support = process.env.SUPPORT_SERVER_URL;
       if (support) return reply(ctx.message, info('🔗 GUILD LINK', `Support server: ${support}\nServer ini: ${ctx.message.guild?.name || 'DM'}`));
       if (!ctx.message.guild) throw new UserError('Command ini hanya bisa dipakai di server.');
       let invite = null;
       if (ctx.message.guild.members.me?.permissions.has(PermissionFlagsBits.CreateInstantInvite)) {
-        invite = await ctx.message.guild.invites.create(ctx.message.channelId, { maxAge: 0, maxUses: 0, unique: false, reason: '6guildlink' }).catch(() => null);
+        invite = await ctx.message.guild.invites.create(ctx.message.channelId, { maxAge: 0, maxUses: 0, unique: false, reason: 'tguildlink' }).catch(() => null);
       }
       return reply(ctx.message, info('🔗 GUILD LINK', invite ? `Invite permanen: ${invite.url}` : `Server ID: \`${ctx.message.guild.id}\` (bot tidak punya izin Create Invite)`));
     },
   }),
   define({
     name: 'disable', category: 'utility', aliases: [], description: 'Aktif/nonaktifkan command di server ini (admin).',
-    usage: '`6disable <command>` • `6disable enable <command>`', examples: ['6disable hunt', '6disable enable hunt'], cooldown: '2 detik', permissions: 'Manage Server',
+    usage: '`tdisable <command>` • `tdisable enable <command>`', examples: ['tdisable hunt', 'tdisable enable hunt'], cooldown: '2 detik', permissions: 'Manage Server',
     async execute(ctx) {
       if (!isAdmin(ctx.message)) throw new UserError('Butuh permission **Manage Server**.');
       const enable = (ctx.args[0] || '').toLowerCase() === 'enable';
-      const token = (enable ? ctx.args[1] : ctx.args[0] || '').replace(/^6/, '').toLowerCase();
-      if (!token) throw new UserError('Format: `6disable <command>` atau `6disable enable <command>`.');
-      const target = require('./index').get(`6${token}`);
-      const names = target?.names?.length ? target.names.map((name) => name.replace(/^6/, '')) : [token];
+      const token = (enable ? ctx.args[1] : ctx.args[0] || '').toLowerCase();
+      if (!token) throw new UserError('Format: `tdisable <command>` atau `tdisable enable <command>`.');
+      const registry = require('./index');
+      const target = registry.get(token) || registry.get(`t${token}`);
+      if (!target) throw new UserError(`Command \`${token}\` tidak ditemukan.`);
+      const names = target.names.map((name) => (name.startsWith('t') ? name.slice(1) : name));
       let result;
       for (const name of names) result = await serverConfigService.toggleCommand(ctx.guildId, name, enable);
-      return reply(ctx.message, ok('🔧 COMMAND SETTING', `\`6${token}\` sekarang **${enable ? 'aktif' : 'nonaktif'}** di server ini.`));
+      const canonical = target.meta?.name?.startsWith('t') ? target.meta.name.slice(1) : target.meta?.name || token;
+      return reply(ctx.message, ok('🔧 COMMAND SETTING', `\`t${canonical}\` sekarang **${enable ? 'aktif' : 'nonaktif'}** di server ini.`));
     },
   }),
   define({
     name: 'censor', category: 'utility', aliases: [], description: 'Kelola filter kata server (admin).',
-    usage: '`6censor on|off|add <kata>|remove <kata>|list`', examples: ['6censor on', '6censor add badword'], cooldown: '2 detik', permissions: 'Manage Server',
+    usage: '`tcensor on|off|add <kata>|remove <kata>|list`', examples: ['tcensor on', 'tcensor add badword'], cooldown: '2 detik', permissions: 'Manage Server',
     async execute(ctx) {
       if (!isAdmin(ctx.message)) throw new UserError('Butuh permission **Manage Server**.');
       const action = (ctx.args[0] || 'list').toLowerCase();
@@ -158,21 +161,21 @@ const commands = [
     },
   }),
   define({
-    name: 'prefix', category: 'utility', aliases: [], description: 'Lihat atau ubah prefix tambahan server (admin). `6` selalu aktif.',
-    usage: '`6prefix [prefix]`', examples: ['6prefix', '6prefix !'], cooldown: '3 detik', permissions: 'Manage Server',
+    name: 'prefix', category: 'utility', aliases: [], description: 'Lihat atau ubah prefix tambahan server (admin). `t` selalu aktif.',
+    usage: '`tprefix [prefix]`', examples: ['tprefix', 'tprefix !'], cooldown: '3 detik', permissions: 'Manage Server',
     async execute(ctx) {
       if (!ctx.args[0]) {
         const cfg = await serverConfigService.getConfig(ctx.guildId);
-        return reply(ctx.message, info('🔧 PREFIX', `Prefix utama: \`6\`\nPrefix tambahan: \`${cfg.customPrefix || '—'}\``));
+        return reply(ctx.message, info('🔧 PREFIX', `Prefix utama: \`t\`\nPrefix tambahan: \`${cfg.customPrefix || '—'}\``));
       }
       if (!isAdmin(ctx.message)) throw new UserError('Butuh permission **Manage Server**.');
       const cfg = await serverConfigService.setCustomPrefix(ctx.guildId, ctx.args[0]);
-      return reply(ctx.message, ok('🔧 PREFIX', `Prefix tambahan diset ke \`${cfg.customPrefix}\`. Prefix \`6\` tetap aktif.`));
+      return reply(ctx.message, ok('🔧 PREFIX', `Prefix tambahan diset ke \`${cfg.customPrefix}\`. Prefix \`t\` tetap aktif.`));
     },
   }),
   define({
     name: 'announcement', category: 'utility', aliases: ['announce'], description: 'Kirim pengumuman embed dan set channel announcement (admin).',
-    usage: '`6announcement <teks>`', examples: ['6announcement Maintenance malam ini'], cooldown: '5 detik', permissions: 'Manage Server',
+    usage: '`tannouncement <teks>`', examples: ['tannouncement Maintenance malam ini'], cooldown: '5 detik', permissions: 'Manage Server',
     async execute(ctx) {
       if (!isAdmin(ctx.message)) throw new UserError('Butuh permission **Manage Server**.');
       const text = ctx.args.join(' ').trim();
@@ -184,42 +187,42 @@ const commands = [
   }),
   define({
     name: 'rules', category: 'utility', aliases: [], description: 'Tampilkan atau set rules server (admin).',
-    usage: '`6rules` • `6rules set <rule1> | <rule2>`', examples: ['6rules', '6rules set Hormati semua orang | No spam'], cooldown: '3 detik', permissions: 'Everyone (set: Manage Server)',
+    usage: '`trules` • `trules set <rule1> | <rule2>`', examples: ['trules', 'trules set Hormati semua orang | No spam'], cooldown: '3 detik', permissions: 'Everyone (set: Manage Server)',
     async execute(ctx) {
       if ((ctx.args[0] || '').toLowerCase() === 'set') {
         if (!isAdmin(ctx.message)) throw new UserError('Butuh permission **Manage Server**.');
         const rules = ctx.args.slice(1).join(' ').split('|').map((r) => r.trim()).filter(Boolean).slice(0, 20);
-        if (!rules.length) throw new UserError('Format: `6rules set rule1 | rule2`.');
+        if (!rules.length) throw new UserError('Format: `trules set rule1 | rule2`.');
         await serverConfigService.setRules(ctx.guildId, rules);
         return reply(ctx.message, ok('📜 RULES UPDATED', `${rules.length} rules disimpan.`));
       }
       const cfg = await serverConfigService.getConfig(ctx.guildId);
-      const rules = (cfg.rules || []).map((rule, index) => `**${index + 1}.** ${rule}`).join('\n') || 'Belum ada rules. Admin bisa set dengan `6rules set ...`.';
+      const rules = (cfg.rules || []).map((rule, index) => `**${index + 1}.** ${rule}`).join('\n') || 'Belum ada rules. Admin bisa set dengan `trules set ...`.';
       return reply(ctx.message, info('📜 SERVER RULES', rules));
     },
   }),
   define({
     name: 'suggest', category: 'utility', aliases: ['suggestion'], description: 'Kirim saran untuk server/bot. Admin dapat menandai status.',
-    usage: '`6suggest <ide>` • `6suggest accept|reject|implemented <id>`', examples: ['6suggest tambah command fish'], cooldown: '10 detik',
+    usage: '`tsuggest <ide>` • `tsuggest accept|reject|implemented <id>`', examples: ['tsuggest tambah command fish'], cooldown: '10 detik',
     async execute(ctx) {
       const action = (ctx.args[0] || '').toLowerCase();
       if (['accept', 'reject', 'implemented'].includes(action)) {
         if (!isAdmin(ctx.message)) throw new UserError('Butuh permission **Manage Server**.');
         const id = ctx.args[1];
-        if (!id || !/^[a-f0-9]{24}$/i.test(id)) throw new UserError('Format: `6suggest accept <id>`.');
+        if (!id || !/^[a-f0-9]{24}$/i.test(id)) throw new UserError('Format: `tsuggest accept <id>`.');
         const suggestion = await models.Suggestion.findOneAndUpdate({ _id: id, guildId: ctx.guildId }, { $set: { status: action === 'accept' ? 'accepted' : action, reviewedBy: ctx.userId, reviewedAt: new Date() } }, { new: true });
         if (!suggestion) throw new UserError('Suggestion tidak ditemukan.');
         return reply(ctx.message, ok('💡 SUGGESTION', `Suggestion \`${id}\` → **${suggestion.status}**.`));
       }
       const text = ctx.args.join(' ').trim();
-      if (!text) throw new UserError('Tulis saran: `6suggest tambah command fish`.');
+      if (!text) throw new UserError('Tulis saran: `tsuggest tambah command fish`.');
       const suggestion = await models.Suggestion.create({ guildId: ctx.guildId, userId: ctx.userId, username: ctx.message.author.username, message: text.slice(0, 1000), status: 'open' });
-      return reply(ctx.message, ok('💡 SUGGESTION TERKIRIM', `\`${suggestion._id}\`\n${text}\n\nAdmin dapat review dengan \`6suggest accept ${suggestion._id}\`.`));
+      return reply(ctx.message, ok('💡 SUGGESTION TERKIRIM', `\`${suggestion._id}\`\n${text}\n\nAdmin dapat review dengan \`tsuggest accept ${suggestion._id}\`.`));
     },
   }),
   define({
     name: 'shards', category: 'utility', aliases: ['shard'], description: 'Lihat jumlah shards dan kegunaannya.',
-    usage: '`6shards [@user]`', examples: ['6shards'], cooldown: '2 detik',
+    usage: '`tshards [@user]`', examples: ['tshards'], cooldown: '2 detik',
     async execute(ctx) {
       const target = ctx.message.mentions?.users?.first()?.id || ctx.userId;
       const user = await userService.ensureUser(ctx.guildId, target);
@@ -228,17 +231,17 @@ const commands = [
   }),
   define({
     name: 'math', category: 'utility', aliases: ['calc'], description: 'Kalkulator aman untuk ekspresi matematika.',
-    usage: '`6math <ekspresi>`', examples: ['6math (12+3)*4^2'], cooldown: '2 detik',
+    usage: '`tmath <ekspresi>`', examples: ['tmath (12+3)*4^2'], cooldown: '2 detik',
     async execute(ctx) {
       const expression = ctx.args.join(' ');
-      if (!expression) throw new UserError('Contoh: `6math (12+3)*4`.');
+      if (!expression) throw new UserError('Contoh: `tmath (12+3)*4`.');
       const value = safeMath(expression);
       return reply(ctx.message, info('🧮 MATH', `\`${expression}\` = **${Number(value.toFixed(10))}**`));
     },
   }),
   define({
     name: 'color', category: 'utility', aliases: ['colour'], description: 'Preview warna dari kode hex.',
-    usage: '`6color <#RRGGBB>`', examples: ['6color #ff5a00'], cooldown: '2 detik',
+    usage: '`tcolor <#RRGGBB>`', examples: ['tcolor #ff5a00'], cooldown: '2 detik',
     async execute(ctx) {
       const raw = (ctx.args[0] || '').replace('#', '');
       if (!/^[0-9a-f]{6}$/i.test(raw)) throw new UserError('Gunakan format hex 6 digit, contoh `#ff5a00`.');
@@ -248,7 +251,7 @@ const commands = [
   }),
   define({
     name: 'patron', category: 'utility', aliases: ['donate'], description: 'Info patron/donasi dan benefit tanpa klaim palsu.',
-    usage: '`6patron`', examples: ['6patron'], cooldown: '3 detik',
+    usage: '`tpatron`', examples: ['tpatron'], cooldown: '3 detik',
     async execute(ctx) {
       return reply(ctx.message, info('💖 PATRON 666', 'Patron membantu biaya server & pengembangan.\nBenefit diberikan manual oleh admin setelah donasi terverifikasi.\n\nHubungi admin server untuk detail. Tidak ada reward otomatis dari command ini.'));
     },

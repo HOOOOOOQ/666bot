@@ -10,15 +10,15 @@ const { getRarity } = require('../data/rarities');
 const { formatCoins } = require('../utils/formulas');
 
 const HELP = [
-  '`6pet hatch [egg_basic|egg_rare|egg_legendary]` — menetas',
-  '`6pet feed [id]` — naikkan level pet',
-  '`6pet equip <id>` — pasang pet aktif',
-  '`6pet unequip <id>` — lepas slot pet',
-  '`6pet inventory` — semua pet',
-  '`6pet stats [id]` — detail pet',
-  '`6pet upgrade [id]` — boost stat',
-  '`6pet evolve [id]` — evolusi saat level cukup',
-  '`6pet collection` — koleksi spesies',
+  '`tpet hatch [egg_basic|egg_rare|egg_legendary]` — menetas',
+  '`tpet feed [id]` — naikkan level pet',
+  '`tpet equip <id>` — pasang pet aktif',
+  '`tpet unequip <id>` — lepas slot pet',
+  '`tpet inventory` — semua pet',
+  '`tpet stats [id]` — detail pet',
+  '`tpet upgrade [id]` — boost stat',
+  '`tpet evolve [id]` — evolusi saat level cukup',
+  '`tpet collection` — koleksi spesies',
 ];
 
 async function execute(ctx) {
@@ -38,13 +38,13 @@ async function execute(ctx) {
       .setDescription(`🍖 Feed berhasil (+${result.xp} XP)${result.levelsGained ? ` • **naik ${result.levelsGained} level!**` : ''}\nBiaya: ${money(result.cost)}`));
   }
   if (sub === 'equip') {
-    requireArgs(ctx.args, 2, '6pet equip <id>');
+    requireArgs(ctx.args, 2, 'tpet equip <id>');
     const id = await resolvePetId(ctx.guildId, ctx.userId, ctx.args[1]);
     const pet = await petService.equip(ctx.guildId, ctx.userId, id);
     return reply(ctx.message, petEmbed(pet, getRarity(pet.rarity)).setDescription('✅ Pet aktif dipasang. Bonus pet sekarang berlaku di hunt & battle.'));
   }
   if (sub === 'unequip') {
-    requireArgs(ctx.args, 2, '6pet unequip <id>');
+    requireArgs(ctx.args, 2, 'tpet unequip <id>');
     const id = await resolvePetId(ctx.guildId, ctx.userId, ctx.args[1]);
     const pet = await petService.unequip(ctx.guildId, ctx.userId, id);
     return reply(ctx.message, petEmbed(pet, getRarity(pet.rarity)).setDescription('✅ Pet dilepas dari slot aktif.'));
@@ -75,7 +75,7 @@ async function execute(ctx) {
     return reply(ctx.message, collectionEmbed(await petService.collection(ctx.guildId, ctx.userId), 'PET'));
   }
   if (sub === 'help') return reply(ctx.message, helpEmbed('666 PET', HELP));
-  throw new UserError(`Subcommand \`${sub}\` tidak dikenal. Lihat \`6pet help\`.`);
+  throw new UserError(`Subcommand \`${sub}\` tidak dikenal. Lihat \`tpet help\`.`);
 }
 
-module.exports = { names: ['6pet'], execute, help: HELP };
+module.exports = { names: ['tpet'], execute, help: HELP };

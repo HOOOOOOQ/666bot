@@ -9,11 +9,11 @@ const { helpEmbed, reply, resolveTarget, profileOf } = require('./_helpers');
 const { formatCoins } = require('../utils/formulas');
 
 const HELP = [
-  '`6battle @user` — tantang battle turn-based',
-  '`6battle accept [id]` — terima tantangan',
-  '`6battle decline [id]` — tolak tantangan',
-  '`6battle stats` — W/L, rating, streak',
-  '`6battle leaderboard` — ranking arena',
+  '`tbattle @user` — tantang battle turn-based',
+  '`tbattle accept [id]` — terima tantangan',
+  '`tbattle decline [id]` — tolak tantangan',
+  '`tbattle stats` — W/L, rating, streak',
+  '`tbattle leaderboard` — ranking arena',
 ];
 
 async function latestFor(ctx, status = 'pending') {
@@ -56,12 +56,12 @@ async function execute(ctx) {
   if (sub === 'help') return reply(ctx.message, helpEmbed('666 BATTLE', HELP));
   if (sub) {
     const target = await resolveTarget(ctx.message, ctx.args[0]);
-    if (!target) throw new UserError('Tag lawan: `6battle @user`.');
+    if (!target) throw new UserError('Tag lawan: `tbattle @user`.');
     if (target.bot) throw new UserError('Tidak bisa menantang bot.');
     const battle = await battleService.challenge(ctx.guildId, ctx.userId, target.id, ctx.profile, profileOf(target));
     return reply(ctx.message, battleChallengeEmbed(battle), [battleButtons(String(battle._id))]);
   }
-  throw new UserError('Format: `6battle @user` atau `6battle help`.');
+  throw new UserError('Format: `tbattle @user` atau `tbattle help`.');
 }
 
-module.exports = { names: ['6battle'], execute, help: HELP };
+module.exports = { names: ['tbattle'], execute, help: HELP };

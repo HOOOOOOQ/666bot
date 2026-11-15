@@ -9,28 +9,28 @@ const { helpEmbed, reply, resolveTarget, requireArgs } = require('./_helpers');
 const { formatCoins } = require('../utils/formulas');
 
 const HELP = [
-  '`6guild create <nama>` — buat guild (biaya koin)',
-  '`6guild join <nama|id>` — masuk guild',
-  '`6guild leave` — keluar guild',
-  '`6guild info` / `6guild members` — profil & anggota',
-  '`6guild invite @user` — cara invite',
-  '`6guild deposit <koin>` — isi bank guild',
-  '`6guild upgrade` — leader upgrade level',
-  '`6guild leaderboard` — ranking guild',
-  '`6guild war [challenge <guild>|accept <id>|status|leaderboard]`',
+  '`tguild create <nama>` — buat guild (biaya koin)',
+  '`tguild join <nama|id>` — masuk guild',
+  '`tguild leave` — keluar guild',
+  '`tguild info` / `tguild members` — profil & anggota',
+  '`tguild invite @user` — cara invite',
+  '`tguild deposit <koin>` — isi bank guild',
+  '`tguild upgrade` — leader upgrade level',
+  '`tguild leaderboard` — ranking guild',
+  '`tguild war [challenge <guild>|accept <id>|status|leaderboard]`',
 ];
 
 async function execute(ctx) {
   const sub = (ctx.args[0] || 'info').toLowerCase();
   if (sub === 'create') {
-    requireArgs(ctx.args, 2, '6guild create <nama>');
+    requireArgs(ctx.args, 2, 'tguild create <nama>');
     const guild = await guildService.create(ctx.guildId, ctx.userId, ctx.args.slice(1).join(' '));
     return reply(ctx.message, new EmbedBuilder().setColor(COLORS.success).setTitle('🛡️ GUILD DIBUAT')
-      .setDescription(`**${guild.name}** berhasil dibuat.\nLeader: <@${ctx.userId}>\nAjak anggota dengan \`6guild join ${guild.name}\`.`)
+      .setDescription(`**${guild.name}** berhasil dibuat.\nLeader: <@${ctx.userId}>\nAjak anggota dengan \`tguild join ${guild.name}\`.`)
       .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
   }
   if (sub === 'join') {
-    requireArgs(ctx.args, 2, '6guild join <nama|id>');
+    requireArgs(ctx.args, 2, 'tguild join <nama|id>');
     const guild = await guildService.join(ctx.guildId, ctx.userId, ctx.args.slice(1).join(' '));
     return reply(ctx.message, new EmbedBuilder().setColor(COLORS.success).setTitle('🛡️ JOIN GUILD')
       .setDescription(`Kamu bergabung dengan **${guild.name}**.`).setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
@@ -46,14 +46,14 @@ async function execute(ctx) {
   }
   if (sub === 'invite') {
     const target = await resolveTarget(ctx.message, ctx.args[1]);
-    if (!target) throw new UserError('Format: `6guild invite @user`.');
+    if (!target) throw new UserError('Format: `tguild invite @user`.');
     const data = await guildService.info(ctx.guildId, ctx.userId);
     return reply(ctx.message, new EmbedBuilder().setColor(COLORS.ember).setTitle('📨 GUILD INVITE')
-      .setDescription(`${target} — gabung ke **${data.guild.name}** dengan:\n\`6guild join ${data.guild.name}\``)
+      .setDescription(`${target} — gabung ke **${data.guild.name}** dengan:\n\`tguild join ${data.guild.name}\``)
       .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
   }
   if (sub === 'deposit') {
-    requireArgs(ctx.args, 2, '6guild deposit <koin>');
+    requireArgs(ctx.args, 2, 'tguild deposit <koin>');
     const result = await guildService.deposit(ctx.guildId, ctx.userId, Number(ctx.args[1]));
     return reply(ctx.message, new EmbedBuilder().setColor(COLORS.success).setTitle('🏦 GUILD DEPOSIT')
       .setDescription(`Deposit **${money(result.amount)}** ke bank guild berhasil.`).setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
@@ -72,12 +72,12 @@ async function execute(ctx) {
   if (sub === 'war') {
     const action = (ctx.args[1] || 'status').toLowerCase();
     if (action === 'challenge') {
-      requireArgs(ctx.args, 3, '6guild war challenge <guild>');
+      requireArgs(ctx.args, 3, 'tguild war challenge <guild>');
       const result = await guildService.warChallenge(ctx.guildId, ctx.userId, ctx.args.slice(2).join(' '), ctx.message.id);
       return reply(ctx.message, warEmbed(result));
     }
     if (action === 'accept') {
-      requireArgs(ctx.args, 3, '6guild war accept <id>');
+      requireArgs(ctx.args, 3, 'tguild war accept <id>');
       const war = await guildService.warAccept(ctx.guildId, ctx.userId, ctx.args[2]);
       return reply(ctx.message, warEmbed({ war }));
     }
@@ -91,7 +91,7 @@ async function execute(ctx) {
     return reply(ctx.message, warEmbed(data));
   }
   if (sub === 'help') return reply(ctx.message, helpEmbed('666 GUILD', HELP));
-  throw new UserError('Subcommand guild tidak dikenal. Lihat `6guild help`.');
+  throw new UserError('Subcommand guild tidak dikenal. Lihat `tguild help`.');
 }
 
-module.exports = { names: ['6guild'], execute, help: HELP };
+module.exports = { names: ['tguild'], execute, help: HELP };

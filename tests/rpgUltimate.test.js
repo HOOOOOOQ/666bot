@@ -14,16 +14,16 @@ const { safeMath } = require('../src/rpg/commands/utility');
 const { parse } = require('../src/rpg/handler');
 
 const REQUIRED = [
-  '6top', '6my',
-  '6cash', '6give', '6daily', '6weekly', '6monthly', '6work', '6vote', '6quest', '6checklist', '6shop', '6buy', '6sell',
-  '6zoo', '6hunt', '6sacrifice', '6battle', '6sim', '6inv', '6equip', '6autohunt', '6dex', '6lootbox', '6egg', '6crate', '6team', '6weapon', '6rename', '6dismantle', '6boss', '6pet',
-  '6slots', '6coinflip', '6lottery', '6blackjack', '6dice', '6roulette', '6guess', '6trivia', '6rps',
-  '68ball', '6define', '6gif', '6pic', '6translate', '6roll', '6choose', '6bell',
-  '6cookie', '6ship', '6pray', '6curse', '6marry', '6emoji', '6profile', '6level', '6wallpaper', '6godify', '6avatar',
-  '6spongebobchicken', '6slapcar', '6isthisa', '6drake', '6distractedbf', '6communismcat', '6eject', '6emergencymeeting', '6headpat', '6tradeoffer', '6waddle',
-  '6blush', '6cry', '6dance', '6pout', '6shrug', '6sleepy', '6smile', '6smug', '6thumbsup', '6wag', '6thinking', '6triggered', '6teehee', '6deredere', '6thonsking', '6scoff', '6happy', '6thumbs', '6grin',
-  '6cuddle', '6hug', '6kiss', '6lick', '6nom', '6pat', '6poke', '6slap', '6stare', '6highfive', '6bite', '6greet', '6punch', '6handholding', '6tickle', '6hold', '6pats', '6wave', '6boop', '6snuggle', '6bully',
-  '6ping', '6stats', '6link', '6guildlink', '6disable', '6censor', '6patron', '6announcement', '6rules', '6suggest', '6shards', '6math', '6color', '6prefix',
+  'ttop', 'tmy',
+  'tcash', 'tgive', 'tdaily', 'tweekly', 'tmonthly', 'twork', 'tvote', 'tquest', 'tchecklist', 'tshop', 'tbuy', 'tsell',
+  'tzoo', 'thunt', 'tsacrifice', 'tbattle', 'tsim', 'tinv', 'tequip', 'tautohunt', 'tdex', 'tlootbox', 'tegg', 'tcrate', 'tteam', 'tweapon', 'trename', 'tdismantle', 'tboss', 'tpet',
+  'tslots', 'tcoinflip', 'tlottery', 'tblackjack', 'tdice', 'troulette', 'tguess', 'ttrivia', 'trps',
+  't8ball', 'tdefine', 'tgif', 'tpic', 'ttranslate', 'troll', 'tchoose', 'tbell',
+  'tcookie', 'tship', 'tpray', 'tcurse', 'tmarry', 'temoji', 'tprofile', 'tlevel', 'twallpaper', 'tgodify', 'tavatar',
+  'tspongebobchicken', 'tslapcar', 'tisthisa', 'tdrake', 'tdistractedbf', 'tcommunismcat', 'teject', 'temergencymeeting', 'theadpat', 'ttradeoffer', 'twaddle',
+  'tblush', 'tcry', 'tdance', 'tpout', 'tshrug', 'tsleepy', 'tsmile', 'tsmug', 'tthumbsup', 'twag', 'tthinking', 'ttriggered', 'tteehee', 'tderedere', 'tthonsking', 'tscoff', 'thappy', 'tthumbs', 'tgrin',
+  'tcuddle', 'thug', 'tkiss', 'tlick', 'tnom', 'tpat', 'tpoke', 'tslap', 'tstare', 'thighfive', 'tbite', 'tgreet', 'tpunch', 'thandholding', 'ttickle', 'thold', 'tpats', 'twave', 'tboop', 'tsnuggle', 'tbully',
+  'tping', 'tstats', 'tlink', 'tguildlink', 'tdisable', 'tcensor', 'tpatron', 'tannouncement', 'trules', 'tsuggest', 'tshards', 'tmath', 'tcolor', 'tprefix',
 ];
 
 test('every command in the screenshot command list is registered and documented', () => {
@@ -34,7 +34,7 @@ test('every command in the screenshot command list is registered and documented'
 test('every command displayed in every help category exists in the registry', () => {
   for (const category of catalog.CATEGORIES) {
     for (const bare of catalog.commandsFor(category)) {
-      assert.ok(commands.get(`6${bare}`), `kategori ${category.label} menampilkan ${bare} yang tidak ada`);
+      assert.ok(commands.get(`t${bare}`), `kategori ${category.label} menampilkan ${bare} yang tidak ada`);
     }
   }
 });
@@ -43,7 +43,7 @@ test('help overview is the 666 command list with all ten categories', () => {
   const data = helpView().embeds[0].data;
   assert.equal(data.title, 'Command List');
   assert.match(data.description, /Here is the list of commands!/);
-  assert.match(data.description, /6help \{command\}/);
+  assert.match(data.description, /thelp \{command\}/);
   assert.match(data.description, /Need more help\? Come join our guild/);
   assert.equal(data.fields.length, 10);
   const names = data.fields.map((field) => field.name.replace(/\*/g, ''));
@@ -55,20 +55,22 @@ test('help overview is the 666 command list with all ten categories', () => {
 
 test('per-command help exposes usage, cooldown, permission, and aliases', () => {
   const data = helpView('daily').embeds[0].data;
-  assert.equal(data.title, '📖 6daily');
+  assert.equal(data.title, '📖 tdaily');
   const names = data.fields.map((field) => field.name);
   assert.ok(names.includes('📌 Usage'));
   assert.ok(names.includes('⏱️ Cooldown'));
   assert.ok(names.includes('🔐 Permission'));
   const profile = helpView('profile').embeds[0].data;
-  assert.match(profile.fields.find((f) => f.name === '🔗 Aliases').value, /6me/);
+  assert.match(profile.fields.find((f) => f.name === '🔗 Aliases').value, /tme/);
 });
 
-test('custom prefix parsing keeps 6 and adds a server prefix', () => {
-  assert.equal(parse('6cash daily').token, '6cash');
-  assert.equal(parse('!cash daily', '!').token, '6cash');
+test('custom prefix parsing keeps t and adds a server prefix', () => {
+  assert.equal(parse('tcash daily').token, 'tcash');
+  assert.equal(parse('ttop').token, 'ttop');
+  assert.equal(parse('!cash daily', '!').token, 'tcash');
   assert.deepEqual(parse('!give @x 5', '!').args, ['@x', '5']);
-  assert.equal(parse('!cash', '6'), null);
+  assert.equal(parse('!cash', 't'), null);
+  assert.equal(parse('6cash daily'), null);
 });
 
 test('safe math parser evaluates without eval and rejects code', () => {

@@ -6,8 +6,8 @@ const { BRAND } = require('../ui/embeds');
 const { reply } = require('./_helpers');
 
 function define(def) {
-  const name = def.name.startsWith('6') ? def.name : `6${def.name}`;
-  const aliases = (def.aliases || []).map((alias) => (alias.startsWith('6') ? alias : `6${alias}`));
+  const name = `t${def.name}`;
+  const aliases = (def.aliases || []).map((alias) => `t${alias}`);
   const meta = {
     name,
     category: def.category,

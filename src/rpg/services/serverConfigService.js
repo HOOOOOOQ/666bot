@@ -61,7 +61,7 @@ async function toggleCommand(guildId, token, enabled) {
 
 async function setCustomPrefix(guildId, prefix) {
   const value = String(prefix || '').trim();
-  if (!/^[!?$%&*+\-.]{1,5}$/.test(value)) throw new UserError('Prefix harus 1–5 karakter simbol (contoh: `!`, `?`, `$`). `6` tetap aktif.');
+  if (!/^[!?$%&*+\-.]{1,5}$/.test(value)) throw new UserError('Prefix harus 1–5 karakter simbol (contoh: `!`, `?`, `$`). `t` tetap aktif.');
   return updateConfig(guildId, { customPrefix: value });
 }
 
