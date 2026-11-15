@@ -14,7 +14,7 @@ const { parse } = require('../src/rpg/handler');
 test('all required t-prefix commands are registered', () => {
   const required = [
     'tcash', 'thunt', 'tbattle', 'tpet', 'tquest', 'ttrade', 'tmarket', 'tguild', 'tboss',
-    'tcoinflip', 'tdice', 'tslots', 'tblackjack', 'troulette', 'tguess', 'ttrivia', 'trps',
+    'tcoinflip', 'tdice', 'tslots', 'tblackjack', 'troulette', 'tguess', 'ttrivia', 'trps', 'tmine',
     'tachievement', 'trank',
   ];
   for (const name of required) assert.ok(commands.get(name), `${name} harus terdaftar`);

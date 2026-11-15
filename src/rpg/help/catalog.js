@@ -28,6 +28,7 @@ const DETAILS = {
   'tguess': { summary: 'Tebak angka yang dipilih sistem.', usage: 'tguess <1-100> [bet]', examples: ['tguess 42 100'], cooldown: '3 detik', permission: 'Everyone' },
   'ttrivia': { summary: 'Trivia dengan pilihan tombol.', usage: 'ttrivia [bet]', examples: ['ttrivia 100'], cooldown: '5 detik', permission: 'Everyone' },
   'trps': { summary: 'Rock-paper-scissors lawan bot atau player.', usage: 'trps [bet] | trps @user [bet]', examples: ['trps 100', 'trps @teman 100'], cooldown: '3 detik', permission: 'Everyone' },
+  'tmine': { summary: 'Mines 3x3 dengan poin virtual, tombol interaktif, dan reward EXP tanpa taruhan saldo.', usage: 'tmine [points]', examples: ['tmine', 'tmine 3000'], note: 'Buka minimal satu kotak aman lalu Cash Out. Tiga mine mengakhiri sesi.', cooldown: '5 detik', permission: 'Everyone' },
   'thelp': { aliases: ['tcommands', 'th', 't?'], summary: 'Command list interaktif, detail per command, pencarian, dan kategori.', usage: 'thelp [command|kategori|keyword]', examples: ['thelp', 'thelp cash', 'thelp economy', 'thelp sell'], note: 'Gunakan menu kategori di bawah embed atau `/help` untuk versi slash.', cooldown: '2 detik', permission: 'Everyone' },
 };
 
@@ -35,7 +36,7 @@ const CATEGORY_DEFS = [
   { id: 'rankings', label: 'Rankings', emoji: '🏅', blurb: 'Peringkat wealth, level, hunt, battle, dan achievement.', commands: ['ttop', 'tmy', 'trank', 'tachievement'] },
   { id: 'economy', label: 'Economy', emoji: '💰', blurb: 'Dompet, bank, reward berkala, kerja, quest, checklist, shop, dan market.', commands: ['tcash', 'tgive', 'tdaily', 'tweekly', 'tmonthly', 'twork', 'tvote', 'tquest', 'tchecklist', 'tshop', 'tbuy', 'tsell', 'tmarket', 'ttrade'] },
   { id: 'animals', label: 'Animals', emoji: '🌱', blurb: 'Hunt, zoo, pet, battle, dungeon, lootbox, egg, dan world boss.', commands: ['tzoo', 'thunt', 'tsell', 'tsacrifice', 'tbattle', 'tsim', 'tinv', 'tequip', 'tautohunt', 'tdex', 'tlootbox', 'tegg', 'tcrate', 'tteam', 'tweapon', 'trename', 'tdismantle', 'tboss', 'tpet'] },
-  { id: 'gambling', label: 'Gambling', emoji: '🎲', blurb: 'RNG crypto, house edge transparan, dan tombol interaktif.', commands: ['tslots', 'tcoinflip', 'tlottery', 'tblackjack', 'tdice', 'troulette', 'tguess', 'ttrivia', 'trps'] },
+  { id: 'gambling', label: 'Gambling', emoji: '🎲', blurb: 'RNG crypto, house edge transparan, dan tombol interaktif.', commands: ['tslots', 'tcoinflip', 'tlottery', 'tblackjack', 'tdice', 'troulette', 'tguess', 'ttrivia', 'trps', 'tmine'] },
   { id: 'fun', label: 'Fun', emoji: '🎱', blurb: '8ball, kamus, GIF, gambar, translate, dadu, pilihan, dan bel.', commands: ['t8ball', 'tdefine', 'tgif', 'tpic', 'ttranslate', 'troll', 'tchoose', 'tbell'] },
   { id: 'social', label: 'Social', emoji: '🎭', blurb: 'Profil, level, avatar, pernikahan, ship, cookie, emoji, dan wallpaper.', commands: ['tcookie', 'tship', 'tpray', 'tcurse', 'tmarry', 'temoji', 'tprofile', 'tlevel', 'twallpaper', 'tgodify', 'tavatar'] },
   { id: 'meme', label: 'Meme', emoji: '😂', blurb: 'Meme generator canvas dengan teks custom.', commands: ['tspongebobchicken', 'tslapcar', 'tisthisa', 'tdrake', 'tdistractedbf', 'tcommunismcat', 'teject', 'temergencymeeting', 'theadpat', 'ttradeoffer', 'twaddle'] },

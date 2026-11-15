@@ -3,6 +3,7 @@
 const profileService = require('../services/profileService');
 const { profileEmbed } = require('../ui/embeds');
 const { reply, resolveTarget, profileOf } = require('./_helpers');
+const { profileCard } = require('../ui/response');
 
 module.exports = {
   names: ['tprofile', 'tme'],
@@ -13,7 +14,7 @@ module.exports = {
       displayAvatarURL: () => ctx.message.author.displayAvatarURL({ extension: 'png', size: 256 }),
     };
     const data = await profileService.profile(ctx.guildId, target.id, profileOf(target));
-    return reply(ctx.message, profileEmbed(data, profileOf(target).avatar));
+    return reply(ctx.message, profileCard(profileEmbed(data, profileOf(target).avatar)));
   },
   help: ['`tprofile [@user]` — kartu profil 666 lengkap'],
 };

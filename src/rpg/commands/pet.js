@@ -4,8 +4,9 @@ const { EmbedBuilder } = require('discord.js');
 const { COLORS } = require('../../ui/theme');
 const { UserError } = require('../../utils/errors');
 const petService = require('../services/petService');
-const { petEmbed, petListEmbed, collectionEmbed, money } = require('../ui/embeds');
+const { petEmbed, collectionEmbed, money } = require('../ui/embeds');
 const { helpEmbed, reply, resolvePetId, requireArgs } = require('./_helpers');
+const { richText } = require('../ui/response');
 const { getRarity } = require('../data/rarities');
 const { formatCoins } = require('../utils/formulas');
 
@@ -51,7 +52,8 @@ async function execute(ctx) {
   }
   if (sub === 'inventory' || sub === 'list') {
     const pets = await petService.inventory(ctx.guildId, ctx.userId);
-    return reply(ctx.message, petListEmbed(pets));
+    const lines = pets.map((p) => `\`${String(p._id).slice(-6)}\` ${getRarity(p.rarity).emoji} **${p.name}** Lv.${p.level}${p.evolved ? ' 🌟' : ''}`);
+    return reply(ctx.message, richText(`🐾 **PET INVENTORY**\n${lines.join('\n') || 'Belum punya pet. Hatch dengan `tpet hatch`.'}`.slice(0, 1900)));
   }
   if (sub === 'stats') {
     const id = ctx.args[1] ? await resolvePetId(ctx.guildId, ctx.userId, ctx.args[1]) : null;

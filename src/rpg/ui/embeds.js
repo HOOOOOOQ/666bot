@@ -232,6 +232,41 @@ function transactionHistoryEmbed(docs) {
   return base('📜 TRANSACTION HISTORY', lines || 'Belum ada transaksi.', COLORS.flame);
 }
 
+function inventoryEmbed({ items = [], page = 1, pages = 1, total = 0 }) {
+  const lines = items.map((i) => {
+    const item = i.item || {};
+    const rarity = i.rarity || item.rarity || 'common';
+    const equipped = i.equipped ? ' • ✅ equipped' : '';
+    return `${item.emoji || '📦'} **${item.name || i.itemId}** ×${i.qty || 1}\n-# ${String(rarity).toUpperCase()} • jual ${money(i.sellPrice || 0)}${equipped}`;
+  });
+  return base('🎒 666 INVENTORY', lines.join('\n') || 'Tas kosong. Beli item dengan `tcash shop`.', COLORS.ember)
+    .setFooter({ text: `${BRAND} • halaman ${page}/${pages} • total ${total} item` });
+}
+
+function mineButtons(sessionId, state = {}, ended = false) {
+  const revealed = new Set(state.revealed || []);
+  const rows = [];
+  for (let row = 0; row < 3; row += 1) {
+    const components = [];
+    for (let col = 0; col < 3; col += 1) {
+      const index = row * 3 + col;
+      const hit = Number(state.hit) === index;
+      const safe = revealed.has(index);
+      components.push(btn(
+        hit ? '💥' : safe ? '💎' : '·',
+        `rpg:mine:reveal:${sessionId}:${index}`,
+        hit ? ButtonStyle.Danger : safe ? ButtonStyle.Success : ButtonStyle.Secondary,
+        null,
+      ).setDisabled(ended || safe || hit));
+    }
+    rows.push(new ActionRowBuilder().addComponents(...components));
+  }
+  rows.push(new ActionRowBuilder().addComponents(
+    btn('Cash Out', `rpg:mine:cash:${sessionId}`, ButtonStyle.Success, '💰').setDisabled(ended || !(state.revealed || []).length),
+  ));
+  return rows;
+}
+
 function btn(label, id, style = ButtonStyle.Secondary, emoji = null) {
   const b = new ButtonBuilder().setCustomId(id).setLabel(label).setStyle(style);
   if (emoji) b.setEmoji(emoji);
@@ -276,7 +311,7 @@ module.exports = {
   BRAND, base, money,
   cashEmbed, dailyEmbed, huntEmbed, monsterListEmbed, collectionEmbed,
   battleChallengeEmbed, battleResultEmbed, petEmbed, petListEmbed, gameEmbed,
-  questEmbed, achievementEmbed, rankEmbed, shopEmbed, marketEmbed, tradeEmbed,
+  questEmbed, achievementEmbed, rankEmbed, shopEmbed, marketEmbed, tradeEmbed, inventoryEmbed, mineButtons,
   guildEmbed, warEmbed, bossEmbed, profileEmbed, leaderboardEmbed, transactionHistoryEmbed,
   battleButtons, tradeButtons, blackjackButtons, triviaButtons, rpsButtons,
 };

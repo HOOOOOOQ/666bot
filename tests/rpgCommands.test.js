@@ -34,7 +34,7 @@ async function run(content, userId, mention = null) {
   await ctx.command.execute(ctx);
   assert.ok(ctx.replies.length >= 1, `${content} harus membalas`);
   const payload = ctx.replies[0];
-  assert.ok(payload.embeds?.length, `${content} harus mengirim embed`);
+  assert.ok(payload.embeds?.length || payload.content, `${content} harus mengirim respons`);
   return ctx;
 }
 
@@ -70,8 +70,10 @@ test('all mini game commands render and blackjack/trivia create sessions', async
   await run('troulette red 10', '734444444444444444');
   await run('tguess 5 10', '735555555555555555');
   await run('trps rock 10', '736666666666666666');
-  await run('tblackjack 10', '737777777777777777');
-  await run('ttrivia 10', '738888888888888888');
+  const blackjack = await run('tblackjack 10', '737777777777777777');
+  assert.ok(blackjack.replies[0].components?.length, 'blackjack harus mengirim tombol Hit/Stand');
+  const trivia = await run('ttrivia 10', '738888888888888888');
+  assert.ok(trivia.replies[0].components?.length, 'trivia harus mengirim tombol jawaban');
 });
 
 test('battle, trade, market, guild and boss commands render', async () => {
@@ -84,4 +86,48 @@ test('battle, trade, market, guild and boss commands render', async () => {
   await run('tguild info', '741111111111111111');
   await run('tboss status', '745555555555555555');
   await run('tboss attack', '746666666666666666');
+});
+
+test('daily, weekly, monthly, work, slots, and coinflip use plain OwO-style responses', async () => {
+  const daily = await run('tcash daily', '751111111111111111');
+  assert.equal(daily.replies[0].embeds, undefined);
+  assert.match(daily.replies[0].content, /Here is your daily/);
+  assert.match(daily.replies[0].content, /\*\*[\d.]+\*\* 666 Coins/);
+  assert.match(daily.replies[0].content, /daily streak/);
+  assert.match(daily.replies[0].content, /Your next daily is in/);
+
+  const weekly = await run('tcash weekly', '751111111111111112');
+  assert.equal(weekly.replies[0].embeds, undefined);
+  assert.match(weekly.replies[0].content, /Here is your weekly/);
+
+  const monthly = await run('tcash monthly', '751111111111111113');
+  assert.equal(monthly.replies[0].embeds, undefined);
+  assert.match(monthly.replies[0].content, /Here is your monthly/);
+
+  const work = await run('tcash work', '751111111111111114');
+  assert.equal(work.replies[0].embeds, undefined);
+  assert.match(work.replies[0].content, /worked and earned/);
+
+  const slots = await run('tslots 10', '751111111111111115');
+  assert.equal(slots.replies[0].embeds, undefined);
+  assert.match(slots.replies[0].content, /666 SLOTS/);
+
+  const coinflip = await run('tcoinflip heads 10', '751111111111111116');
+  assert.equal(coinflip.replies[0].embeds, undefined);
+  assert.match(coinflip.replies[0].content, /coin spins/);
+});
+
+test('mines starts a safe 3x3 virtual-point session without touching wallet balance', async () => {
+  const ctx = makeCtx('tmine 3000', '752222222222222222');
+  const before = await models.RPGUser.findOne({ guildId: GUILD, userId: ctx.userId });
+  await ctx.command.execute(ctx);
+  const payload = ctx.replies[0];
+  assert.match(payload.content, /666 MINES/);
+  assert.ok(payload.components.length >= 4);
+  const session = await models.GameSession.findOne({ guildId: GUILD, userId: ctx.userId, game: 'mines' });
+  assert.ok(session);
+  assert.equal(session.bet, 3000);
+  assert.equal(session.state.revealed.length, 0);
+  const after = await models.RPGUser.findOne({ guildId: GUILD, userId: ctx.userId });
+  assert.equal((after?.wallet || 0) - (before?.wallet || 0), 0);
 });

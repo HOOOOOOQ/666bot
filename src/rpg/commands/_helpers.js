@@ -3,6 +3,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { COLORS } = require('../../ui/theme');
 const { BRAND } = require('../ui/embeds');
+const { isResponse, toPayload } = require('../ui/response');
 const { UserError } = require('../../utils/errors');
 
 function payload(embed, components = []) {
@@ -19,8 +20,13 @@ function helpEmbed(title, lines) {
     .setFooter({ text: BRAND });
 }
 
-async function reply(message, embed, components = []) {
-  return message.reply(payload(embed, components));
+async function reply(message, content, components = []) {
+  if (isResponse(content)) {
+    const data = toPayload(content);
+    if (components.length) data.components = [...(data.components || []), ...components];
+    return message.reply(data);
+  }
+  return message.reply(payload(content, components));
 }
 
 function mentionUser(id) {

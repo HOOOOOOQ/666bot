@@ -17,7 +17,7 @@ const REQUIRED = [
   'ttop', 'tmy',
   'tcash', 'tgive', 'tdaily', 'tweekly', 'tmonthly', 'twork', 'tvote', 'tquest', 'tchecklist', 'tshop', 'tbuy', 'tsell',
   'tzoo', 'thunt', 'tsacrifice', 'tbattle', 'tsim', 'tinv', 'tequip', 'tautohunt', 'tdex', 'tlootbox', 'tegg', 'tcrate', 'tteam', 'tweapon', 'trename', 'tdismantle', 'tboss', 'tpet',
-  'tslots', 'tcoinflip', 'tlottery', 'tblackjack', 'tdice', 'troulette', 'tguess', 'ttrivia', 'trps',
+  'tslots', 'tcoinflip', 'tlottery', 'tblackjack', 'tdice', 'troulette', 'tguess', 'ttrivia', 'trps', 'tmine',
   't8ball', 'tdefine', 'tgif', 'tpic', 'ttranslate', 'troll', 'tchoose', 'tbell',
   'tcookie', 'tship', 'tpray', 'tcurse', 'tmarry', 'temoji', 'tprofile', 'tlevel', 'twallpaper', 'tgodify', 'tavatar',
   'tspongebobchicken', 'tslapcar', 'tisthisa', 'tdrake', 'tdistractedbf', 'tcommunismcat', 'teject', 'temergencymeeting', 'theadpat', 'ttradeoffer', 'twaddle',

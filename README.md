@@ -62,8 +62,9 @@ BEST STREAK: 45 DAYS • DUO XP: 2,800 XP
 - **Restart-safe** — streak, aktivitas, reward, konfigurasi, dan antrean log tetap konsisten setelah restart.
 - **Graceful shutdown** — flush antrean log & notifikasi, tutup API, tutup koneksi MongoDB.
 - **Streak API opsional** — endpoint HTTP untuk uptime monitor (Pterodactyl).
-- **Test suite** — 108 test otomatis (`node --test`) termasuk render kartu PNG, meme engine PNG, dedupe log, retry, recovery, dan seluruh sistem RPG.
-- **666 ULTIMATE RPG** — economy, hunting, battle, pet, 9 gambling games, quest/achievement, trade, market, guild war, world boss, social, fun, meme generator, emotes, actions, utility, dan dashboard web. Semua additive; fitur Duo lama tidak diubah.
+- **Test suite** — 115 test otomatis (`node --test`) termasuk render kartu PNG, meme engine PNG, dedupe log, retry, recovery, dan seluruh sistem RPG.
+- **666 ULTIMATE RPG** — economy, hunting, battle, pet, mini games termasuk **Mines 3×3 interaktif**, quest/achievement, trade, market, guild war, world boss, social, fun, meme generator, emotes, actions, utility, dan dashboard web. Semua additive; fitur Duo lama tidak diubah.
+- **Response layer bertingkat** — command memilih bentuk paling pas: plain text, rich text, embed, image, GIF, profile card, leaderboard, atau game board interaktif. Daily/weekly/monthly/work/beg tampil sebagai teks dengan reward bold, streak, bonus, dan countdown reset; tidak lagi dipaksa menjadi embed.
 - **Command List 666** — `thelp` menampilkan satu embed **Command List** dengan 10 kategori (Rankings, Economy, Animals, Gambling, Fun, Social, Meme, Emotes, Actions, Utility), detail per command (usage, contoh, argumen, cooldown, permission, alias), pencarian, select menu, dan pagination data.
 - **Dashboard RPG** — `/dashboard` dengan settings 8 grup, drop-rate editor tervalidasi, command/category management live, player detail, transaction log, dan admin key.
 
@@ -655,7 +656,7 @@ Expansion besar yang **additive**: seluruh fitur Duo Streak, `/duo`, database, d
 | Hunting | `thunt` | start, inventory, collection, sell, stats, leaderboard |
 | Battle | `tbattle @user` | accept, decline, stats, leaderboard; turn-based PvP + ELO + anti win-trading |
 | Pet | `tpet` | hatch, feed, equip/unequip, inventory, upgrade, stats, evolve, collection; slot aktif mengikuti settings `maxSlots` |
-| Mini Games | `tcoinflip` `tdice` `tslots` `tblackjack` `troulette` `tguess` `ttrivia` `trps` | betting, tombol interaktif, RNG crypto, house edge transparan |
+| Mini Games | `tcoinflip` `tdice` `tslots` `tblackjack` `troulette` `tguess` `ttrivia` `trps` `tmine` | betting, tombol interaktif, RNG crypto, house edge transparan; `tmine` memakai poin virtual/EXP tanpa taruhan saldo |
 | Quest | `tquest` | daily, weekly, special, hidden, claim |
 | Achievement | `tachievement` | badge + reward sekali |
 | Rank | `trank` | level, rank, EXP, posisi server |
@@ -684,6 +685,7 @@ tbattle @partner
 tpet hatch egg_rare
 tcoinflip heads 100
 tblackjack 250
+tmine 3000
 ttrade @friend 500
 tmarket sell monster <id> 1500
 tguild create Nightfall
@@ -691,6 +693,22 @@ tboss attack
 tquest claim daily_hunt_5
 tprofile @member
 ```
+
+### Response Layer
+
+Command tidak lagi otomatis mengirim embed. `src/rpg/ui/response.js` menyediakan kontrak kecil yang dipakai oleh command dan interaction handler:
+
+| Tipe | Dipakai untuk |
+| --- | --- |
+| `plain` / `richText` | reward, work/beg, transfer, stats, rank, quest, achievement, notice singkat |
+| `gameBoard` | coinflip, slots, dice, roulette, guess, blackjack, trivia, RPS, battle result, mines |
+| `image` | encounter hunting dengan artwork monster |
+| `gif` | emotes/actions (teks + URL GIF, tanpa embed tambahan) |
+| `profileCard` | `tprofile` dan `tcash profile` |
+| `leaderboard` | ranking teks |
+| `embed` | data terstruktur yang memang butuh field, seperti shop, market, guild, boss, dan inventory |
+
+Semua respons tetap melalui `reply()` / `toPayload()` dengan `allowedMentions` aman. Game interaktif memakai satu pesan session: handler memanggil `deferUpdate()` lalu `editReply()`, tombol dinonaktifkan setelah selesai/kedaluwarsa, dan handler memverifikasi pemilik session sebelum memproses klik. `formatCountdown()` memakai reset UTC yang sama dengan `dayKey/weekKey/monthKey` backend agar countdown daily/weekly/monthly tidak menyesatkan.
 
 ### Dashboard Web
 
@@ -797,7 +815,7 @@ src/
 npm test
 ```
 
-Test suite sekarang mencakup fitur lama + RPG: registry command, parser prefix, validasi drop rate/settings, formula, RNG, battle simulator, blackjack, economy idempotency/concurrency, cooldown terdistribusi, hunt/pet, battle atomic, mini game, world boss, guild, trade dua-confirm, market, command render, tombol interaksi, dan dashboard API/static.
+Test suite sekarang mencakup fitur lama + RPG: registry command, parser prefix, validasi drop rate/settings, formula, RNG, battle simulator, blackjack, mines, economy idempotency/concurrency, cooldown terdistribusi, hunt/pet, battle atomic, mini game, world boss, guild, trade dua-confirm, market, command render, response layer, pagination/inventory owner, tombol interaksi, dan dashboard API/static.
 
 ## Testing
 

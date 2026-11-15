@@ -2,12 +2,13 @@
 
 const crypto = require('node:crypto');
 const { EmbedBuilder } = require('discord.js');
-const { define, info, ok, fail } = require('./_factory');
+const { define } = require('./_factory');
 const { reply, resolveTarget } = require('./_helpers');
 const extraService = require('../services/extraService');
 const userService = require('../services/userService');
 const cooldownService = require('../services/cooldownService');
 const { BRAND } = require('../ui/embeds');
+const { plain, richText } = require('../ui/response');
 const { COLORS } = require('../../ui/theme');
 const { money } = require('../ui/embeds');
 const { formatCoins, xpForLevel } = require('../utils/formulas');
@@ -38,7 +39,7 @@ const commands = [
       const target = await targetOf(ctx);
       await extraService.socialCount(ctx.guildId, ctx.userId, 'cookiesGiven');
       if (target) await extraService.socialCount(ctx.guildId, target.id, 'cookiesReceived');
-      return reply(ctx.message, ok('🍪 COOKIE', target ? `<@${ctx.userId}> memberikan cookie ke <@${target.id}>! 🍪` : `<@${ctx.userId}> memakan cookie. 🍪`));
+      return reply(ctx.message, plain(target ? `🍪 | <@${ctx.userId}> memberikan cookie ke <@${target.id}>! 🍪` : `🍪 | <@${ctx.userId}> memakan cookie.`));
     },
   }),
   define({
@@ -53,8 +54,7 @@ const commands = [
       const hash = crypto.createHash('sha256').update(key).digest();
       const percent = hash[0] % 101;
       const bar = '█'.repeat(Math.round(percent / 10)).padEnd(10, '░');
-      return reply(ctx.message, info('💞 SHIP METER',
-        `<@${first}> ❤️ <@${second}>\n\n\`${bar}\` **${percent}%**\n\n` +
+      return reply(ctx.message, richText(`💞 **SHIP METER**\n<@${first}> ❤️ <@${second}>\n\n\`${bar}\` **${percent}%**\n\n` +
         (percent >= 80 ? 'Jodoh banget! 💍' : percent >= 50 ? 'Ada potensi. 👀' : percent >= 25 ? 'Friendzone? 🤝' : 'Mungkin jangan dulu. 💔')));
     },
   }),
@@ -69,7 +69,7 @@ const commands = [
         await userService.addXp(ctx.guildId, target.id, 5, 'xp').catch(() => {});
         await extraService.socialCount(ctx.guildId, target.id, 'blessings');
       }
-      return reply(ctx.message, ok('🙏 PRAY', target ? `<@${ctx.userId}> mengirim doa untuk <@${target.id}>. +5 XP untuk target.` : `<@${ctx.userId}> memanjatkan doa.`));
+      return reply(ctx.message, plain(target ? `🙏 | <@${ctx.userId}> mengirim doa untuk <@${target.id}>. +5 XP untuk target.` : `🙏 | <@${ctx.userId}> memanjatkan doa.`));
     },
   }),
   define({
@@ -80,7 +80,7 @@ const commands = [
       const target = await targetOf(ctx);
       await extraService.socialCount(ctx.guildId, ctx.userId, 'curses');
       if (target) await extraService.socialCount(ctx.guildId, target.id, 'cursesReceived');
-      return reply(ctx.message, fail('🌑 CURSE', target ? `<@${ctx.userId}> melempar kutukan ke <@${target.id}>... semoga RNG baik.` : `<@${ctx.userId}> mengutuk langit.`));
+      return reply(ctx.message, plain(target ? `🌑 | <@${ctx.userId}> melempar kutukan ke <@${target.id}>... semoga RNG baik.` : `🌑 | <@${ctx.userId}> mengutuk langit.`));
     },
   }),
   define({
@@ -91,13 +91,13 @@ const commands = [
       const action = (ctx.args[0] || 'status').toLowerCase();
       if (action === 'status' || (!action.startsWith('@') && !ctx.message.mentions?.users?.size && ctx.args.length === 0)) {
         const user = await userService.ensureUser(ctx.guildId, ctx.userId);
-        if (!user.partnerId) return reply(ctx.message, info('💍 MARRIAGE', 'Kamu belum menikah. Gunakan `tmarry @user` untuk propose.'));
-        return reply(ctx.message, info('💍 MARRIAGE', `Kamu menikah dengan <@${user.partnerId}> sejak <t:${Math.floor(new Date(user.marriedAt || Date.now()).getTime() / 1000)}:R>.`));
+        if (!user.partnerId) return reply(ctx.message, plain('💍 | Kamu belum menikah. Gunakan `tmarry @user` untuk propose.'));
+        return reply(ctx.message, richText(`💍 **MARRIAGE**\nKamu menikah dengan <@${user.partnerId}> sejak <t:${Math.floor(new Date(user.marriedAt || Date.now()).getTime() / 1000)}:R>.`));
       }
       if (action === 'accept') {
         if (!ctx.args[1] || !/^[a-f0-9]{24}$/i.test(ctx.args[1])) throw new UserError('Format: `tmarry accept <proposalId>`. Salin ID dari pesan proposal.');
         const proposal = await extraService.acceptMarriage(ctx.guildId, ctx.userId, ctx.args[1]);
-        return reply(ctx.message, ok('💍 MARRIAGE ACCEPTED', `<@${proposal.userId}> dan <@${ctx.userId}> sekarang menikah!`));
+        return reply(ctx.message, plain(`💍 | <@${proposal.userId}> dan <@${ctx.userId}> sekarang menikah!`));
       }
       if (action === 'divorce') {
         const user = await userService.ensureUser(ctx.guildId, ctx.userId);
@@ -105,14 +105,13 @@ const commands = [
         const partner = user.partnerId;
         await userService.ensureUser(ctx.guildId, partner);
         await require('../../database/models').RPGUser.updateMany({ guildId: ctx.guildId, userId: { $in: [ctx.userId, partner] } }, { $set: { partnerId: null, marriedAt: null } });
-        return reply(ctx.message, ok('💔 DIVORCE', `Pernikahan dengan <@${partner}> berakhir.`));
+        return reply(ctx.message, plain(`💔 | Pernikahan dengan <@${partner}> berakhir.`));
       }
       const target = await resolveTarget(ctx.message, ctx.args[0]);
       if (!target) throw new UserError('Tag orang yang ingin dinikahi: `tmarry @user`.');
       if (target.bot) throw new UserError('Tidak bisa menikahi bot.');
       const proposal = await extraService.proposeMarriage(ctx.guildId, ctx.userId, target.id);
-      return reply(ctx.message, info('💍 MARRIAGE PROPOSAL',
-        `<@${ctx.userId}> melamar <@${target.id}>!\n\n<@${target.id}>, terima dengan:\n\`tmarry accept ${proposal._id}\`\n\nBerlaku 1 jam.`));
+      return reply(ctx.message, richText(`💍 **MARRIAGE PROPOSAL**\n<@${ctx.userId}> melamar <@${target.id}>!\n\n<@${target.id}>, terima dengan:\n\`tmarry accept ${proposal._id}\`\n\nBerlaku 1 jam.`));
     },
   }),
   define({
@@ -135,7 +134,7 @@ const commands = [
       const need = xpForLevel(user.level || 1);
       const pct = Math.min(100, Math.round(((user.xp || 0) / need) * 100));
       const bar = '█'.repeat(Math.round(pct / 10)).padEnd(10, '░');
-      return reply(ctx.message, info('📈 LEVEL', `<@${target}>\n**Level ${user.level || 1}**\n\`${bar}\` ${pct}%\n${formatCoins(user.xp || 0)} / ${formatCoins(need)} XP`));
+      return reply(ctx.message, richText(`📈 **LEVEL** — <@${target}>\n**Level ${user.level || 1}**\n\`${bar}\` ${pct}%\n${formatCoins(user.xp || 0)} / ${formatCoins(need)} XP`));
     },
   }),
   define({
