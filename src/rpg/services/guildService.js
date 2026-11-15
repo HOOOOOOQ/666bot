@@ -25,17 +25,20 @@ async function create(discordGuildId, userId, name) {
   const nameTaken = await models.Guild.findOne({ discordGuildId, name: clean }).lean();
   if (nameTaken) throw new UserError('Nama guild sudah dipakai.');
   await userService.ensureUser(discordGuildId, userId);
-  await userService.spendCoins(discordGuildId, userId, cfg.creationCost, 'guild_create', `guild_create:${discordGuildId}:${userId}:${Date.now()}`, { name: clean });
+  const creationKey = `guild_create:${discordGuildId}:${userId}:${Date.now()}`;
+  if (cfg.creationCost > 0) {
+    await userService.spendCoins(discordGuildId, userId, cfg.creationCost, 'guild_create', creationKey, { name: clean });
+  }
   let guild;
   try {
     guild = await models.Guild.create({
       discordGuildId, name: clean, leaderId: userId, maxMembers: cfg.maxMembers,
-      season: seasonKey(), missions: {},
+      season: seasonKey(new Date(), cfg.season), missions: {},
     });
     await models.GuildMember.create({ guildRef: guild._id, discordGuildId, userId, role: 'leader' });
     await models.RPGUser.updateOne({ guildId: discordGuildId, userId }, { $set: { rpgGuildId: guild._id } });
   } catch (error) {
-    await userService.addCoins(discordGuildId, userId, cfg.creationCost, 'guild_create_refund', `guild_create_refund:${discordGuildId}:${userId}:${Date.now()}`, {}).catch(() => {});
+    if (cfg.creationCost > 0) await userService.addCoins(discordGuildId, userId, cfg.creationCost, 'guild_create_refund', `${creationKey}:refund`, {}).catch(() => {});
     if (guild) {
       await models.GuildMember.deleteMany({ guildRef: guild._id }).catch(() => {});
       await models.Guild.deleteOne({ _id: guild._id }).catch(() => {});
@@ -114,8 +117,13 @@ async function deposit(discordGuildId, userId, amount) {
   const value = userService.assertAmount(amount);
   const key = `guild_deposit:${discordGuildId}:${userId}:${Date.now()}`;
   const result = await userService.spendCoins(discordGuildId, userId, value, 'guild_deposit', key, { guildRef: String(member.guildRef) });
-  await models.Guild.updateOne({ _id: member.guildRef }, { $inc: { bank: value, xp: Math.floor(value / 10) } });
-  await models.GuildMember.updateOne({ _id: member._id }, { $inc: { contribution: value } });
+  try {
+    await models.Guild.updateOne({ _id: member.guildRef }, { $inc: { bank: value, xp: Math.floor(value / 10) } });
+    await models.GuildMember.updateOne({ _id: member._id }, { $inc: { contribution: value } });
+  } catch (error) {
+    await userService.addCoins(discordGuildId, userId, value, 'guild_deposit_refund', `${key}:refund`, { guildRef: String(member.guildRef) }).catch(() => {});
+    throw error;
+  }
   return { guildRef: member.guildRef, amount: value, user: result.user };
 }
 
@@ -163,7 +171,7 @@ async function warChallenge(discordGuildId, userId, targetName, requestId) {
     challengerGuildId: challenger._id,
     defenderGuildId: defender._id,
     status: 'pending',
-    season: seasonKey(),
+    season: seasonKey(new Date(), game.guild.season),
     idempotencyKey: `war:${discordGuildId}:${challenger._id}:${defender._id}:${requestId || Date.now()}`,
   });
   return { war, challenger, defender };
@@ -187,7 +195,8 @@ async function warAccept(discordGuildId, userId, warId) {
   return updated;
 }
 
-async function addBattlePoints(discordGuildId, winnerId, loserId) {
+async function addBattlePoints(discordGuildId, winnerId, loserId, antiFarm = false) {
+  if (antiFarm) return null;
   const [winner, loser] = await Promise.all([
     models.RPGUser.findOne({ guildId: discordGuildId, userId: winnerId }).lean(),
     models.RPGUser.findOne({ guildId: discordGuildId, userId: loserId }).lean(),

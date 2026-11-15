@@ -17,7 +17,9 @@ function monthKey(date = new Date()) {
   return date.toISOString().slice(0, 7);
 }
 
-function seasonKey(date = new Date()) {
+function seasonKey(date = new Date(), period = 'weekly') {
+  if (period === 'monthly') return monthKey(date);
+  if (period === 'daily') return dayKey(date);
   return weekKey(date);
 }
 

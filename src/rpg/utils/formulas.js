@@ -63,11 +63,13 @@ function playerBattleStats(user, pet, settings = {}) {
     defense: 12 + (user.level || 1) * 2,
     speed: 10 + Math.floor((user.level || 1) / 2),
   };
-  if (pet) {
-    base.hp += Math.round(pet.hp * 0.35);
-    base.attack += Math.round(pet.attack * 0.5);
-    base.defense += Math.round(pet.defense * 0.35);
-    base.speed += Math.round(pet.speed * 0.25);
+  const pets = Array.isArray(pet) ? pet : (pet ? [pet] : []);
+  const petBonus = Number(settings.petBonusMultiplier ?? 1);
+  for (const activePet of pets) {
+    base.hp += Math.round(activePet.hp * 0.35 * petBonus);
+    base.attack += Math.round(activePet.attack * 0.5 * petBonus);
+    base.defense += Math.round(activePet.defense * 0.35 * petBonus);
+    base.speed += Math.round(activePet.speed * 0.25 * petBonus);
   }
   return {
     hp: Math.round(base.hp * (settings.hpMultiplier || 1)),

@@ -5,6 +5,8 @@ const { UserError } = require('../../utils/errors');
 const settingsService = require('./settingsService');
 const userService = require('./userService');
 const questService = require('./questService');
+const petService = require('./petService');
+const cooldownService = require('./cooldownService');
 const { playerBattleStats, damage, eloDelta, formatCoins } = require('../utils/formulas');
 const { randomFloat } = require('../utils/rng');
 const { createLogger } = require('../../utils/logger');
@@ -13,16 +15,17 @@ const log = createLogger('rpg-battle');
 
 async function buildSnapshot(guildId, userId, profile = {}) {
   const user = await userService.ensureUser(guildId, userId, profile);
-  let pet = null;
-  if (user.activePetId) pet = await models.Pet.findOne({ _id: user.activePetId, guildId, userId }).lean();
+  const pets = await petService.activePets(guildId, userId, user);
+  const pet = pets[0] || null;
   const game = await settingsService.getGame(guildId);
   return {
     userId,
     username: profile.username || user.username || `User ${userId}`,
     level: user.level || 1,
     rating: user.battleRating || 1000,
-    stats: playerBattleStats(user, pet, game.battle),
+    stats: playerBattleStats(user, pets, { ...game.battle, petBonusMultiplier: game.pets.bonusMultiplier }),
     pet: pet ? { id: String(pet._id), name: pet.name, skill: pet.skill, attack: pet.attack } : null,
+    pets: pets.map((entry) => ({ id: String(entry._id), name: entry.name, skill: entry.skill })),
   };
 }
 
@@ -51,17 +54,25 @@ async function challenge(guildId, challengerId, opponentId, challengerProfile = 
     { guildId, status: 'pending', expiresAt: { $lte: new Date() } },
     { $set: { status: 'expired' } },
   ).catch(() => {});
+  const cd = await cooldownService.claim(guildId, challengerId, 'battle', game.battle.cooldownSec * 1000);
+  if (!cd.ok) throw new UserError(`Battle cooldown. Tantang lagi <t:${Math.floor(cd.retryAt.getTime() / 1000)}:R>.`);
   const expiry = new Date(Date.now() + game.battle.challengeExpirySec * 1000);
-  const battle = await models.Battle.create({
-    guildId,
-    challengerId,
-    opponentId,
-    status: 'pending',
-    challengerSnapshot: await buildSnapshot(guildId, challengerId, challengerProfile),
-    opponentSnapshot: await buildSnapshot(guildId, opponentId, opponentProfile),
-    expiresAt: expiry,
-    idempotencyKey: `battle:${guildId}:${challengerId}:${opponentId}:${Date.now()}`,
-  });
+  let battle;
+  try {
+    battle = await models.Battle.create({
+      guildId,
+      challengerId,
+      opponentId,
+      status: 'pending',
+      challengerSnapshot: await buildSnapshot(guildId, challengerId, challengerProfile),
+      opponentSnapshot: await buildSnapshot(guildId, opponentId, opponentProfile),
+      expiresAt: expiry,
+      idempotencyKey: `battle:${guildId}:${challengerId}:${opponentId}:${Date.now()}`,
+    });
+  } catch (error) {
+    await cooldownService.clear(guildId, challengerId, 'battle').catch(() => {});
+    throw error;
+  }
   return battle;
 }
 
@@ -170,14 +181,21 @@ async function accept(guildId, userId, battleId, profile = {}) {
     { guildId, userId: loserId },
     { $inc: { battleLosses: 1, totalBattles: 1, battleRating: -delta }, $set: { battleStreak: 0 } },
   );
-  if (reward > 0) await userService.addCoins(guildId, winnerId, reward, 'battle_win', `battle:${battleId}:reward`, { opponentId: loserId });
+  let payout = reward;
+  if (reward > 0) {
+    const winnerBefore = await models.RPGUser.findOne({ guildId, userId: winnerId }).select('wallet').lean();
+    const economy = await settingsService.getEconomy(guildId);
+    payout = Math.max(0, Math.min(reward, economy.maxWallet - (winnerBefore?.wallet || 0)));
+    if (payout > 0) await userService.addCoins(guildId, winnerId, payout, 'battle_win', `battle:${battleId}:reward`, { opponentId: loserId });
+    if (payout !== reward) await models.Battle.updateOne({ _id: battleId }, { $set: { reward: payout } }).catch(() => {});
+  }
   await userService.addXp(guildId, winnerId, xpReward, 'xp');
   await userService.addXp(guildId, loserId, Math.max(1, Math.floor(xpReward / 3)), 'xp');
   const winnerUser = await models.RPGUser.findOne({ guildId, userId: winnerId }).catch(() => null);
   await questService.track(guildId, winnerId, 'battleWin', 1, winnerUser).catch(() => {});
   try {
     const guildWar = require('./guildService');
-    await guildWar.addBattlePoints(guildId, winnerId, loserId);
+    await guildWar.addBattlePoints(guildId, winnerId, loserId, antiFarm);
   } catch (error) {
     log.warn(`Guild war hook failed: ${error.message}`);
   }
@@ -185,7 +203,7 @@ async function accept(guildId, userId, battleId, profile = {}) {
     battle: completed,
     winnerId,
     loserId,
-    reward,
+    reward: payout,
     xpReward,
     antiFarm,
     ratingDelta: delta,

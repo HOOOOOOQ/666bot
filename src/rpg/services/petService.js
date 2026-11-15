@@ -6,6 +6,7 @@ const { PETS, PET_MAP, EGGS_MAP, SHOP_MAP } = require('../data/catalog');
 const { getRarity } = require('../data/rarities');
 const settingsService = require('./settingsService');
 const userService = require('./userService');
+const cooldownService = require('./cooldownService');
 const { petStats, applyXp, xpForLevel, formatCoins } = require('../utils/formulas');
 const { weightedPickTable, pick } = require('../utils/rng');
 const { DEFAULT_DROP_RATES } = require('../config/defaults');
@@ -34,6 +35,31 @@ function eggRatesFor(game, egg) {
   return table;
 }
 
+function activeIdList(user) {
+  const list = (user?.activePetIds || []).map(String);
+  if (list.length > 0) return list;
+  return user?.activePetId ? [String(user.activePetId)] : [];
+}
+
+async function activePets(guildId, userId, user = null) {
+  const owner = user || (await userService.ensureUser(guildId, userId));
+  const ids = activeIdList(owner);
+  if (ids.length === 0) return [];
+  const docs = await models.Pet.find({ _id: { $in: ids }, guildId, userId }).lean();
+  const map = new Map(docs.map((pet) => [String(pet._id), pet]));
+  return ids.map((id) => map.get(id)).filter(Boolean);
+}
+
+async function detach(guildId, userId, petId) {
+  const id = String(petId);
+  await models.RPGUser.updateOne({ guildId, userId }, { $pull: { activePetIds: petId } }).catch(() => {});
+  const user = await models.RPGUser.findOne({ guildId, userId }).lean();
+  if (user && String(user.activePetId || '') === id) {
+    const remaining = (user.activePetIds || []).map(String).filter((value) => value !== id);
+    await models.RPGUser.updateOne({ guildId, userId }, { $set: { activePetId: remaining[0] || null } }).catch(() => {});
+  }
+}
+
 async function resolveEgg(guildId, userId, eggId) {
   const game = await settingsService.getGame(guildId);
   const id = eggId || 'egg_basic';
@@ -54,7 +80,16 @@ async function resolveEgg(guildId, userId, eggId) {
 async function hatch(guildId, userId, eggId) {
   const game = await settingsService.getGame(guildId);
   if (!game.pets.enabled) throw new UserError('Pet system sedang dinonaktifkan admin.');
-  const { egg, paid } = await resolveEgg(guildId, userId, eggId);
+  const cd = await cooldownService.claim(guildId, userId, 'pet_hatch', 1500);
+  if (!cd.ok) throw new UserError('Hatch sedang diproses. Coba lagi sebentar.');
+  let resolved;
+  try {
+    resolved = await resolveEgg(guildId, userId, eggId);
+  } catch (error) {
+    await cooldownService.clear(guildId, userId, 'pet_hatch').catch(() => {});
+    throw error;
+  }
+  const { egg, paid } = resolved;
   const rarity = weightedPickTable(eggRatesFor(game, egg), PETS.map((p) => ({ rarity: p.rarity })));
   const rarityId = rarity?.rarity || 'common';
   const pool = petsByRarity(rarityId);
@@ -78,7 +113,12 @@ async function hatch(guildId, userId, eggId) {
     { upsert: true, new: true },
   );
   const user = await userService.ensureUser(guildId, userId);
-  if (!user.activePetId) await models.RPGUser.updateOne({ guildId, userId, activePetId: null }, { $set: { activePetId: pet._id } });
+  const active = activeIdList(user);
+  if (active.length < Math.max(1, game.pets.maxSlots)) {
+    const update = { $addToSet: { activePetIds: pet._id } };
+    if (!user.activePetId) update.$set = { activePetId: pet._id };
+    await models.RPGUser.updateOne({ guildId, userId }, update);
+  }
   await userService.addXp(guildId, userId, Math.round(10 * game.pets.xpMultiplier), 'xp');
   return { pet, species, egg, paid };
 }
@@ -100,7 +140,17 @@ async function feed(guildId, userId, petId) {
       speed: Math.max(1, Math.round(pet.speed * growth * 0.1)),
     };
   }
-  const updated = await models.Pet.findOneAndUpdate({ _id: pet._id, guildId, userId }, update, { new: true });
+  let updated;
+  try {
+    updated = await models.Pet.findOneAndUpdate({ _id: pet._id, guildId, userId }, update, { new: true });
+  } catch (error) {
+    if (cost > 0) await userService.addCoins(guildId, userId, cost, 'pet_feed_refund', `pet_feed:${guildId}:${userId}:${pet._id}:${Date.now()}:refund`, { petId: String(pet._id) }).catch(() => {});
+    throw error;
+  }
+  if (!updated) {
+    if (cost > 0) await userService.addCoins(guildId, userId, cost, 'pet_feed_refund', `pet_feed:${guildId}:${userId}:${pet._id}:${Date.now()}:refund`, { petId: String(pet._id) }).catch(() => {});
+    throw new UserError('Pet sudah tidak tersedia.');
+  }
   return { pet: updated, xp, levelsGained: result.levelsGained, cost };
 }
 
@@ -114,8 +164,28 @@ async function findOwnedPet(guildId, userId, petId) {
 }
 
 async function equip(guildId, userId, petId) {
+  const game = await settingsService.getGame(guildId);
   const pet = await findOwnedPet(guildId, userId, petId);
-  await models.RPGUser.updateOne({ guildId, userId }, { $set: { activePetId: pet._id } });
+  const user = await userService.ensureUser(guildId, userId);
+  const active = activeIdList(user);
+  if (!active.includes(String(pet._id)) && active.length >= Math.max(1, game.pets.maxSlots)) {
+    throw new UserError(`Slot pet aktif penuh (${active.length}/${game.pets.maxSlots}). Lepas salah satu dengan \`6pet unequip <id>\`.`);
+  }
+  await models.RPGUser.updateOne(
+    { guildId, userId },
+    { $addToSet: { activePetIds: pet._id }, $set: { activePetId: pet._id } },
+  );
+  return pet;
+}
+
+async function unequip(guildId, userId, petId) {
+  const pet = await findOwnedPet(guildId, userId, petId);
+  await models.RPGUser.updateOne({ guildId, userId }, { $pull: { activePetIds: pet._id } });
+  const user = await models.RPGUser.findOne({ guildId, userId }).lean();
+  if (user && String(user.activePetId || '') === String(pet._id)) {
+    const remaining = (user.activePetIds || []).map(String).filter((id) => id !== String(pet._id));
+    await models.RPGUser.updateOne({ guildId, userId }, { $set: { activePetId: remaining[0] || null } });
+  }
   return pet;
 }
 
@@ -133,11 +203,21 @@ async function upgrade(guildId, userId, petId) {
   const pet = await findOwnedPet(guildId, userId, petId);
   const cost = Math.floor(100 * Math.pow(1.35, pet.level || 1));
   await userService.spendCoins(guildId, userId, cost, 'pet_upgrade', `pet_upgrade:${guildId}:${userId}:${pet._id}:${pet.level}:${Date.now()}`, { petId: String(pet._id) });
-  const updated = await models.Pet.findOneAndUpdate(
-    { _id: pet._id, guildId, userId },
-    { $inc: { attack: 3, defense: 2, hp: 8, speed: 1 } },
-    { new: true },
-  );
+  let updated;
+  try {
+    updated = await models.Pet.findOneAndUpdate(
+      { _id: pet._id, guildId, userId },
+      { $inc: { attack: 3, defense: 2, hp: 8, speed: 1 } },
+      { new: true },
+    );
+  } catch (error) {
+    await userService.addCoins(guildId, userId, cost, 'pet_upgrade_refund', `pet_upgrade:${guildId}:${userId}:${pet._id}:refund`, { petId: String(pet._id) }).catch(() => {});
+    throw error;
+  }
+  if (!updated) {
+    await userService.addCoins(guildId, userId, cost, 'pet_upgrade_refund', `pet_upgrade:${guildId}:${userId}:${pet._id}:refund`, { petId: String(pet._id) }).catch(() => {});
+    throw new UserError('Pet sudah tidak tersedia.');
+  }
   return { pet: updated, cost, bonus: game.pets.bonusMultiplier };
 }
 
@@ -149,13 +229,12 @@ async function evolve(guildId, userId, petId) {
   const updated = await models.Pet.findOneAndUpdate(
     { _id: pet._id, guildId, userId, evolved: false },
     {
-      $set: { evolved: true, name: `Evolved ${pet.name}` },
+      $set: { evolved: true, name: `Evolved ${pet.name}`, level: 1 },
       $inc: {
         hp: Math.round(pet.hp * 0.6),
         attack: Math.round(pet.attack * 0.6),
         defense: Math.round(pet.defense * 0.6),
         speed: Math.round(pet.speed * 0.6),
-        level: 1,
       },
     },
     { new: true },
@@ -174,4 +253,4 @@ async function listCollection(guildId, userId) {
   return collection(guildId, userId);
 }
 
-module.exports = { hatch, feed, equip, inventory, stats, upgrade, evolve, collection, listCollection, findOwnedPet, petsByRarity, _test: { eggRatesFor } };
+module.exports = { hatch, feed, equip, unequip, inventory, stats, upgrade, evolve, collection, listCollection, findOwnedPet, activePets, detach, petsByRarity, _test: { eggRatesFor } };

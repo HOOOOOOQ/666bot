@@ -20,7 +20,8 @@ function cleanFallback(now) {
  */
 async function claim(guildId, userId, scope, ms) {
   const now = new Date();
-  const expiresAt = new Date(now.getTime() + Math.max(0, ms));
+  const ttl = Number.isFinite(Number(ms)) ? Math.max(0, Number(ms)) : 0;
+  const expiresAt = new Date(now.getTime() + ttl);
 
   if (!models.GameCooldown) {
     const k = key(guildId, userId, scope);

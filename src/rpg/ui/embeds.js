@@ -217,6 +217,7 @@ function profileEmbed(profile, avatarUrl) {
       { name: '🛡️ Guild', value: profile.guild ? `**${profile.guild.name}** (${profile.guildMember.role})` : '—', inline: true },
       { name: '👹 Boss Damage', value: formatCoins(profile.bossContribution), inline: true },
       { name: '📈 Trading', value: `${profile.trading.trades} trade • ${profile.trading.market} market`, inline: true },
+      { name: '📜 Quest', value: `${profile.quests?.completed || 0}/${profile.quests?.total || 0} selesai • ${profile.quests?.claimed || 0} claimed`, inline: true },
     );
   return e;
 }

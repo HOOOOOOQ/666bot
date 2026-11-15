@@ -18,6 +18,8 @@ async function profile(guildId, userId, profile = {}) {
   ]);
   let guild = null;
   if (guildMember) guild = await models.Guild.findOne({ _id: guildMember.guildRef }).lean();
+  const questService = require('./questService');
+  const questList = await questService.list(guildId, userId).catch(() => []);
   const rank = rankForLevel(user.level || 1);
   const nextXp = xpForLevel(user.level || 1);
   return {
@@ -58,6 +60,11 @@ async function profile(guildId, userId, profile = {}) {
       market: user.totalMarketTrades || 0,
     },
     games: { wins: user.gameWins || 0, losses: user.gameLosses || 0 },
+    quests: {
+      total: questList.length,
+      completed: questList.filter((quest) => quest.completed).length,
+      claimed: questList.filter((quest) => quest.claimed).length,
+    },
     labels: {
       wallet: formatCoins(user.wallet || 0),
       bank: formatCoins(user.bank || 0),

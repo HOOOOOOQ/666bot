@@ -71,6 +71,18 @@ async function resolveMonsterId(guildId, userId, input) {
   return match ? String(match._id) : raw;
 }
 
+async function resolveListingId(guildId, userId, input) {
+  const raw = String(input || '');
+  if (/^[a-f0-9]{24}$/i.test(raw)) return raw;
+  const models = require('../../database/models');
+  const docs = await models.MarketListing.find({ guildId, sellerId: userId, status: 'active' }).select('_id').lean();
+  const mine = docs.find((d) => String(d._id).endsWith(raw));
+  if (mine) return String(mine._id);
+  const all = await models.MarketListing.find({ guildId, status: 'active' }).select('_id').lean();
+  const match = all.find((d) => String(d._id).endsWith(raw));
+  return match ? String(match._id) : raw;
+}
+
 async function resolvePetId(guildId, userId, input) {
   const raw = String(input || '');
   if (/^[a-f0-9]{24}$/i.test(raw)) return raw;
@@ -92,5 +104,5 @@ function btn(label, id, style = ButtonStyle.Secondary, emoji = null) {
 
 module.exports = {
   payload, helpEmbed, reply, mentionUser, resolveTarget, profileOf, parseAmount, argAmount,
-  splitIdAndQty, resolveMonsterId, resolvePetId, requireArgs, btn, ActionRowBuilder, ButtonBuilder, ButtonStyle,
+  splitIdAndQty, resolveMonsterId, resolvePetId, resolveListingId, requireArgs, btn, ActionRowBuilder, ButtonBuilder, ButtonStyle,
 };

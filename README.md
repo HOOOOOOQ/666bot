@@ -62,7 +62,7 @@ BEST STREAK: 45 DAYS • DUO XP: 2,800 XP
 - **Restart-safe** — streak, aktivitas, reward, konfigurasi, dan antrean log tetap konsisten setelah restart.
 - **Graceful shutdown** — flush antrean log & notifikasi, tutup API, tutup koneksi MongoDB.
 - **Streak API opsional** — endpoint HTTP untuk uptime monitor (Pterodactyl).
-- **Test suite** — 86 test otomatis (`node --test`) termasuk render kartu PNG, dedupe log, retry, recovery, dan seluruh sistem RPG.
+- **Test suite** — 91 test otomatis (`node --test`) termasuk render kartu PNG, dedupe log, retry, recovery, dan seluruh sistem RPG.
 - **666 ULTIMATE RPG** — economy, hunting, battle, pet, 8 mini games, quest/achievement, trade, market, guild war, world boss, profile, dan dashboard web. Semua additive; fitur Duo lama tidak diubah.
 - **Dashboard RPG** — `/dashboard` dengan settings 8 grup, drop-rate editor tervalidasi, statistik live, transaction log, dan admin key.
 
@@ -650,7 +650,7 @@ Expansion besar yang **additive**: seluruh fitur Duo Streak, prefix lama, `/duo`
 | Economy | `6cash` | balance, daily/weekly/monthly, work, beg, deposit, withdraw, transfer, leaderboard, inventory, shop, buy, sell, history |
 | Hunting | `6hunt` | start, inventory, collection, sell, stats, leaderboard |
 | Battle | `6battle @user` | accept, decline, stats, leaderboard; turn-based PvP + ELO + anti win-trading |
-| Pet | `6pet` | hatch, feed, equip, inventory, upgrade, stats, evolve, collection |
+| Pet | `6pet` | hatch, feed, equip/unequip, inventory, upgrade, stats, evolve, collection; slot aktif mengikuti settings `maxSlots` |
 | Mini Games | `6coinflip` `6dice` `6slots` `6blackjack` `6roulette` `6guess` `6trivia` `6rps` | betting, tombol interaktif, RNG crypto, house edge transparan |
 | Quest | `6quest` | daily, weekly, special, hidden, claim |
 | Achievement | `6achievement` | badge + reward sekali |

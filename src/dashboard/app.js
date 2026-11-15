@@ -227,7 +227,7 @@ function renderBattle() {
 function renderMinigames() {
   const { recentGames, overview } = state.data;
   return `<div class="grid cols-4">
-    ${metricCard('Total Games', num(recentGames.length ? overview.transactions : 0), 'tercatat di game_history')}
+    ${metricCard('Total Games', num(overview.games), 'tercatat di game_history')}
     ${metricCard('House Edge', 'Transparan', 'dari settings')}
     ${metricCard('RNG', 'Crypto', 'crypto.randomInt')}
     ${metricCard('Games', '8', 'coinflip … rps')}

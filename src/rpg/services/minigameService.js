@@ -322,6 +322,7 @@ async function rps(guildId, userId, choice, bet, requestId) {
 async function rpsChallenge(guildId, userId, opponentId, choice, bet, channelId, requestId) {
   if (String(userId) === String(opponentId)) throw new UserError('Tidak bisa menantang diri sendiri.');
   const { game, bet: value } = await assertGame(guildId, bet);
+  if (!game.minigames.allowMultiplayer) throw new UserError('Mini game multiplayer sedang dinonaktifkan admin.');
   const mine = String(choice || '').toLowerCase();
   if (!['rock', 'paper', 'scissors'].includes(mine)) throw new UserError('Pilih rock/paper/scissors.');
   await userService.ensureUser(guildId, opponentId);

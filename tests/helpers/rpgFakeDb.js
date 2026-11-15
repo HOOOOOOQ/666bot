@@ -8,7 +8,7 @@ function defaultUser() {
     huntLevel: 1, huntXp: 0, huntKills: 0, shinyCount: 0, legendaryCount: 0, mythicalCount: 0, secretCount: 0,
     battleWins: 0, battleLosses: 0, battleRating: 1000, battleStreak: 0, gameWins: 0, gameLosses: 0,
     totalHunts: 0, totalBattles: 0, totalTrades: 0, totalMarketTrades: 0, totalBossDamage: 0,
-    dailyStreak: 0, inventory: {}, activePetId: null, rpgGuildId: null,
+    dailyStreak: 0, inventory: {}, activePetId: null, activePetIds: [], rpgGuildId: null,
   };
 }
 

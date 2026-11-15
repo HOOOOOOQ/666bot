@@ -4,6 +4,7 @@ const models = require('../../database/models');
 const { UserError } = require('../../utils/errors');
 const settingsService = require('./settingsService');
 const userService = require('./userService');
+const petService = require('./petService');
 const { withTransaction, sessionOptions } = require('../utils/db');
 const { formatCoins } = require('../utils/formulas');
 const { createLogger } = require('../../utils/logger');
@@ -217,6 +218,7 @@ async function execute(guildId, tradeId) {
         { new: true, ...sessionOptions(session) },
       );
       if (!moved) throw new UserError('Pet initiator tidak lagi tersedia.');
+      await petService.detach(guildId, claimed.initiatorId, id).catch(() => {});
     }
     for (const id of b.pets) {
       const moved = await models.Pet.findOneAndUpdate(
@@ -225,6 +227,7 @@ async function execute(guildId, tradeId) {
         { new: true, ...sessionOptions(session) },
       );
       if (!moved) throw new UserError('Pet target tidak lagi tersedia.');
+      await petService.detach(guildId, claimed.targetId, id).catch(() => {});
     }
     for (const item of a.items) await userService.addItem(guildId, claimed.targetId, item.id, item.qty);
     for (const item of b.items) await userService.addItem(guildId, claimed.initiatorId, item.id, item.qty);

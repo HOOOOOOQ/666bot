@@ -39,6 +39,7 @@ const rpgUserSchema = new Schema(
     totalBossDamage: { type: Number, default: 0, min: 0 },
 
     activePetId: { type: Schema.Types.ObjectId, default: null },
+    activePetIds: { type: [{ type: Schema.Types.ObjectId }], default: [] },
     rpgGuildId: { type: Schema.Types.ObjectId, default: null, index: true },
     inventory: { type: Schema.Types.Mixed, default: () => ({}) },
 

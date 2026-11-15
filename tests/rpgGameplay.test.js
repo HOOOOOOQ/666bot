@@ -148,3 +148,38 @@ test('pet drop-rate table controls egg rarity weights', () => {
   const disabled = eggRatesFor({ dropRates: { pet: { common: 50, uncommon: 25, rare: 0, epic: 7, legendary: 2.5, mythical: 0.4 } } }, egg);
   assert.equal(disabled.rare, 0);
 });
+
+test('evolve resets pet level to 1 and is one-shot', async () => {
+  const petService = require('../src/rpg/services/petService');
+  const user = '699999999999999999';
+  await models.RPGUser.create({ guildId: GUILD, userId: user, wallet: 1000 });
+  const pet = await models.Pet.create({
+    guildId: GUILD, userId: user, speciesId: 'frost_fox', name: 'Frost Fox',
+    rarity: 'rare', level: 20, xp: 0, hp: 100, attack: 20, defense: 10, speed: 15,
+  });
+  const result = await petService.evolve(GUILD, user, pet._id);
+  assert.equal(result.pet.level, 1);
+  assert.equal(result.pet.evolved, true);
+  await assert.rejects(() => petService.evolve(GUILD, user, pet._id), /sudah berevolusi/);
+});
+
+test('active pet slots respect maxSlots and unequip frees a slot', async () => {
+  const petService = require('../src/rpg/services/petService');
+  const settingsService = require('../src/rpg/services/settingsService');
+  const user = '698888888888888888';
+  await settingsService.updateSection(GUILD, 'pets', { maxSlots: 1 }, 'test');
+  try {
+    await models.RPGUser.create({ guildId: GUILD, userId: user, wallet: 1000 });
+    const first = await models.Pet.create({ guildId: GUILD, userId: user, speciesId: 'a', name: 'A', rarity: 'common', level: 1, hp: 10, attack: 2, defense: 1, speed: 1 });
+    const second = await models.Pet.create({ guildId: GUILD, userId: user, speciesId: 'b', name: 'B', rarity: 'common', level: 1, hp: 10, attack: 2, defense: 1, speed: 1 });
+    await petService.equip(GUILD, user, first._id);
+    await assert.rejects(() => petService.equip(GUILD, user, second._id), /Slot pet aktif penuh/);
+    await petService.unequip(GUILD, user, first._id);
+    await petService.equip(GUILD, user, second._id);
+    const active = await petService.activePets(GUILD, user);
+    assert.equal(active.length, 1);
+    assert.equal(String(active[0]._id), String(second._id));
+  } finally {
+    await settingsService.updateSection(GUILD, 'pets', { maxSlots: 3 }, 'test');
+  }
+});

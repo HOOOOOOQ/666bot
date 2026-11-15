@@ -7,7 +7,32 @@ const last = { boss: 0, market: 0, war: 0, sessions: 0 };
 
 async function cleanupSessions() {
   const models = require('../database/models');
+  const userService = require('./services/userService');
   const now = new Date();
+  try {
+    const staleRps = await models.GameSession.find({
+      game: 'rps_pvp',
+      status: { $in: ['pending', 'active'] },
+      expiresAt: { $lte: now },
+    }).limit(100).lean();
+    for (const session of staleRps) {
+      const closed = await models.GameSession.findOneAndUpdate(
+        { _id: session._id, status: { $in: ['pending', 'active'] } },
+        { $set: { status: 'expired' } },
+        { new: true },
+      );
+      if (closed) {
+        await userService.addCoins(
+          session.guildId,
+          session.userId,
+          session.bet,
+          'game_refund',
+          `${session.idempotencyKey}:refund:expiry`,
+          { game: 'rps', reason: 'expired' },
+        ).catch(() => {});
+      }
+    }
+  } catch { /* ignore */ }
   try {
     await models.GameSession.updateMany(
       { status: { $in: ['pending', 'active'] }, expiresAt: { $lte: now } },

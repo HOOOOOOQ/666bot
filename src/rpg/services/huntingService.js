@@ -146,9 +146,24 @@ async function sell(guildId, userId, monsterId) {
   if (!monster) throw new UserError('Monster tidak ditemukan di kandangmu.');
   if (monster.lockedBy) throw new UserError('Monster sedang dikunci di trade/market.');
   const { tax, net } = applyTax(monster.sellValue, game.hunting.sellTaxPct);
+  const economy = await settingsService.getEconomy(guildId);
+  const seller = await userService.ensureUser(guildId, userId);
+  if (net > 0 && (seller.wallet || 0) + net > economy.maxWallet) {
+    throw new UserError('Wallet kamu sudah penuh. Deposit sebagian ke bank dulu sebelum menjual monster.');
+  }
   const deleted = await models.Monster.findOneAndDelete({ _id: monsterId, guildId, userId, lockedBy: null });
   if (!deleted) throw new UserError('Monster sedang diproses. Coba lagi.');
-  await userService.addCoins(guildId, userId, net, 'monster_sell', `monster_sell:${monsterId}`, { tax, gross: monster.sellValue });
+  if (net > 0) {
+    try {
+      await userService.addCoins(guildId, userId, net, 'monster_sell', `monster_sell:${monsterId}`, { tax, gross: monster.sellValue });
+    } catch (error) {
+      // Restore the exact monster if the credit failed, so a full wallet can
+      // never destroy a monster without paying for it.
+      const raw = typeof deleted.toObject === 'function' ? deleted.toObject() : { ...deleted };
+      await models.Monster.create(raw).catch(() => {});
+      throw error;
+    }
+  }
   await models.MonsterCollection.updateOne(
     { guildId, userId, speciesId: monster.speciesId, count: { $gt: 0 } },
     { $inc: { count: -1 } },

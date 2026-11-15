@@ -6,6 +6,7 @@ const settingsService = require('./settingsService');
 const cooldownService = require('./cooldownService');
 const userService = require('./userService');
 const questService = require('./questService');
+const petService = require('./petService');
 const { BOSS_TEMPLATES } = require('../data/catalog');
 const { playerBattleStats, formatCoins } = require('../utils/formulas');
 const { randomFloat, chance, pick } = require('../utils/rng');
@@ -66,8 +67,8 @@ async function ensureBoss(guildId, force = false) {
   }
 }
 
-async function getStatus(guildId) {
-  const boss = await ensureBoss(guildId);
+async function getStatus(guildId, ensure = true) {
+  const boss = ensure ? await ensureBoss(guildId) : await models.WorldBossSession.findOne({ guildId, status: 'active' }).lean();
   if (!boss) return { boss: null, contributors: [] };
   const contributors = await models.WorldBossContribution.find({ sessionId: boss._id }).sort({ damage: -1 }).limit(10).lean();
   const totalDamage = contributors.reduce((sum, c) => sum + (c.damage || 0), 0);
@@ -89,9 +90,8 @@ async function attack(guildId, userId, profile = {}, requestId = null) {
   if (!cd.ok) throw new UserError(`Serangan boss cooldown <t:${Math.floor(cd.retryAt.getTime() / 1000)}:R>.`);
 
   const user = await userService.ensureUser(guildId, userId, profile);
-  let pet = null;
-  if (user.activePetId) pet = await models.Pet.findOne({ _id: user.activePetId, guildId, userId }).lean();
-  const stats = playerBattleStats(user, pet, game.battle);
+  const pets = await petService.activePets(guildId, userId, user);
+  const stats = playerBattleStats(user, pets, { ...game.battle, petBonusMultiplier: game.pets.bonusMultiplier });
   const raw = Math.max(1, Math.round((stats.attack * (0.85 + randomFloat() * 0.3) + stats.speed * 0.5 - boss.defense * 0.25) * cfg.damageMultiplier));
   const damage = Math.max(1, Math.min(raw, boss.hp));
   const updated = await models.WorldBossSession.findOneAndUpdate(
@@ -144,6 +144,7 @@ async function grantRewards(session) {
   const cfg = game.worldBoss;
   const top = contributions[0];
   for (const [index, contribution] of contributions.entries()) {
+    if ((contribution.damage || 0) < (cfg.minContribution || 0)) continue;
     const share = contribution.damage / total;
     const coins = Math.max(1, Math.round(cfg.coinReward * (0.3 + share * 2)));
     const xp = Math.max(1, Math.round(cfg.xpReward * (0.3 + share * 2)));

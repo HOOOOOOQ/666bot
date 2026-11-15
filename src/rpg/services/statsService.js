@@ -14,7 +14,7 @@ async function count(Model, filter) {
 async function overview(guildId = null) {
   const q = guildQuery(guildId);
   const weekAgo = new Date(Date.now() - 7 * 86400000);
-  const [players, activePlayers, transactions, hunts, monsters, pets, battles, marketTransactions, guilds, bossSessions, bossContributions, quests, achievements] = await Promise.all([
+  const [players, activePlayers, transactions, hunts, monsters, pets, battles, games, marketTransactions, guilds, bossSessions, bossContributions, quests, achievements] = await Promise.all([
     count(models.RPGUser, q),
     count(models.RPGUser, { ...q, updatedAt: { $gte: weekAgo } }),
     count(models.EconomyTransaction, q),
@@ -22,6 +22,7 @@ async function overview(guildId = null) {
     count(models.Monster, q),
     count(models.Pet, q),
     count(models.Battle, { ...q, status: 'completed' }),
+    count(models.GameHistory, q),
     count(models.MarketTransaction, q),
     count(models.Guild, guildId ? { discordGuildId: guildId } : {}),
     count(models.WorldBossSession, q),
@@ -49,6 +50,7 @@ async function overview(guildId = null) {
     monsters,
     pets,
     battles,
+    games,
     marketTransactions,
     guilds,
     bossSessions,

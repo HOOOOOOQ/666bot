@@ -238,6 +238,33 @@ function applyUpdate(doc, update, isInsert = false) {
     }
   }
 
+  if (update.$addToSet) {
+    for (const [key, value] of Object.entries(update.$addToSet)) {
+      const current = readPath(doc, key);
+      const list = Array.isArray(current) ? current : [];
+      const values = value?.$each ? value.$each : [value];
+      for (const item of values) {
+        if (!list.some((entry) => equalsValue(entry, item))) {
+          list.push(clone(item));
+          changed = true;
+        }
+      }
+      writePath(doc, key, list);
+    }
+  }
+
+  if (update.$pull) {
+    for (const [key, value] of Object.entries(update.$pull)) {
+      const current = readPath(doc, key);
+      if (!Array.isArray(current)) continue;
+      const next = current.filter((entry) => !equalsValue(entry, value));
+      if (next.length !== current.length) {
+        writePath(doc, key, next);
+        changed = true;
+      }
+    }
+  }
+
   return changed;
 }
 

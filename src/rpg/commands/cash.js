@@ -74,6 +74,10 @@ async function profile(ctx, target) {
 async function execute(ctx) {
   const { args } = ctx;
   const sub = (args[0] || '').toLowerCase();
+  if (sub !== 'help') {
+    const economy = await settingsService.getEconomy(ctx.guildId);
+    if (!economy.enabled) throw new UserError('Economy sedang dinonaktifkan admin.');
+  }
   const profile = ctx.profile;
   const target = await resolveTarget(ctx.message, args[1]);
 

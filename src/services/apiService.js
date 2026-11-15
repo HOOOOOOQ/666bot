@@ -154,7 +154,7 @@ async function dashboardData(guildId) {
     statsService.topPlayers(guildId || null, 10),
     guildService.leaderboard(guildId, 10).catch(() => []),
     marketService.list(guildId, 15, 1).catch(() => ({ listings: [] })),
-    guildId ? bossService.getStatus(guildId).catch(() => ({ boss: null, contributors: [] })) : Promise.resolve({ boss: null, contributors: [] }),
+    guildId ? bossService.getStatus(guildId, false).catch(() => ({ boss: null, contributors: [] })) : Promise.resolve({ boss: null, contributors: [] }),
     models.EconomyTransaction.find(guildId ? { guildId } : {}).sort({ createdAt: -1 }).limit(20).lean().catch(() => []),
     models.Battle.find(guildId ? { guildId } : {}).sort({ createdAt: -1 }).limit(10).lean().catch(() => []),
     models.GameHistory.find(guildId ? { guildId } : {}).sort({ createdAt: -1 }).limit(10).lean().catch(() => []),
@@ -253,7 +253,8 @@ async function handleDashboardRequest(req, res, url, pathName) {
       if (!guildId) return sendJson(res, 400, { ok: false, error: 'guildId_required' }), true;
       const data = await settingsService.getAll(guildId);
       const history = await settingsService.getHistory(guildId, 20);
-      sendJson(res, 200, { ok: true, data: { ...data, history }, dropRates: data.game.dropRates });
+      const dropRates = data.game.dropRates;
+      sendJson(res, 200, { ok: true, data: { ...data, history, dropRates }, dropRates });
       return true;
     }
     if (pathName === '/api/dashboard/drop-rates' && req.method === 'GET') {

@@ -6,7 +6,7 @@ const { UserError } = require('../../utils/errors');
 const marketService = require('../services/marketService');
 const tradeService = require('../services/tradeService');
 const { marketEmbed, tradeEmbed, money, tradeButtons } = require('../ui/embeds');
-const { helpEmbed, reply, resolveTarget, resolveMonsterId, resolvePetId, requireArgs } = require('./_helpers');
+const { helpEmbed, reply, resolveTarget, resolveMonsterId, resolvePetId, resolveListingId, requireArgs } = require('./_helpers');
 const { formatCoins } = require('../utils/formulas');
 
 const TRADE_HELP = [
@@ -102,14 +102,16 @@ async function marketCommand(ctx) {
   }
   if (sub === 'buy') {
     if (!ctx.args[1]) throw new UserError('Format: `6market buy <listingId>`.');
-    const result = await marketService.buy(ctx.guildId, ctx.userId, ctx.args[1]);
+    const listingId = await resolveListingId(ctx.guildId, ctx.userId, ctx.args[1]);
+    const result = await marketService.buy(ctx.guildId, ctx.userId, listingId);
     return reply(ctx.message, new EmbedBuilder().setColor(COLORS.success).setTitle('✅ PEMBELIAN MARKET')
       .setDescription(`**${result.listing.itemSnapshot?.name || result.listing.itemId}** berhasil dibeli.\nHarga: ${money(result.price)} • Pajak: ${money(result.tax)}`)
       .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
   }
   if (sub === 'cancel') {
     if (!ctx.args[1]) throw new UserError('Format: `6market cancel <listingId>`.');
-    await marketService.cancel(ctx.guildId, ctx.userId, ctx.args[1]);
+    const listingId = await resolveListingId(ctx.guildId, ctx.userId, ctx.args[1]);
+    await marketService.cancel(ctx.guildId, ctx.userId, listingId);
     return reply(ctx.message, new EmbedBuilder().setColor(COLORS.ash).setTitle('✖️ LISTING DIBATALKAN').setDescription('Item dikembalikan ke inventory.')
       .setFooter({ text: '666 SYSTEM • ULTIMATE RPG' }));
   }

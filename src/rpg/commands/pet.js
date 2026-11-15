@@ -13,6 +13,7 @@ const HELP = [
   '`6pet hatch [egg_basic|egg_rare|egg_legendary]` — menetas',
   '`6pet feed [id]` — naikkan level pet',
   '`6pet equip <id>` — pasang pet aktif',
+  '`6pet unequip <id>` — lepas slot pet',
   '`6pet inventory` — semua pet',
   '`6pet stats [id]` — detail pet',
   '`6pet upgrade [id]` — boost stat',
@@ -41,6 +42,12 @@ async function execute(ctx) {
     const id = await resolvePetId(ctx.guildId, ctx.userId, ctx.args[1]);
     const pet = await petService.equip(ctx.guildId, ctx.userId, id);
     return reply(ctx.message, petEmbed(pet, getRarity(pet.rarity)).setDescription('✅ Pet aktif dipasang. Bonus pet sekarang berlaku di hunt & battle.'));
+  }
+  if (sub === 'unequip') {
+    requireArgs(ctx.args, 2, '6pet unequip <id>');
+    const id = await resolvePetId(ctx.guildId, ctx.userId, ctx.args[1]);
+    const pet = await petService.unequip(ctx.guildId, ctx.userId, id);
+    return reply(ctx.message, petEmbed(pet, getRarity(pet.rarity)).setDescription('✅ Pet dilepas dari slot aktif.'));
   }
   if (sub === 'inventory' || sub === 'list') {
     const pets = await petService.inventory(ctx.guildId, ctx.userId);

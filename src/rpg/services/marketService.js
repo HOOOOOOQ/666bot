@@ -5,6 +5,7 @@ const { UserError } = require('../../utils/errors');
 const settingsService = require('./settingsService');
 const userService = require('./userService');
 const questService = require('./questService');
+const petService = require('./petService');
 const { formatCoins, applyTax } = require('../utils/formulas');
 const { createLogger } = require('../../utils/logger');
 
@@ -99,8 +100,20 @@ async function buy(guildId, buyerId, listingId) {
     await unlockItem(guildId, listing.sellerId, listing);
     throw new UserError('Listing sudah kedaluwarsa.');
   }
-  const key = `market_buy:${guildId}:${listingId}:${buyerId}`;
+  const expectedTax = Math.floor(listing.price * (cfg.taxPct / 100));
+  const expectedNet = listing.price - expectedTax;
+  const entityModel = listing.itemType === 'monster' ? models.Monster : listing.itemType === 'pet' ? models.Pet : null;
+  if (entityModel) {
+    const exists = await entityModel.findOne({ _id: listing.itemId, guildId, userId: listing.sellerId, lockedBy: 'market' }).lean();
+    if (!exists) throw new UserError('Item tidak lagi tersedia.');
+  }
+  const economy = await settingsService.getEconomy(guildId);
+  const seller = await models.RPGUser.findOne({ guildId, userId: listing.sellerId }).select('wallet').lean();
+  if (seller && (seller.wallet || 0) + expectedNet > economy.maxWallet) {
+    throw new UserError('Wallet penjual sudah penuh. Coba lagi nanti.');
+  }
   await userService.ensureUser(guildId, buyerId);
+  const key = `market_buy:${guildId}:${listingId}:${buyerId}`;
   const claimed = await models.MarketListing.findOneAndUpdate(
     { _id: listingId, status: 'active', lockedBy: null },
     { $set: { lockedBy: buyerId } },
@@ -110,22 +123,27 @@ async function buy(guildId, buyerId, listingId) {
   const tax = Math.floor(claimed.price * (cfg.taxPct / 100));
   const net = claimed.price - tax;
   let paid = false;
+  let sellerPaid = false;
+  let movedItem = false;
+  let addedItem = false;
   try {
     await userService.spendCoins(guildId, buyerId, claimed.price, 'market_buy', `${key}:pay`, { listingId: String(listingId) });
     paid = true;
     if (net > 0) {
       await userService.addCoins(guildId, claimed.sellerId, net, 'market_sell', `${key}:seller`, { listingId: String(listingId), tax });
+      sellerPaid = true;
     }
-    if (claimed.itemType === 'monster' || claimed.itemType === 'pet') {
-      const Model = claimed.itemType === 'monster' ? models.Monster : models.Pet;
-      const moved = await Model.findOneAndUpdate(
+    if (entityModel) {
+      const moved = await entityModel.findOneAndUpdate(
         { _id: claimed.itemId, guildId, userId: claimed.sellerId, lockedBy: 'market' },
         { $set: { userId: buyerId, lockedBy: null } },
         { new: true },
       );
       if (!moved) throw new UserError('Item tidak lagi tersedia.');
+      movedItem = true;
     } else {
       await userService.addItem(guildId, buyerId, claimed.itemId, 1);
+      addedItem = true;
     }
     await models.MarketListing.updateOne({ _id: listingId }, { $set: { status: 'sold', buyerId, tax, lockedBy: null } });
     await models.MarketTransaction.create({
@@ -135,8 +153,23 @@ async function buy(guildId, buyerId, listingId) {
     await models.RPGUser.updateOne({ guildId, userId: buyerId }, { $inc: { totalMarketTrades: 1 } });
     await models.RPGUser.updateOne({ guildId, userId: claimed.sellerId }, { $inc: { totalMarketTrades: 1 } });
     await questService.track(guildId, buyerId, 'marketBuy', 1).catch(() => {});
+    if (claimed.itemType === 'pet') await petService.detach(guildId, claimed.sellerId, claimed.itemId).catch(() => {});
     return { listing: { ...claimed, status: 'sold', buyerId }, net, tax, price: claimed.price };
   } catch (error) {
+    if (movedItem && entityModel) {
+      await entityModel.updateOne(
+        { _id: claimed.itemId, guildId, userId: buyerId },
+        { $set: { userId: claimed.sellerId, lockedBy: 'market' } },
+      ).catch(() => {});
+    }
+    if (addedItem) await userService.removeItem(guildId, buyerId, claimed.itemId, 1).catch(() => {});
+    if (sellerPaid) {
+      const reversed = await models.RPGUser.updateOne(
+        { guildId, userId: claimed.sellerId, wallet: { $gte: net } },
+        { $inc: { wallet: -net, totalEarned: -net } },
+      ).catch(() => null);
+      if (!reversed || reversed.modifiedCount === 0) log.error(`Market rollback failed for seller ${claimed.sellerId} listing ${listingId}.`);
+    }
     if (paid) await userService.addCoins(guildId, buyerId, claimed.price, 'market_refund', `${key}:refund`, { listingId: String(listingId) }).catch(() => {});
     await models.MarketListing.updateOne({ _id: listingId, status: 'active' }, { $set: { lockedBy: null } }).catch(() => {});
     throw error;
