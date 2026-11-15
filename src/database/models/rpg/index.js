@@ -30,4 +30,9 @@ module.exports = {
   GameSettings: require('./GameSettings'),
   GameCooldown: require('./GameCooldown'),
   SettingsHistory: require('./SettingsHistory'),
+  AutoHunt: require('./AutoHunt'),
+  Lottery: require('./Lottery'),
+  LotteryTicket: require('./LotteryTicket'),
+  ServerConfig: require('./ServerConfig'),
+  Suggestion: require('./Suggestion'),
 };

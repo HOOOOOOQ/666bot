@@ -11,6 +11,8 @@ const state = {
   data: null,
   settings: null,
   section: 'economy',
+  commands: [],
+  categories: [],
   timer: null,
   page: 'overview',
 };
@@ -21,7 +23,7 @@ const PAGE_META = {
   hunting: ['Hunting', 'Monster, rarity, dan pemburu terbaik'],
   pets: ['Pets', 'Koleksi pet dan progres hatch'],
   battle: ['Battle', 'Arena PvP, rating, dan hasil terbaru'],
-  minigames: ['Mini Games', 'Riwayat permainan dan house edge transparan'],
+  minigames: ['Gambling', 'Riwayat permainan dan house edge transparan'],
   quests: ['Quests', 'Quest, achievement, dan progres pemain'],
   market: ['Market', 'Listing, penjualan, dan transaksi P2P'],
   guilds: ['Guilds', 'Guild, bank, dan klasemen war'],
@@ -30,6 +32,8 @@ const PAGE_META = {
   settings: ['Settings', 'Semua konfigurasi game per guild'],
   'drop-rates': ['Drop Rates', 'Editor persentase dengan validasi 100%'],
   transactions: ['Transactions', 'Audit log seluruh transaksi ekonomi'],
+  commands: ['Commands', 'Aktif/nonaktifkan command tanpa restart'],
+  categories: ['Categories', 'Kelola kategori command per guild'],
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -315,6 +319,26 @@ function settingField(section, key, field, value) {
   return `<div class="field"><label>${esc(field.label)}</label><input type="text" id="${id}" data-section="${section}" data-key="${key}" value="${esc(value)}" maxlength="${field.maxLength || 64}" /></div>`;
 }
 
+function renderCommands() {
+  const items = state.commands || [];
+  const enabled = items.filter((entry) => entry.enabled).length;
+  return `<div class="grid cols-3 section">
+    ${metricCard('Commands', num(items.length), 'terdaftar di registry')}
+    ${metricCard('Enabled', num(enabled), 'aktif di guild ini')}
+    ${metricCard('Disabled', num(items.length - enabled), 'disembunyikan dari handler')}
+  </div>
+  <div class="section card"><div class="section-head"><div><h2>Command Management</h2><p>Perubahan langsung disimpan ke MongoDB dan aktif tanpa restart.</p></div></div>
+    ${table(['Command', 'Kategori', 'Status', 'Aksi'], items.map((entry) => `<tr><td class="mono">${esc(entry.name)}</td><td><span class="badge">${esc(entry.category)}</span></td><td>${entry.enabled ? '✅ ON' : '⛔ OFF'}</td><td><button class="btn ${entry.enabled ? 'ghost' : 'primary'}" data-toggle-command="${esc(entry.name.replace(/^6/, ''))}" data-enabled="${entry.enabled ? 'false' : 'true'}">${entry.enabled ? 'Disable' : 'Enable'}</button></td></tr>`))}
+  </div>`;
+}
+
+function renderCategories() {
+  const items = state.categories || [];
+  return `<div class="section"><div class="section-head"><div><h2>Category Management</h2><p>Matikan satu kategori untuk menonaktifkan semua command di dalamnya.</p></div></div>
+    <div class="grid cols-2">${items.map((category) => `<div class="card"><div class="section-head"><div><h3>${category.emoji} ${esc(category.label)}</h3><p>${esc(category.blurb)}</p></div><button class="btn ${category.enabled ? 'ghost' : 'primary'}" data-toggle-category="${esc(category.id)}" data-enabled="${category.enabled ? 'false' : 'true'}">${category.enabled ? 'Disable' : 'Enable'}</button></div><div class="sub">${num(category.commands.length)} commands • ${num(category.commands.filter((c) => c.enabled).length)} aktif</div><div class="mono" style="margin-top:8px;font-size:11px">${category.commands.map((c) => esc(c.name.replace(/^6/, ''))).join(' · ')}</div></div>`).join('')}</div>
+  </div>`;
+}
+
 function renderSettings() {
   const settings = state.settings;
   if (!settings) return '<div class="loading"><div class="spinner"></div> Memuat settings…</div>';
@@ -379,6 +403,26 @@ function updateDropSums() {
 }
 
 function bindPage() {
+  document.querySelectorAll('[data-toggle-command]').forEach((button) => {
+    button.onclick = async () => {
+      try {
+        await api(withGuild('/api/dashboard/commands'), { method: 'PATCH', body: JSON.stringify({ command: button.dataset.toggleCommand, enabled: button.dataset.enabled === 'true' }) });
+        toast('Command diperbarui tanpa restart.');
+        await loadMetaPanels();
+        render();
+      } catch (error) { toast(error.message, 'error'); }
+    };
+  });
+  document.querySelectorAll('[data-toggle-category]').forEach((button) => {
+    button.onclick = async () => {
+      try {
+        await api(withGuild('/api/dashboard/categories'), { method: 'PATCH', body: JSON.stringify({ category: button.dataset.toggleCategory, enabled: button.dataset.enabled === 'true' }) });
+        toast('Kategori diperbarui tanpa restart.');
+        await loadMetaPanels();
+        render();
+      } catch (error) { toast(error.message, 'error'); }
+    };
+  });
   document.querySelectorAll('[data-settings-tab]').forEach((button) => {
     button.onclick = () => { state.section = button.dataset.settingsTab; render(); };
   });
@@ -475,6 +519,8 @@ function render() {
     else if (page === 'worldboss') container.innerHTML = renderWorldboss();
     else if (page === 'statistics') container.innerHTML = renderStatistics();
     else if (page === 'transactions') container.innerHTML = '<div class="loading"><div class="spinner"></div> Memuat audit log…</div>';
+    else if (page === 'commands') container.innerHTML = renderCommands();
+    else if (page === 'categories') container.innerHTML = renderCategories();
     else container.innerHTML = renderOverview();
     if (page === 'transactions') renderTransactions().then((html) => { container.innerHTML = html; }).catch((error) => { container.innerHTML = `<div class="alert error">${esc(error.message)}</div>`; });
     bindPage();
@@ -486,12 +532,16 @@ async function loadData() {
   if (!state.token && !state.adminKey) return;
   $('#loading').hidden = false;
   try {
-    const [dataResult, settingsResult] = await Promise.all([
+    const [dataResult, settingsResult, commandsResult, categoriesResult] = await Promise.all([
       api(withGuild('/api/dashboard/data')),
       state.guildId ? api(withGuild('/api/dashboard/settings')) : Promise.resolve(null),
+      state.guildId ? api(withGuild('/api/dashboard/commands')).catch(() => null) : Promise.resolve(null),
+      state.guildId ? api(withGuild('/api/dashboard/categories')).catch(() => null) : Promise.resolve(null),
     ]);
     state.data = dataResult.data;
     if (settingsResult) state.settings = settingsResult.data;
+    if (commandsResult) state.commands = commandsResult.data.commands || [];
+    if (categoriesResult) state.categories = categoriesResult.data || [];
     $('#connectionStatus').className = 'status-dot online';
     $('#connectionText').textContent = 'Live • MongoDB';
     $('#globalError').hidden = true;
@@ -513,6 +563,16 @@ async function loadData() {
   } finally {
     $('#loading').hidden = true;
   }
+}
+
+async function loadMetaPanels() {
+  if (!state.guildId) return;
+  const [commandsResult, categoriesResult] = await Promise.all([
+    api(withGuild('/api/dashboard/commands')).catch(() => null),
+    api(withGuild('/api/dashboard/categories')).catch(() => null),
+  ]);
+  if (commandsResult) state.commands = commandsResult.data.commands || [];
+  if (categoriesResult) state.categories = categoriesResult.data || [];
 }
 
 async function loadSettings() {

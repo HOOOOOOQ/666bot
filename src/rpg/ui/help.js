@@ -19,6 +19,8 @@ const {
   search,
   linesFor,
   categoryOf,
+  describe,
+  commandsFor,
 } = require('../help/catalog');
 
 const FIELD_LIMIT = 1024;
@@ -32,19 +34,25 @@ function commandLine(entry) {
   return `\`${entry.name}\` — ${entry.summary}`;
 }
 
-function overviewEmbed() {
+function guildLink() {
+  return process.env.SUPPORT_SERVER_URL || config.web?.publicUrl || 'https://github.com/HOOOOOOQ/666bot';
+}
+
+function overviewEmbed(client = null) {
   const embed = new EmbedBuilder()
     .setColor(COLORS.flame)
-    .setTitle('📖 666 ULTIMATE RPG • PUSAT BANTUAN')
+    .setTitle('Command List')
     .setDescription(
-      `Prefix \`6\` • pilih kategori di menu, atau ketik \`6help <command>\` untuk detail.\n` +
-      `Contoh: \`6help cash\`, \`6help battle\`, \`6help economy\`.\n${divider()}`,
+      `Here is the list of commands!\n\n` +
+      `For more info on a specific command, use\n\`6help {command}\`\n\n` +
+      `Need more help? Come join our guild\n[Join 666 Guild](${guildLink()})`,
     )
-    .setFooter({ text: `${BRAND} • ${ENTRIES.length} command terdokumentasi` });
+    .setFooter({ text: `${BRAND} • ${new Set(ENTRIES.map((entry) => entry.name)).size} commands` });
+  if (client?.user?.displayAvatarURL) embed.setAuthor({ name: '666 ULTIMATE', iconURL: client.user.displayAvatarURL({ extension: 'png', size: 128 }) });
   for (const category of CATEGORIES) {
     embed.addFields({
-      name: `${category.emoji} ${category.label}`,
-      value: clip(category.commands.map(commandLine).join('\n')),
+      name: `${category.emoji} **${category.label}**`,
+      value: commandsFor(category).map((name) => `\`${name}\``).join(' '),
       inline: false,
     });
   }
@@ -67,24 +75,28 @@ function categoryEmbed(category) {
   return embed;
 }
 
-function commandEmbed(entry) {
+function commandEmbed(input) {
+  const entry = describe(input);
+  if (!entry) return new EmbedBuilder().setColor(COLORS.error).setTitle('Command tidak ditemukan');
   const category = categoryOf(entry);
   const examples = (entry.examples || []).map((example) => `\`${example}\``).join('\n');
   const details = linesFor(entry).join('\n');
   const embed = new EmbedBuilder()
     .setColor(COLORS.flame)
     .setTitle(`📖 ${entry.name}`)
-    .setDescription(entry.summary)
-    .addFields(
-      { name: '📌 Cara pakai', value: clip(`\`${entry.usage}\``), inline: false },
-      { name: '📚 Subcommand', value: clip(details || '—'), inline: false },
-    );
-  if (examples) embed.addFields({ name: '💡 Contoh', value: clip(examples), inline: false });
-  if (entry.note) embed.addFields({ name: 'ℹ️ Catatan', value: clip(entry.note), inline: false });
-  const meta = [];
-  if (category) meta.push(`${category.emoji} ${category.label}`);
-  if (entry.aliases?.length) meta.push(`Alias: ${entry.aliases.join(', ')}`);
-  if (meta.length) embed.addFields({ name: '🔗 Terkait', value: meta.join(' • '), inline: false });
+    .setDescription(entry.summary || 'Tidak ada deskripsi.')
+    .addFields({ name: '📌 Usage', value: clip(`\`${entry.usage || entry.name}\``), inline: false });
+  if (entry.required?.length) embed.addFields({ name: '✅ Required', value: clip(entry.required.map((arg) => `\`${arg}\``).join(' ')), inline: true });
+  if (entry.optional?.length) embed.addFields({ name: '🟡 Optional', value: clip(entry.optional.map((arg) => `\`${arg}\``).join(' ')), inline: true });
+  embed.addFields(
+    { name: '⏱️ Cooldown', value: entry.cooldown || '—', inline: true },
+    { name: '🔐 Permission', value: entry.permission || 'Everyone', inline: true },
+  );
+  if (examples) embed.addFields({ name: '💡 Examples', value: clip(examples), inline: false });
+  if (details) embed.addFields({ name: '📚 Subcommands', value: clip(details), inline: false });
+  if (entry.aliases?.length) embed.addFields({ name: '🔗 Aliases', value: clip(entry.aliases.map((alias) => `\`${alias}\``).join(' ')), inline: false });
+  if (entry.note) embed.addFields({ name: 'ℹ️ Note', value: clip(entry.note), inline: false });
+  if (category) embed.addFields({ name: '🗂️ Category', value: `${category.emoji} ${category.label}`, inline: true });
   return embed.setFooter({ text: `${BRAND} • 6help untuk kembali` });
 }
 
@@ -129,6 +141,15 @@ function helpComponents(currentCategoryId = null) {
       .setEmoji('🏠')
       .setStyle(ButtonStyle.Secondary),
   );
+  if (process.env.SUPPORT_SERVER_URL) {
+    buttons.addComponents(
+      new ButtonBuilder()
+        .setLabel('Join Guild')
+        .setEmoji('🏰')
+        .setStyle(ButtonStyle.Link)
+        .setURL(process.env.SUPPORT_SERVER_URL),
+    );
+  }
   if (config.web.publicUrl) {
     buttons.addComponents(
       new ButtonBuilder()
@@ -141,9 +162,9 @@ function helpComponents(currentCategoryId = null) {
   return [row, buttons];
 }
 
-function helpView(query = null) {
+function helpView(query = null, client = null) {
   const input = String(query || '').trim();
-  if (!input) return { embeds: [overviewEmbed()], components: helpComponents() };
+  if (!input) return { embeds: [overviewEmbed(client)], components: helpComponents() };
 
   const category = getCategory(input);
   if (category) return { embeds: [categoryEmbed(category)], components: helpComponents(category.id) };
@@ -161,7 +182,7 @@ async function handleHelpInteraction(interaction, action) {
   } else if (action && action !== 'home') {
     query = action;
   }
-  const payload = helpView(query);
+  const payload = helpView(query, interaction.client);
   await interaction.editReply(payload);
 }
 

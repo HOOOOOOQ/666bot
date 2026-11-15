@@ -168,7 +168,7 @@ const SETTING_SCHEMA = Object.freeze({
     },
   },
   minigames: {
-    label: 'Mini Games',
+    label: 'Gambling',
     fields: {
       enabled: { label: 'Mini games aktif', type: 'boolean' },
       minBet: { label: 'Bet minimal', type: 'number', min: 1, max: 1000000, step: 1 },

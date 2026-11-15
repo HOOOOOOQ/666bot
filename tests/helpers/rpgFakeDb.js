@@ -9,12 +9,13 @@ function defaultUser() {
     battleWins: 0, battleLosses: 0, battleRating: 1000, battleStreak: 0, gameWins: 0, gameLosses: 0,
     totalHunts: 0, totalBattles: 0, totalTrades: 0, totalMarketTrades: 0, totalBossDamage: 0,
     dailyStreak: 0, inventory: {}, activePetId: null, activePetIds: [], rpgGuildId: null,
+    shards: 0, social: {}, partnerId: null, marriedAt: null, equippedWeapon: null, lastVoteAt: null, voteCount: 0, checklistDay: null,
   };
 }
 
 function installFakeRPGModels() {
   const models = createFakeModels();
-  const simple = ['EconomySettings', 'GameSettings', 'SettingsHistory', 'Quest', 'Achievement', 'GameHistory', 'GameSession', 'Battle', 'MarketListing', 'MarketTransaction', 'TradeSession', 'GuildMember', 'GuildWar', 'WorldBoss', 'WorldBossSession'];
+  const simple = ['EconomySettings', 'GameSettings', 'SettingsHistory', 'Quest', 'Achievement', 'GameHistory', 'GameSession', 'Battle', 'MarketListing', 'MarketTransaction', 'TradeSession', 'GuildMember', 'GuildWar', 'WorldBoss', 'WorldBossSession', 'AutoHunt', 'Lottery', 'LotteryTicket', 'ServerConfig', 'Suggestion'];
   for (const name of simple) models[name] = new FakeModel(name, { timestamps: true });
   models.Guild = new FakeModel('Guild', { timestamps: true, defaults: () => ({ level: 1, xp: 0, bank: 0, memberCount: 1, maxMembers: 50, wins: 0, losses: 0, warPoints: 0 }) });
   models.WorldBossContribution = new FakeModel('WorldBossContribution', { timestamps: true, defaults: () => ({ damage: 0, attacks: 0, rewarded: false }) });

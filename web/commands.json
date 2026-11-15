@@ -4,23 +4,111 @@
   "prefix": "6",
   "categories": [
     {
+      "id": "rankings",
+      "label": "Rankings",
+      "emoji": "🏅",
+      "blurb": "Peringkat wealth, level, hunt, battle, dan achievement.",
+      "commands": [
+        {
+          "name": "6top",
+          "aliases": [],
+          "summary": "Leaderboard server untuk wealth, level, hunt, battle, boss, games, atau shards.",
+          "usage": "6top [wealth|level|hunt|battle|boss|games|shards] [limit]",
+          "examples": [
+            "6top",
+            "6top battle 10"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6top [wealth|level|hunt|battle|boss|games|shards] [limit]",
+            "Contoh: 6top",
+            "Contoh: 6top battle 10"
+          ]
+        },
+        {
+          "name": "6my",
+          "aliases": [],
+          "summary": "Ringkasan profil, posisi server, saldo, dan progress level kamu.",
+          "usage": "6my [@user]",
+          "examples": [
+            "6my",
+            "6my @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6my [@user]",
+            "Contoh: 6my",
+            "Contoh: 6my @friend"
+          ]
+        },
+        {
+          "name": "6rank",
+          "aliases": [],
+          "summary": "Level, rank, EXP, dan posisi server.",
+          "usage": "6rank",
+          "examples": [
+            "6rank"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6rank — level, rank, EXP, posisi server"
+          ]
+        },
+        {
+          "name": "6achievement",
+          "aliases": [
+            "6achievements"
+          ],
+          "summary": "Daftar badge dan progres achievement.",
+          "usage": "6achievement",
+          "examples": [
+            "6achievement"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6achievement — daftar badge & progres"
+          ]
+        }
+      ]
+    },
+    {
       "id": "economy",
       "label": "Economy",
       "emoji": "💰",
-      "blurb": "Dompet, bank, reward berkala, kerja, dan shop.",
+      "blurb": "Dompet, bank, reward berkala, kerja, quest, checklist, shop, dan market.",
       "commands": [
         {
           "name": "6cash",
           "aliases": [
             "6economy"
           ],
-          "summary": "Dompet, reward harian/mingguan/bulanan, kerja, bank, transfer, shop.",
+          "summary": "Dompet, bank, reward harian/mingguan/bulanan, kerja, transfer, shop, dan history.",
           "usage": "6cash <balance|daily|weekly|monthly|work|beg|deposit|withdraw|transfer|leaderboard|inventory|shop|buy|sell|history|profile>",
           "examples": [
             "6cash",
             "6cash daily",
             "6cash transfer @teman 500"
           ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
           "note": "Semua transaksi memakai idempotency key dan tidak bisa membuat saldo minus.",
           "subcommands": [
             "6cash — lihat saldo",
@@ -34,15 +122,293 @@
             "6cash history — riwayat transaksi",
             "6cash profile [@user] — kartu profil lengkap"
           ]
+        },
+        {
+          "name": "6give",
+          "aliases": [
+            "6transfer"
+          ],
+          "summary": "Transfer 666 Coins ke member lain dengan tax server dan idempotency.",
+          "usage": "6give @user <jumlah>",
+          "examples": [
+            "6give @friend 500"
+          ],
+          "required": [
+            "user",
+            "amount"
+          ],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6give @user <jumlah>",
+            "Contoh: 6give @friend 500"
+          ]
+        },
+        {
+          "name": "6daily",
+          "aliases": [],
+          "summary": "Klaim reward harian 666 Coins.",
+          "usage": "6daily",
+          "examples": [
+            "6daily"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "24 jam",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6daily",
+            "Contoh: 6daily"
+          ]
+        },
+        {
+          "name": "6weekly",
+          "aliases": [],
+          "summary": "Klaim reward mingguan.",
+          "usage": "6weekly",
+          "examples": [
+            "6weekly"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "7 hari",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6weekly",
+            "Contoh: 6weekly"
+          ]
+        },
+        {
+          "name": "6monthly",
+          "aliases": [],
+          "summary": "Klaim reward bulanan.",
+          "usage": "6monthly",
+          "examples": [
+            "6monthly"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "30 hari",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6monthly",
+            "Contoh: 6monthly"
+          ]
+        },
+        {
+          "name": "6work",
+          "aliases": [],
+          "summary": "Bekerja untuk mendapatkan 666 Coins.",
+          "usage": "6work",
+          "examples": [
+            "6work"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "1 jam",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6work",
+            "Contoh: 6work"
+          ]
+        },
+        {
+          "name": "6vote",
+          "aliases": [],
+          "summary": "Klaim hadiah vote 666 Coins setiap 12 jam.",
+          "usage": "6vote",
+          "examples": [
+            "6vote"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "12 jam",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6vote",
+            "Contoh: 6vote"
+          ]
+        },
+        {
+          "name": "6quest",
+          "aliases": [],
+          "summary": "Quest harian/mingguan dan klaim reward.",
+          "usage": "6quest [list|daily|weekly] | 6quest claim <questId>",
+          "examples": [
+            "6quest",
+            "6quest daily",
+            "6quest claim <id>"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6quest / 6quest list — quest harian & mingguan",
+            "6quest daily|weekly — filter",
+            "6quest claim <questId> — klaim reward",
+            "6achievement — badge & progres",
+            "6rank — level, rank, posisi server"
+          ]
+        },
+        {
+          "name": "6checklist",
+          "aliases": [],
+          "summary": "Checklist quest harian dan mingguan beserta progress kamu.",
+          "usage": "6checklist",
+          "examples": [
+            "6checklist"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6checklist",
+            "Contoh: 6checklist"
+          ]
+        },
+        {
+          "name": "6shop",
+          "aliases": [
+            "6store"
+          ],
+          "summary": "Tampilkan shop item 666.",
+          "usage": "6shop",
+          "examples": [
+            "6shop"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6shop",
+            "Contoh: 6shop"
+          ]
+        },
+        {
+          "name": "6buy",
+          "aliases": [],
+          "summary": "Beli item dari shop 666.",
+          "usage": "6buy <itemId> [qty]",
+          "examples": [
+            "6buy bait 3"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6buy <itemId> [qty]",
+            "Contoh: 6buy bait 3"
+          ]
+        },
+        {
+          "name": "6sell",
+          "aliases": [],
+          "summary": "Jual monster, item shop, atau semua duplikat monster.",
+          "usage": "6sell <monsterId|itemId|all>",
+          "examples": [
+            "6sell all",
+            "6sell a1b2c3"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6sell <monsterId|itemId|all>",
+            "Contoh: 6sell all",
+            "Contoh: 6sell a1b2c3"
+          ]
+        },
+        {
+          "name": "6market",
+          "aliases": [
+            "6shopmarket"
+          ],
+          "summary": "Lihat listing, sell, buy, cancel, mine, dan history dengan escrow.",
+          "usage": "6market [list] [halaman] | 6market sell <monster|pet|item|egg> <id> <harga> | 6market buy <id> | 6market cancel <id>",
+          "examples": [
+            "6market",
+            "6market sell pet <id> 5000",
+            "6market buy <id>"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": "Listing memakai escrow dan short ID; item tidak bisa dipakai saat dikunci.",
+          "subcommands": [
+            "6market / 6market list [halaman] — listing aktif",
+            "6market sell <monster|pet|item|egg> <id> <harga>",
+            "6market buy <listingId>",
+            "6market cancel <listingId>",
+            "6market mine / 6market history"
+          ]
+        },
+        {
+          "name": "6trade",
+          "aliases": [],
+          "summary": "Trade aman: item dikunci dan dua pihak wajib confirm.",
+          "usage": "6trade @user [koin] | 6trade offer <id> coins <n> monster <id> pet <id> item <id> <qty>",
+          "examples": [
+            "6trade @teman",
+            "6trade offer <id> coins 500",
+            "6trade confirm <id>"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": "Item dikunci selama transfer dan baru berpindah setelah kedua pihak confirm.",
+          "subcommands": [
+            "6trade @user [koin] — mulai trade",
+            "6trade offer <id> coins <n> monster <id> pet <id> item <id> <qty>",
+            "6trade accept <id> / 6trade decline <id>",
+            "6trade confirm <id> — kedua pihak wajib confirm",
+            "6trade cancel <id> / 6trade status <id>"
+          ]
         }
       ]
     },
     {
-      "id": "hunting",
-      "label": "Hunting",
-      "emoji": "🏹",
-      "blurb": "Cari monster, isi koleksi, jual monster, dan naikkan hunt level.",
+      "id": "animals",
+      "label": "Animals",
+      "emoji": "🌱",
+      "blurb": "Hunt, zoo, pet, battle, dungeon, lootbox, egg, dan world boss.",
       "commands": [
+        {
+          "name": "6zoo",
+          "aliases": [],
+          "summary": "Lihat kandang monster dan koleksi pet kamu.",
+          "usage": "6zoo",
+          "examples": [
+            "6zoo"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6zoo",
+            "Contoh: 6zoo"
+          ]
+        },
         {
           "name": "6hunt",
           "aliases": [],
@@ -53,6 +419,10 @@
             "6hunt inventory",
             "6hunt sell <id>"
           ],
+          "required": [],
+          "optional": [],
+          "cooldown": "30 detik",
+          "permission": "Everyone",
           "note": "Monster tidak akan hilang jika wallet penuh saat dijual.",
           "subcommands": [
             "6hunt — cari monster (cooldown)",
@@ -62,15 +432,47 @@
             "6hunt stats — statistik hunting",
             "6hunt leaderboard — pemburu terbaik"
           ]
-        }
-      ]
-    },
-    {
-      "id": "battle",
-      "label": "Battle",
-      "emoji": "⚔️",
-      "blurb": "Arena turn-based dengan rating, streak, dan cooldown.",
-      "commands": [
+        },
+        {
+          "name": "6sell",
+          "aliases": [],
+          "summary": "Jual monster, item shop, atau semua duplikat monster.",
+          "usage": "6sell <monsterId|itemId|all>",
+          "examples": [
+            "6sell all",
+            "6sell a1b2c3"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6sell <monsterId|itemId|all>",
+            "Contoh: 6sell all",
+            "Contoh: 6sell a1b2c3"
+          ]
+        },
+        {
+          "name": "6sacrifice",
+          "aliases": [],
+          "summary": "Korbankan monster untuk koin dan XP instan. Monster akan dihapus permanen.",
+          "usage": "6sacrifice <id>",
+          "examples": [
+            "6sacrifice a1b2c3"
+          ],
+          "required": [
+            "monster id"
+          ],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6sacrifice <id>",
+            "Contoh: 6sacrifice a1b2c3"
+          ]
+        },
         {
           "name": "6battle",
           "aliases": [],
@@ -81,6 +483,10 @@
             "6battle accept",
             "6battle stats"
           ],
+          "required": [],
+          "optional": [],
+          "cooldown": "15 detik",
+          "permission": "Everyone",
           "note": "Battle memakai cooldown dan anti-farm untuk poin guild war.",
           "subcommands": [
             "6battle @user — tantang battle turn-based",
@@ -89,15 +495,261 @@
             "6battle stats — W/L, rating, streak",
             "6battle leaderboard — ranking arena"
           ]
-        }
-      ]
-    },
-    {
-      "id": "pets",
-      "label": "Pets",
-      "emoji": "🐾",
-      "blurb": "Hatch, rawat, upgrade, evolusi, dan pasang beberapa pet aktif.",
-      "commands": [
+        },
+        {
+          "name": "6sim",
+          "aliases": [
+            "6simulate"
+          ],
+          "summary": "Simulasikan battle melawan monster liar tanpa mempertaruhkan apa pun.",
+          "usage": "6sim",
+          "examples": [
+            "6sim"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6sim",
+            "Contoh: 6sim"
+          ]
+        },
+        {
+          "name": "6inv",
+          "aliases": [
+            "6inventory"
+          ],
+          "summary": "Inventory gabungan: item, monster, dan pet.",
+          "usage": "6inv",
+          "examples": [
+            "6inv"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6inv",
+            "Contoh: 6inv"
+          ]
+        },
+        {
+          "name": "6equip",
+          "aliases": [],
+          "summary": "Pasang pet ke slot aktif atau equip weapon.",
+          "usage": "6equip <petId|weaponId>",
+          "examples": [
+            "6equip a1b2c3"
+          ],
+          "required": [
+            "pet id"
+          ],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6equip <petId|weaponId>",
+            "Contoh: 6equip a1b2c3"
+          ]
+        },
+        {
+          "name": "6autohunt",
+          "aliases": [],
+          "summary": "Aktifkan auto-hunt. Scheduler akan hunt otomatis setiap ±5 menit.",
+          "usage": "6autohunt [on|off|status]",
+          "examples": [
+            "6autohunt on",
+            "6autohunt status"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6autohunt [on|off|status]",
+            "Contoh: 6autohunt on",
+            "Contoh: 6autohunt status"
+          ]
+        },
+        {
+          "name": "6dex",
+          "aliases": [
+            "6encyclopedia"
+          ],
+          "summary": "Ensiklopedia monster dan pet beserta status koleksi.",
+          "usage": "6dex [monster|pet]",
+          "examples": [
+            "6dex",
+            "6dex pet"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6dex [monster|pet]",
+            "Contoh: 6dex",
+            "Contoh: 6dex pet"
+          ]
+        },
+        {
+          "name": "6lootbox",
+          "aliases": [],
+          "summary": "Beli dan buka lootbox berisi koin, shards, item, atau egg.",
+          "usage": "6lootbox",
+          "examples": [
+            "6lootbox"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6lootbox",
+            "Contoh: 6lootbox"
+          ]
+        },
+        {
+          "name": "6egg",
+          "aliases": [],
+          "summary": "Hatch egg pet. Tanpa argumen akan menampilkan daftar egg.",
+          "usage": "6egg [basic|rare|legendary]",
+          "examples": [
+            "6egg",
+            "6egg rare"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "1.5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6egg [basic|rare|legendary]",
+            "Contoh: 6egg",
+            "Contoh: 6egg rare"
+          ]
+        },
+        {
+          "name": "6crate",
+          "aliases": [],
+          "summary": "Buka crate dengan hadiah lebih besar dan peluang item langka.",
+          "usage": "6crate",
+          "examples": [
+            "6crate"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6crate",
+            "Contoh: 6crate"
+          ]
+        },
+        {
+          "name": "6team",
+          "aliases": [],
+          "summary": "Lihat tim pet aktif dan bonus stat mereka.",
+          "usage": "6team",
+          "examples": [
+            "6team"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6team",
+            "Contoh: 6team"
+          ]
+        },
+        {
+          "name": "6weapon",
+          "aliases": [],
+          "summary": "Lihat, equip, atau unequip weapon untuk bonus battle.",
+          "usage": "6weapon [list|equip <id>|unequip]",
+          "examples": [
+            "6weapon list",
+            "6weapon equip iron_sword"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6weapon [list|equip <id>|unequip]",
+            "Contoh: 6weapon list",
+            "Contoh: 6weapon equip iron_sword"
+          ]
+        },
+        {
+          "name": "6rename",
+          "aliases": [],
+          "summary": "Ganti nama monster atau pet dengan biaya 500 coins.",
+          "usage": "6rename <monster|pet> <id> <nama baru>",
+          "examples": [
+            "6rename pet a1b2c3 Kuro"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6rename <monster|pet> <id> <nama baru>",
+            "Contoh: 6rename pet a1b2c3 Kuro"
+          ]
+        },
+        {
+          "name": "6dismantle",
+          "aliases": [],
+          "summary": "Bongkar monster atau pet menjadi shards.",
+          "usage": "6dismantle <monster|pet> <id>",
+          "examples": [
+            "6dismantle monster a1b2c3"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6dismantle <monster|pet> <id>",
+            "Contoh: 6dismantle monster a1b2c3"
+          ]
+        },
+        {
+          "name": "6boss",
+          "aliases": [],
+          "summary": "Status world boss, serang, leaderboard, dan preview reward.",
+          "usage": "6boss [status|attack|leaderboard|rewards]",
+          "examples": [
+            "6boss",
+            "6boss attack",
+            "6boss leaderboard"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "10 detik",
+          "permission": "Everyone",
+          "note": "Boss di-spawn scheduler; minimum kontribusi diatur dari dashboard.",
+          "subcommands": [
+            "6boss / 6boss status — HP & damage leaderboard",
+            "6boss attack — serang boss (cooldown 30 detik)",
+            "6boss leaderboard — kontribusi damage",
+            "6boss rewards — preview reward"
+          ]
+        },
         {
           "name": "6pet",
           "aliases": [],
@@ -109,6 +761,10 @@
             "6pet unequip <id>",
             "6pet collection"
           ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
           "note": "Jumlah slot aktif mengikuti setting `pets.maxSlots` di dashboard.",
           "subcommands": [
             "6pet hatch [egg_basic|egg_rare|egg_legendary] — menetas",
@@ -125,37 +781,11 @@
       ]
     },
     {
-      "id": "games",
-      "label": "Mini Games",
+      "id": "gambling",
+      "label": "Gambling",
       "emoji": "🎲",
-      "blurb": "RNG crypto, house edge transparan, tombol interaktif.",
+      "blurb": "RNG crypto, house edge transparan, dan tombol interaktif.",
       "commands": [
-        {
-          "name": "6coinflip",
-          "aliases": [],
-          "summary": "Tebak heads/tails dengan bet.",
-          "usage": "6coinflip <heads|tails> [bet]",
-          "examples": [
-            "6coinflip heads 100"
-          ],
-          "note": null,
-          "subcommands": [
-            "6coinflip heads|tails <bet> — lempar koin adil 50/50"
-          ]
-        },
-        {
-          "name": "6dice",
-          "aliases": [],
-          "summary": "Tebak hasil dadu.",
-          "usage": "6dice <1-6> [bet]",
-          "examples": [
-            "6dice 6 100"
-          ],
-          "note": null,
-          "subcommands": [
-            "6dice <1-6> <bet> — tebak dadu, bayaran 6x"
-          ]
-        },
         {
           "name": "6slots",
           "aliases": [],
@@ -164,9 +794,50 @@
           "examples": [
             "6slots 100"
           ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
           "note": null,
           "subcommands": [
             "6slots <bet> — 3 reel, triple up to 200x"
+          ]
+        },
+        {
+          "name": "6coinflip",
+          "aliases": [],
+          "summary": "Tebak heads/tails dengan bet.",
+          "usage": "6coinflip <heads|tails> [bet]",
+          "examples": [
+            "6coinflip heads 100"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6coinflip heads|tails <bet> — lempar koin adil 50/50"
+          ]
+        },
+        {
+          "name": "6lottery",
+          "aliases": [],
+          "summary": "Lottery server: beli tiket, kumpulkan pot, dan menangkan hadiah.",
+          "usage": "6lottery [status|buy <tiket>]",
+          "examples": [
+            "6lottery",
+            "6lottery buy 3"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6lottery [status|buy <tiket>]",
+            "Contoh: 6lottery",
+            "Contoh: 6lottery buy 3"
           ]
         },
         {
@@ -177,9 +848,30 @@
           "examples": [
             "6blackjack 100"
           ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
           "note": null,
           "subcommands": [
             "6blackjack <bet> — hit/stand melawan dealer"
+          ]
+        },
+        {
+          "name": "6dice",
+          "aliases": [],
+          "summary": "Tebak hasil dadu.",
+          "usage": "6dice <1-6> [bet]",
+          "examples": [
+            "6dice 6 100"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6dice <1-6> <bet> — tebak dadu, bayaran 6x"
           ]
         },
         {
@@ -190,6 +882,10 @@
           "examples": [
             "6roulette red 100"
           ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
           "note": null,
           "subcommands": [
             "6roulette <red|black|green|0-36> <bet>"
@@ -203,6 +899,10 @@
           "examples": [
             "6guess 42 100"
           ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
           "note": null,
           "subcommands": [
             "6guess <1-10> <bet> — tebak angka, bayaran 10x"
@@ -216,6 +916,10 @@
           "examples": [
             "6trivia 100"
           ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
           "note": null,
           "subcommands": [
             "6trivia <bet> — jawab pertanyaan via tombol"
@@ -230,6 +934,10 @@
             "6rps 100",
             "6rps @teman 100"
           ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
           "note": null,
           "subcommands": [
             "6rps <rock|paper|scissors> <bet> — lawan bot",
@@ -239,56 +947,287 @@
       ]
     },
     {
-      "id": "progress",
-      "label": "Progress",
-      "emoji": "📈",
-      "blurb": "Quest, achievement, rank, dan kartu profil.",
+      "id": "fun",
+      "label": "Fun",
+      "emoji": "🎱",
+      "blurb": "8ball, kamus, GIF, gambar, translate, dadu, pilihan, dan bel.",
       "commands": [
         {
-          "name": "6quest",
+          "name": "68ball",
           "aliases": [],
-          "summary": "Quest harian/mingguan dan klaim reward.",
-          "usage": "6quest [list|daily|weekly] | 6quest claim <questId>",
+          "summary": "Tanya bola 8 dan dapatkan jawaban dari RNG.",
+          "usage": "68ball <pertanyaan>",
           "examples": [
-            "6quest",
-            "6quest daily",
-            "6quest claim <id>"
+            "68ball apakah aku menang?"
           ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6quest / 6quest list — quest harian & mingguan",
-            "6quest daily|weekly — filter",
-            "6quest claim <questId> — klaim reward",
-            "6achievement — badge & progres",
-            "6rank — level, rank, posisi server"
+            "68ball <pertanyaan>",
+            "Contoh: 68ball apakah aku menang?"
           ]
         },
         {
-          "name": "6achievement",
+          "name": "6define",
           "aliases": [
-            "6achievements"
+            "6dictionary"
           ],
-          "summary": "Daftar badge dan progres achievement.",
-          "usage": "6achievement",
+          "summary": "Cari arti kata bahasa Inggris lewat dictionary API.",
+          "usage": "6define <kata>",
           "examples": [
-            "6achievement"
+            "6define serendipity"
           ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6achievement — daftar badge & progres"
+            "6define <kata>",
+            "Contoh: 6define serendipity"
           ]
         },
         {
-          "name": "6rank",
+          "name": "6gif",
           "aliases": [],
-          "summary": "Level, rank, EXP, dan posisi server.",
-          "usage": "6rank",
+          "summary": "Cari GIF dari Tenor berdasarkan kata kunci.",
+          "usage": "6gif <kata kunci>",
           "examples": [
-            "6rank"
+            "6gif cat dance"
           ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
           "note": null,
           "subcommands": [
-            "6rank — level, rank, EXP, posisi server"
+            "6gif <kata kunci>",
+            "Contoh: 6gif cat dance"
+          ]
+        },
+        {
+          "name": "6pic",
+          "aliases": [
+            "6image"
+          ],
+          "summary": "Ambil gambar acak dari LoremFlickr.",
+          "usage": "6pic [kata kunci]",
+          "examples": [
+            "6pic sunset",
+            "6pic"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6pic [kata kunci]",
+            "Contoh: 6pic sunset",
+            "Contoh: 6pic"
+          ]
+        },
+        {
+          "name": "6translate",
+          "aliases": [],
+          "summary": "Terjemahkan teks via MyMemory API. Format: dari ke teks.",
+          "usage": "6translate <from> <to> <teks>",
+          "examples": [
+            "6translate id en halo dunia"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6translate <from> <to> <teks>",
+            "Contoh: 6translate id en halo dunia"
+          ]
+        },
+        {
+          "name": "6roll",
+          "aliases": [],
+          "summary": "Roll dadu dengan format NdM atau angka biasa.",
+          "usage": "6roll [2d6|100]",
+          "examples": [
+            "6roll",
+            "6roll 2d6+3",
+            "6roll 100"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6roll [2d6|100]",
+            "Contoh: 6roll",
+            "Contoh: 6roll 2d6+3",
+            "Contoh: 6roll 100"
+          ]
+        },
+        {
+          "name": "6choose",
+          "aliases": [
+            "6pick"
+          ],
+          "summary": "Pilih satu opsi secara acak.",
+          "usage": "6choose opsi1, opsi2, opsi3",
+          "examples": [
+            "6choose nasi, mie, sate"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6choose opsi1, opsi2, opsi3",
+            "Contoh: 6choose nasi, mie, sate"
+          ]
+        },
+        {
+          "name": "6bell",
+          "aliases": [],
+          "summary": "Bunyikan bel keberuntungan 666.",
+          "usage": "6bell",
+          "examples": [
+            "6bell"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6bell",
+            "Contoh: 6bell"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social",
+      "label": "Social",
+      "emoji": "🎭",
+      "blurb": "Profil, level, avatar, pernikahan, ship, cookie, emoji, dan wallpaper.",
+      "commands": [
+        {
+          "name": "6cookie",
+          "aliases": [],
+          "summary": "Beri cookie ke member lain.",
+          "usage": "6cookie [@user]",
+          "examples": [
+            "6cookie @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "30 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6cookie [@user]",
+            "Contoh: 6cookie @friend"
+          ]
+        },
+        {
+          "name": "6ship",
+          "aliases": [
+            "6love"
+          ],
+          "summary": "Hitung compatibility dua member secara deterministik.",
+          "usage": "6ship @user [@user2]",
+          "examples": [
+            "6ship @a @b"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "10 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6ship @user [@user2]",
+            "Contoh: 6ship @a @b"
+          ]
+        },
+        {
+          "name": "6pray",
+          "aliases": [],
+          "summary": "Kirim doa/blessing untuk member lain.",
+          "usage": "6pray [@user]",
+          "examples": [
+            "6pray @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "30 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6pray [@user]",
+            "Contoh: 6pray @friend"
+          ]
+        },
+        {
+          "name": "6curse",
+          "aliases": [],
+          "summary": "Lempar kutukan ringan (hanya social stats, tanpa mengurangi saldo).",
+          "usage": "6curse [@user]",
+          "examples": [
+            "6curse @rival"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "30 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6curse [@user]",
+            "Contoh: 6curse @rival"
+          ]
+        },
+        {
+          "name": "6marry",
+          "aliases": [],
+          "summary": "Propose, accept, status, atau divorce partner.",
+          "usage": "6marry @user • 6marry accept <proposalId> • 6marry status • 6marry divorce",
+          "examples": [
+            "6marry @partner",
+            "6marry accept a1b2c3",
+            "6marry status"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "10 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6marry @user • 6marry accept <proposalId> • 6marry status • 6marry divorce",
+            "Contoh: 6marry @partner",
+            "Contoh: 6marry accept a1b2c3",
+            "Contoh: 6marry status"
+          ]
+        },
+        {
+          "name": "6emoji",
+          "aliases": [],
+          "summary": "Tampilkan emoji besar atau info emoji.",
+          "usage": "6emoji <emoji>",
+          "examples": [
+            "6emoji 🔥"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6emoji <emoji>",
+            "Contoh: 6emoji 🔥"
           ]
         },
         {
@@ -296,81 +1235,1399 @@
           "aliases": [
             "6me"
           ],
-          "summary": "Kartu profil lengkap dengan statistik dan quest.",
+          "summary": "Kartu profil lengkap dengan statistik, sosial, dan quest.",
           "usage": "6profile [@user]",
           "examples": [
             "6profile",
             "6profile @teman"
           ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
           "note": null,
           "subcommands": [
             "6profile [@user] — kartu profil 666 lengkap"
           ]
-        }
-      ]
-    },
-    {
-      "id": "trade",
-      "label": "Trade",
-      "emoji": "🤝",
-      "blurb": "Trade aman: item dikunci dan dua pihak wajib confirm.",
-      "commands": [
+        },
         {
-          "name": "6trade",
-          "aliases": [],
-          "summary": "Mulai trade, offer item/koin, accept, confirm, cancel, status.",
-          "usage": "6trade @user [koin] | 6trade offer <id> coins <n> monster <id> pet <id> item <id> <qty>",
-          "examples": [
-            "6trade @teman",
-            "6trade offer <id> coins 500",
-            "6trade confirm <id>"
-          ],
-          "note": "Item dikunci selama transfer dan baru berpindah setelah kedua pihak confirm.",
-          "subcommands": [
-            "6trade @user [koin] — mulai trade",
-            "6trade offer <id> coins <n> monster <id> pet <id> item <id> <qty>",
-            "6trade accept <id> / 6trade decline <id>",
-            "6trade confirm <id> — kedua pihak wajib confirm",
-            "6trade cancel <id> / 6trade status <id>"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "market",
-      "label": "Market",
-      "emoji": "🏪",
-      "blurb": "Jual-beli monster, pet, item, dan egg dengan escrow.",
-      "commands": [
-        {
-          "name": "6market",
+          "name": "6level",
           "aliases": [
-            "6shopmarket"
+            "6lvl"
           ],
-          "summary": "Lihat listing, sell, buy, cancel, mine, history.",
-          "usage": "6market [list] [halaman] | 6market sell <monster|pet|item|egg> <id> <harga> | 6market buy <id> | 6market cancel <id>",
+          "summary": "Lihat level, EXP, dan progress ke level berikutnya.",
+          "usage": "6level [@user]",
           "examples": [
-            "6market",
-            "6market sell pet <id> 5000",
-            "6market buy <id>"
+            "6level",
+            "6level @friend"
           ],
-          "note": "Listing memakai escrow dan short ID; item tidak bisa dipakai saat dikunci.",
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
           "subcommands": [
-            "6market / 6market list [halaman] — listing aktif",
-            "6market sell <monster|pet|item|egg> <id> <harga>",
-            "6market buy <listingId>",
-            "6market cancel <listingId>",
-            "6market mine / 6market history"
+            "6level [@user]",
+            "Contoh: 6level",
+            "Contoh: 6level @friend"
+          ]
+        },
+        {
+          "name": "6wallpaper",
+          "aliases": [],
+          "summary": "Ambil wallpaper acak sesuai tema.",
+          "usage": "6wallpaper [tema]",
+          "examples": [
+            "6wallpaper cyberpunk"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6wallpaper [tema]",
+            "Contoh: 6wallpaper cyberpunk"
+          ]
+        },
+        {
+          "name": "6godify",
+          "aliases": [
+            "6ascend"
+          ],
+          "summary": "Buat avatar member menjadi versi 666 ascended lewat canvas API.",
+          "usage": "6godify [@user]",
+          "examples": [
+            "6godify",
+            "6godify @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6godify [@user]",
+            "Contoh: 6godify",
+            "Contoh: 6godify @friend"
+          ]
+        },
+        {
+          "name": "6avatar",
+          "aliases": [
+            "6av"
+          ],
+          "summary": "Tampilkan avatar member dalam ukuran besar.",
+          "usage": "6avatar [@user]",
+          "examples": [
+            "6avatar",
+            "6avatar @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6avatar [@user]",
+            "Contoh: 6avatar",
+            "Contoh: 6avatar @friend"
           ]
         }
       ]
     },
     {
-      "id": "guild",
-      "label": "Guild",
-      "emoji": "🏰",
-      "blurb": "Guild, bank, upgrade, dan guild war musiman.",
+      "id": "meme",
+      "label": "Meme",
+      "emoji": "😂",
+      "blurb": "Meme generator canvas dengan teks custom.",
       "commands": [
+        {
+          "name": "6spongebobchicken",
+          "aliases": [],
+          "summary": "Meme SpongeBob chicken dengan teks custom.",
+          "usage": "6spongebobchicken [teks atas | teks bawah]",
+          "examples": [
+            "6spongebobchicken ketika kamu | klaim daily"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6spongebobchicken [teks atas | teks bawah]",
+            "Contoh: 6spongebobchicken ketika kamu | klaim daily"
+          ]
+        },
+        {
+          "name": "6slapcar",
+          "aliases": [],
+          "summary": "Meme slap car untuk rasa kesal.",
+          "usage": "6slapcar [teks atas | teks bawah]",
+          "examples": [
+            "6slapcar aku kalah | RNG"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6slapcar [teks atas | teks bawah]",
+            "Contoh: 6slapcar aku kalah | RNG"
+          ]
+        },
+        {
+          "name": "6isthisa",
+          "aliases": [],
+          "summary": "Meme is this a pigeon?",
+          "usage": "6isthisa [teks atas | teks bawah]",
+          "examples": [
+            "6isthisa apakah ini | reward gratis"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6isthisa [teks atas | teks bawah]",
+            "Contoh: 6isthisa apakah ini | reward gratis"
+          ]
+        },
+        {
+          "name": "6drake",
+          "aliases": [],
+          "summary": "Meme Drake NO/YES. Pisahkan dua teks dengan |.",
+          "usage": "6drake [teks atas | teks bawah]",
+          "examples": [
+            "6drake grind manual | autohunt"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6drake [teks atas | teks bawah]",
+            "Contoh: 6drake grind manual | autohunt"
+          ]
+        },
+        {
+          "name": "6distractedbf",
+          "aliases": [],
+          "summary": "Meme distracted boyfriend.",
+          "usage": "6distractedbf [teks atas | teks bawah]",
+          "examples": [
+            "6distractedbf walletku | egg legendary"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6distractedbf [teks atas | teks bawah]",
+            "Contoh: 6distractedbf walletku | egg legendary"
+          ]
+        },
+        {
+          "name": "6communismcat",
+          "aliases": [],
+          "summary": "Meme communism cat.",
+          "usage": "6communismcat [teks atas | teks bawah]",
+          "examples": [
+            "6communismcat koinmu | koin kita"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6communismcat [teks atas | teks bawah]",
+            "Contoh: 6communismcat koinmu | koin kita"
+          ]
+        },
+        {
+          "name": "6eject",
+          "aliases": [],
+          "summary": "Meme emergency eject.",
+          "usage": "6eject [teks atas | teks bawah]",
+          "examples": [
+            "6eject listing kemahalan | eject"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6eject [teks atas | teks bawah]",
+            "Contoh: 6eject listing kemahalan | eject"
+          ]
+        },
+        {
+          "name": "6emergencymeeting",
+          "aliases": [],
+          "summary": "Meme emergency meeting.",
+          "usage": "6emergencymeeting [teks atas | teks bawah]",
+          "examples": [
+            "6emergencymeeting ada secret monster | sus"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6emergencymeeting [teks atas | teks bawah]",
+            "Contoh: 6emergencymeeting ada secret monster | sus"
+          ]
+        },
+        {
+          "name": "6headpat",
+          "aliases": [],
+          "summary": "Meme headpat untuk teman.",
+          "usage": "6headpat [teks atas | teks bawah]",
+          "examples": [
+            "6headpat kamu hebat | semoga hoki"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6headpat [teks atas | teks bawah]",
+            "Contoh: 6headpat kamu hebat | semoga hoki"
+          ]
+        },
+        {
+          "name": "6tradeoffer",
+          "aliases": [],
+          "summary": "Meme trade offer.",
+          "usage": "6tradeoffer [teks atas | teks bawah]",
+          "examples": [
+            "6tradeoffer aku dapat pet langka | kamu dapat egg umum"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6tradeoffer [teks atas | teks bawah]",
+            "Contoh: 6tradeoffer aku dapat pet langka | kamu dapat egg umum"
+          ]
+        },
+        {
+          "name": "6waddle",
+          "aliases": [],
+          "summary": "Meme waddle saat boss muncul.",
+          "usage": "6waddle [teks atas | teks bawah]",
+          "examples": [
+            "6waddle boss spawn | semua waddle"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6waddle [teks atas | teks bawah]",
+            "Contoh: 6waddle boss spawn | semua waddle"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "emotes",
+      "label": "Emotes",
+      "emoji": "🙂",
+      "blurb": "Ekspresi dan reaksi dengan GIF nyata.",
+      "commands": [
+        {
+          "name": "6blush",
+          "aliases": [],
+          "summary": "😊 Ekspresi blush: merona karena malu.",
+          "usage": "6blush",
+          "examples": [
+            "6blush"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6blush",
+            "Contoh: 6blush"
+          ]
+        },
+        {
+          "name": "6cry",
+          "aliases": [],
+          "summary": "😭 Ekspresi cry: menangis.",
+          "usage": "6cry",
+          "examples": [
+            "6cry"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6cry",
+            "Contoh: 6cry"
+          ]
+        },
+        {
+          "name": "6dance",
+          "aliases": [],
+          "summary": "💃 Ekspresi dance: menari.",
+          "usage": "6dance",
+          "examples": [
+            "6dance"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6dance",
+            "Contoh: 6dance"
+          ]
+        },
+        {
+          "name": "6pout",
+          "aliases": [],
+          "summary": "😤 Ekspresi pout: cemberut.",
+          "usage": "6pout",
+          "examples": [
+            "6pout"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6pout",
+            "Contoh: 6pout"
+          ]
+        },
+        {
+          "name": "6shrug",
+          "aliases": [],
+          "summary": "🤷 Ekspresi shrug: angkat bahu.",
+          "usage": "6shrug",
+          "examples": [
+            "6shrug"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6shrug",
+            "Contoh: 6shrug"
+          ]
+        },
+        {
+          "name": "6sleepy",
+          "aliases": [],
+          "summary": "😴 Ekspresi sleepy: mengantuk.",
+          "usage": "6sleepy",
+          "examples": [
+            "6sleepy"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6sleepy",
+            "Contoh: 6sleepy"
+          ]
+        },
+        {
+          "name": "6smile",
+          "aliases": [],
+          "summary": "😄 Ekspresi smile: tersenyum.",
+          "usage": "6smile",
+          "examples": [
+            "6smile"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6smile",
+            "Contoh: 6smile"
+          ]
+        },
+        {
+          "name": "6smug",
+          "aliases": [],
+          "summary": "😏 Ekspresi smug: smug.",
+          "usage": "6smug",
+          "examples": [
+            "6smug"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6smug",
+            "Contoh: 6smug"
+          ]
+        },
+        {
+          "name": "6thumbsup",
+          "aliases": [],
+          "summary": "👍 Ekspresi thumbsup: memberi thumbs up.",
+          "usage": "6thumbsup",
+          "examples": [
+            "6thumbsup"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6thumbsup",
+            "Contoh: 6thumbsup"
+          ]
+        },
+        {
+          "name": "6wag",
+          "aliases": [],
+          "summary": "🐕 Ekspresi wag: menggoyangkan ekor.",
+          "usage": "6wag",
+          "examples": [
+            "6wag"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6wag",
+            "Contoh: 6wag"
+          ]
+        },
+        {
+          "name": "6thinking",
+          "aliases": [],
+          "summary": "🤔 Ekspresi thinking: berpikir.",
+          "usage": "6thinking",
+          "examples": [
+            "6thinking"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6thinking",
+            "Contoh: 6thinking"
+          ]
+        },
+        {
+          "name": "6triggered",
+          "aliases": [],
+          "summary": "😡 Ekspresi triggered: triggered.",
+          "usage": "6triggered",
+          "examples": [
+            "6triggered"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6triggered",
+            "Contoh: 6triggered"
+          ]
+        },
+        {
+          "name": "6teehee",
+          "aliases": [],
+          "summary": "😋 Ekspresi teehee: teehee.",
+          "usage": "6teehee",
+          "examples": [
+            "6teehee"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6teehee",
+            "Contoh: 6teehee"
+          ]
+        },
+        {
+          "name": "6deredere",
+          "aliases": [],
+          "summary": "🥰 Ekspresi deredere: deredere.",
+          "usage": "6deredere",
+          "examples": [
+            "6deredere"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6deredere",
+            "Contoh: 6deredere"
+          ]
+        },
+        {
+          "name": "6thonsking",
+          "aliases": [],
+          "summary": "🤨 Ekspresi thonsking: thonsking.",
+          "usage": "6thonsking",
+          "examples": [
+            "6thonsking"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6thonsking",
+            "Contoh: 6thonsking"
+          ]
+        },
+        {
+          "name": "6scoff",
+          "aliases": [],
+          "summary": "😒 Ekspresi scoff: scoff.",
+          "usage": "6scoff",
+          "examples": [
+            "6scoff"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6scoff",
+            "Contoh: 6scoff"
+          ]
+        },
+        {
+          "name": "6happy",
+          "aliases": [],
+          "summary": "😁 Ekspresi happy: bahagia.",
+          "usage": "6happy",
+          "examples": [
+            "6happy"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6happy",
+            "Contoh: 6happy"
+          ]
+        },
+        {
+          "name": "6thumbs",
+          "aliases": [],
+          "summary": "👍 Ekspresi thumbs: thumbs up.",
+          "usage": "6thumbs",
+          "examples": [
+            "6thumbs"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6thumbs",
+            "Contoh: 6thumbs"
+          ]
+        },
+        {
+          "name": "6grin",
+          "aliases": [],
+          "summary": "😁 Ekspresi grin: grin.",
+          "usage": "6grin",
+          "examples": [
+            "6grin"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "4 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6grin",
+            "Contoh: 6grin"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "actions",
+      "label": "Actions",
+      "emoji": "🤗",
+      "blurb": "Aksi sosial ke member lain dengan GIF.",
+      "commands": [
+        {
+          "name": "6cuddle",
+          "aliases": [],
+          "summary": "🤗 Memeluk member lain dengan GIF.",
+          "usage": "6cuddle [@user]",
+          "examples": [
+            "6cuddle",
+            "6cuddle @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6cuddle [@user]",
+            "Contoh: 6cuddle",
+            "Contoh: 6cuddle @friend"
+          ]
+        },
+        {
+          "name": "6hug",
+          "aliases": [],
+          "summary": "🫂 Memeluk member lain dengan GIF.",
+          "usage": "6hug [@user]",
+          "examples": [
+            "6hug",
+            "6hug @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6hug [@user]",
+            "Contoh: 6hug",
+            "Contoh: 6hug @friend"
+          ]
+        },
+        {
+          "name": "6kiss",
+          "aliases": [],
+          "summary": "😘 Mencium member lain dengan GIF.",
+          "usage": "6kiss [@user]",
+          "examples": [
+            "6kiss",
+            "6kiss @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6kiss [@user]",
+            "Contoh: 6kiss",
+            "Contoh: 6kiss @friend"
+          ]
+        },
+        {
+          "name": "6lick",
+          "aliases": [],
+          "summary": "👅 Menjilat member lain dengan GIF.",
+          "usage": "6lick [@user]",
+          "examples": [
+            "6lick",
+            "6lick @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6lick [@user]",
+            "Contoh: 6lick",
+            "Contoh: 6lick @friend"
+          ]
+        },
+        {
+          "name": "6nom",
+          "aliases": [],
+          "summary": "😋 Menggigit member lain dengan GIF.",
+          "usage": "6nom [@user]",
+          "examples": [
+            "6nom",
+            "6nom @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6nom [@user]",
+            "Contoh: 6nom",
+            "Contoh: 6nom @friend"
+          ]
+        },
+        {
+          "name": "6pat",
+          "aliases": [],
+          "summary": "🫳 Mengelus member lain dengan GIF.",
+          "usage": "6pat [@user]",
+          "examples": [
+            "6pat",
+            "6pat @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6pat [@user]",
+            "Contoh: 6pat",
+            "Contoh: 6pat @friend"
+          ]
+        },
+        {
+          "name": "6poke",
+          "aliases": [],
+          "summary": "👉 Mencolek member lain dengan GIF.",
+          "usage": "6poke [@user]",
+          "examples": [
+            "6poke",
+            "6poke @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6poke [@user]",
+            "Contoh: 6poke",
+            "Contoh: 6poke @friend"
+          ]
+        },
+        {
+          "name": "6slap",
+          "aliases": [],
+          "summary": "🖐️ Menampar member lain dengan GIF.",
+          "usage": "6slap [@user]",
+          "examples": [
+            "6slap",
+            "6slap @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6slap [@user]",
+            "Contoh: 6slap",
+            "Contoh: 6slap @friend"
+          ]
+        },
+        {
+          "name": "6stare",
+          "aliases": [],
+          "summary": "👀 Menatap member lain dengan GIF.",
+          "usage": "6stare [@user]",
+          "examples": [
+            "6stare",
+            "6stare @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6stare [@user]",
+            "Contoh: 6stare",
+            "Contoh: 6stare @friend"
+          ]
+        },
+        {
+          "name": "6highfive",
+          "aliases": [],
+          "summary": "🙌 Tos member lain dengan GIF.",
+          "usage": "6highfive [@user]",
+          "examples": [
+            "6highfive",
+            "6highfive @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6highfive [@user]",
+            "Contoh: 6highfive",
+            "Contoh: 6highfive @friend"
+          ]
+        },
+        {
+          "name": "6bite",
+          "aliases": [],
+          "summary": "🦷 Menggigit member lain dengan GIF.",
+          "usage": "6bite [@user]",
+          "examples": [
+            "6bite",
+            "6bite @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6bite [@user]",
+            "Contoh: 6bite",
+            "Contoh: 6bite @friend"
+          ]
+        },
+        {
+          "name": "6greet",
+          "aliases": [],
+          "summary": "👋 Menyapa member lain dengan GIF.",
+          "usage": "6greet [@user]",
+          "examples": [
+            "6greet",
+            "6greet @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6greet [@user]",
+            "Contoh: 6greet",
+            "Contoh: 6greet @friend"
+          ]
+        },
+        {
+          "name": "6punch",
+          "aliases": [],
+          "summary": "👊 Meninju member lain dengan GIF.",
+          "usage": "6punch [@user]",
+          "examples": [
+            "6punch",
+            "6punch @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6punch [@user]",
+            "Contoh: 6punch",
+            "Contoh: 6punch @friend"
+          ]
+        },
+        {
+          "name": "6handholding",
+          "aliases": [],
+          "summary": "🤝 Menggandeng tangan member lain dengan GIF.",
+          "usage": "6handholding [@user]",
+          "examples": [
+            "6handholding",
+            "6handholding @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6handholding [@user]",
+            "Contoh: 6handholding",
+            "Contoh: 6handholding @friend"
+          ]
+        },
+        {
+          "name": "6tickle",
+          "aliases": [],
+          "summary": "🪶 Menggelitik member lain dengan GIF.",
+          "usage": "6tickle [@user]",
+          "examples": [
+            "6tickle",
+            "6tickle @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6tickle [@user]",
+            "Contoh: 6tickle",
+            "Contoh: 6tickle @friend"
+          ]
+        },
+        {
+          "name": "6hold",
+          "aliases": [],
+          "summary": "🫴 Menggenggam member lain dengan GIF.",
+          "usage": "6hold [@user]",
+          "examples": [
+            "6hold",
+            "6hold @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6hold [@user]",
+            "Contoh: 6hold",
+            "Contoh: 6hold @friend"
+          ]
+        },
+        {
+          "name": "6pats",
+          "aliases": [],
+          "summary": "🫳 Mengelus member lain dengan GIF.",
+          "usage": "6pats [@user]",
+          "examples": [
+            "6pats",
+            "6pats @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6pats [@user]",
+            "Contoh: 6pats",
+            "Contoh: 6pats @friend"
+          ]
+        },
+        {
+          "name": "6wave",
+          "aliases": [],
+          "summary": "👋 Melambai member lain dengan GIF.",
+          "usage": "6wave [@user]",
+          "examples": [
+            "6wave",
+            "6wave @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6wave [@user]",
+            "Contoh: 6wave",
+            "Contoh: 6wave @friend"
+          ]
+        },
+        {
+          "name": "6boop",
+          "aliases": [],
+          "summary": "👉 Boop hidung member lain dengan GIF.",
+          "usage": "6boop [@user]",
+          "examples": [
+            "6boop",
+            "6boop @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6boop [@user]",
+            "Contoh: 6boop",
+            "Contoh: 6boop @friend"
+          ]
+        },
+        {
+          "name": "6snuggle",
+          "aliases": [],
+          "summary": "🛌 Snuggle member lain dengan GIF.",
+          "usage": "6snuggle [@user]",
+          "examples": [
+            "6snuggle",
+            "6snuggle @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6snuggle [@user]",
+            "Contoh: 6snuggle",
+            "Contoh: 6snuggle @friend"
+          ]
+        },
+        {
+          "name": "6bully",
+          "aliases": [],
+          "summary": "😈 Mengganggu member lain dengan GIF.",
+          "usage": "6bully [@user]",
+          "examples": [
+            "6bully",
+            "6bully @friend"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6bully [@user]",
+            "Contoh: 6bully",
+            "Contoh: 6bully @friend"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "utility",
+      "label": "Utility",
+      "emoji": "🔧",
+      "blurb": "Info bot, link, prefix, moderator tools, saran, shards, math, dan warna.",
+      "commands": [
+        {
+          "name": "6help",
+          "aliases": [
+            "6commands",
+            "6h",
+            "6?"
+          ],
+          "summary": "Command list interaktif, detail per command, pencarian, dan kategori.",
+          "usage": "6help [command|kategori|keyword]",
+          "examples": [
+            "6help",
+            "6help cash",
+            "6help economy",
+            "6help sell"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": "Gunakan menu kategori di bawah embed atau `/help` untuk versi slash.",
+          "subcommands": [
+            "6help — buka pusat bantuan interaktif",
+            "6help <command> — detail satu command (contoh: 6help cash)",
+            "6help <kategori> — daftar command per kategori (contoh: 6help economy)",
+            "6help <keyword> — cari command berdasarkan kata kunci",
+            "/help [command] — versi slash command"
+          ]
+        },
+        {
+          "name": "6ping",
+          "aliases": [],
+          "summary": "Cek latency WebSocket dan uptime bot.",
+          "usage": "6ping",
+          "examples": [
+            "6ping"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6ping",
+            "Contoh: 6ping"
+          ]
+        },
+        {
+          "name": "6stats",
+          "aliases": [],
+          "summary": "Statistik bot dan server.",
+          "usage": "6stats",
+          "examples": [
+            "6stats"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6stats",
+            "Contoh: 6stats"
+          ]
+        },
+        {
+          "name": "6link",
+          "aliases": [],
+          "summary": "Tautan website, help center, dan dashboard 666.",
+          "usage": "6link",
+          "examples": [
+            "6link"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6link",
+            "Contoh: 6link"
+          ]
+        },
+        {
+          "name": "6guildlink",
+          "aliases": [
+            "6serverlink"
+          ],
+          "summary": "Buat link invite server ini atau tampilkan support server.",
+          "usage": "6guildlink",
+          "examples": [
+            "6guildlink"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6guildlink",
+            "Contoh: 6guildlink"
+          ]
+        },
+        {
+          "name": "6disable",
+          "aliases": [],
+          "summary": "Aktif/nonaktifkan command di server ini (admin).",
+          "usage": "6disable <command> • 6disable enable <command>",
+          "examples": [
+            "6disable hunt",
+            "6disable enable hunt"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Manage Server",
+          "note": null,
+          "subcommands": [
+            "6disable <command> • 6disable enable <command>",
+            "Contoh: 6disable hunt",
+            "Contoh: 6disable enable hunt"
+          ]
+        },
+        {
+          "name": "6censor",
+          "aliases": [],
+          "summary": "Kelola filter kata server (admin).",
+          "usage": "6censor on|off|add <kata>|remove <kata>|list",
+          "examples": [
+            "6censor on",
+            "6censor add badword"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Manage Server",
+          "note": null,
+          "subcommands": [
+            "6censor on|off|add <kata>|remove <kata>|list",
+            "Contoh: 6censor on",
+            "Contoh: 6censor add badword"
+          ]
+        },
+        {
+          "name": "6patron",
+          "aliases": [
+            "6donate"
+          ],
+          "summary": "Info patron/donasi dan benefit tanpa klaim palsu.",
+          "usage": "6patron",
+          "examples": [
+            "6patron"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6patron",
+            "Contoh: 6patron"
+          ]
+        },
+        {
+          "name": "6announcement",
+          "aliases": [
+            "6announce"
+          ],
+          "summary": "Kirim pengumuman embed dan set channel announcement (admin).",
+          "usage": "6announcement <teks>",
+          "examples": [
+            "6announcement Maintenance malam ini"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "5 detik",
+          "permission": "Manage Server",
+          "note": null,
+          "subcommands": [
+            "6announcement <teks>",
+            "Contoh: 6announcement Maintenance malam ini"
+          ]
+        },
+        {
+          "name": "6rules",
+          "aliases": [],
+          "summary": "Tampilkan atau set rules server (admin).",
+          "usage": "6rules • 6rules set <rule1> | <rule2>",
+          "examples": [
+            "6rules",
+            "6rules set Hormati semua orang | No spam"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone (set: Manage Server)",
+          "note": null,
+          "subcommands": [
+            "6rules • 6rules set <rule1> | <rule2>",
+            "Contoh: 6rules",
+            "Contoh: 6rules set Hormati semua orang | No spam"
+          ]
+        },
+        {
+          "name": "6suggest",
+          "aliases": [
+            "6suggestion"
+          ],
+          "summary": "Kirim saran untuk server/bot. Admin dapat menandai status.",
+          "usage": "6suggest <ide> • 6suggest accept|reject|implemented <id>",
+          "examples": [
+            "6suggest tambah command fish"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "10 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6suggest <ide> • 6suggest accept|reject|implemented <id>",
+            "Contoh: 6suggest tambah command fish"
+          ]
+        },
+        {
+          "name": "6shards",
+          "aliases": [
+            "6shard"
+          ],
+          "summary": "Lihat jumlah shards dan kegunaannya.",
+          "usage": "6shards [@user]",
+          "examples": [
+            "6shards"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6shards [@user]",
+            "Contoh: 6shards"
+          ]
+        },
+        {
+          "name": "6math",
+          "aliases": [
+            "6calc"
+          ],
+          "summary": "Kalkulator aman untuk ekspresi matematika.",
+          "usage": "6math <ekspresi>",
+          "examples": [
+            "6math (12+3)*4^2"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6math <ekspresi>",
+            "Contoh: 6math (12+3)*4^2"
+          ]
+        },
+        {
+          "name": "6color",
+          "aliases": [
+            "6colour"
+          ],
+          "summary": "Preview warna dari kode hex.",
+          "usage": "6color <#RRGGBB>",
+          "examples": [
+            "6color #ff5a00"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "2 detik",
+          "permission": "Everyone",
+          "note": null,
+          "subcommands": [
+            "6color <#RRGGBB>",
+            "Contoh: 6color #ff5a00"
+          ]
+        },
+        {
+          "name": "6prefix",
+          "aliases": [],
+          "summary": "Lihat atau ubah prefix tambahan server (admin). `6` selalu aktif.",
+          "usage": "6prefix [prefix]",
+          "examples": [
+            "6prefix",
+            "6prefix !"
+          ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Manage Server",
+          "note": null,
+          "subcommands": [
+            "6prefix [prefix]",
+            "Contoh: 6prefix",
+            "Contoh: 6prefix !"
+          ]
+        },
         {
           "name": "6guild",
           "aliases": [],
@@ -381,6 +2638,10 @@
             "6guild join <nama>",
             "6guild war challenge <guild>"
           ],
+          "required": [],
+          "optional": [],
+          "cooldown": "3 detik",
+          "permission": "Everyone",
           "note": "Season war mengikuti setting `guild.season` (daily/weekly/monthly).",
           "subcommands": [
             "6guild create <nama> — buat guild (biaya koin)",
@@ -392,64 +2653,6 @@
             "6guild upgrade — leader upgrade level",
             "6guild leaderboard — ranking guild",
             "6guild war [challenge <guild>|accept <id>|status|leaderboard]"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "boss",
-      "label": "World Boss",
-      "emoji": "👹",
-      "blurb": "HP bersama, damage leaderboard, dan reward kontribusi.",
-      "commands": [
-        {
-          "name": "6boss",
-          "aliases": [],
-          "summary": "Status boss, serang, leaderboard, dan preview reward.",
-          "usage": "6boss [status|attack|leaderboard|rewards]",
-          "examples": [
-            "6boss",
-            "6boss attack",
-            "6boss leaderboard"
-          ],
-          "note": "Boss di-spawn scheduler; minimum kontribusi diatur dari dashboard.",
-          "subcommands": [
-            "6boss / 6boss status — HP & damage leaderboard",
-            "6boss attack — serang boss (cooldown 30 detik)",
-            "6boss leaderboard — kontribusi damage",
-            "6boss rewards — preview reward"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "utility",
-      "label": "Utility",
-      "emoji": "🛠️",
-      "blurb": "Bantuan, pencarian command, dan navigasi.",
-      "commands": [
-        {
-          "name": "6help",
-          "aliases": [
-            "6commands",
-            "6h",
-            "6?"
-          ],
-          "summary": "Panduan interaktif semua command, kategori, dan pencarian.",
-          "usage": "6help [command|kategori|keyword]",
-          "examples": [
-            "6help",
-            "6help cash",
-            "6help economy",
-            "6help sell"
-          ],
-          "note": "Gunakan menu kategori di bawah embed atau `/help` untuk versi slash.",
-          "subcommands": [
-            "6help — buka pusat bantuan interaktif",
-            "6help <command> — detail satu command (contoh: 6help cash)",
-            "6help <kategori> — daftar command per kategori (contoh: 6help economy)",
-            "6help <keyword> — cari command berdasarkan kata kunci",
-            "/help [command] — versi slash command"
           ]
         }
       ]

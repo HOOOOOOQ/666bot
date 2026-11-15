@@ -19,15 +19,22 @@ const payload = {
     label: category.label,
     emoji: category.emoji,
     blurb: category.blurb,
-    commands: category.commands.map((entry) => ({
-      name: entry.name,
-      aliases: entry.aliases || [],
-      summary: entry.summary,
-      usage: entry.usage,
-      examples: entry.examples || [],
-      note: entry.note || null,
-      subcommands: catalog.linesFor(entry).map(stripBackticks),
-    })),
+    commands: category.commands.map((rawEntry) => {
+      const entry = catalog.describe(rawEntry);
+      return {
+        name: entry.name,
+        aliases: entry.aliases || [],
+        summary: entry.summary,
+        usage: entry.usage,
+        examples: entry.examples || [],
+        required: entry.required || [],
+        optional: entry.optional || [],
+        cooldown: entry.cooldown || null,
+        permission: entry.permission || 'Everyone',
+        note: entry.note || null,
+        subcommands: catalog.linesFor(entry).map(stripBackticks),
+      };
+    }),
   })),
 };
 

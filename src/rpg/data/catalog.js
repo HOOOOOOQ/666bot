@@ -116,9 +116,18 @@ const SHOP_ITEMS = [
   { id: 'egg_rare', name: 'Egg Rare', type: 'egg', price: 2500, emoji: '🥚', description: 'Telur pet langka.', effect: { egg: 'egg_rare' } },
   { id: 'egg_legendary', name: 'Egg Legendary', type: 'egg', price: 10000, emoji: '🥚', description: 'Telur pet legendaris.', effect: { egg: 'egg_legendary' } },
   { id: 'repair_kit', name: 'Guild Repair Kit', type: 'guild', price: 800, emoji: '🛠️', description: 'Kontribusi 50 guild EXP.', effect: { guildXp: 50 } },
+  { id: 'rusty_blade', name: 'Rusty Blade', type: 'weapon', price: 900, emoji: '🗡️', description: '+6 ATK saat battle.', effect: { attack: 6, defense: 0, speed: 1 } },
+  { id: 'iron_sword', name: 'Iron Sword', type: 'weapon', price: 3200, emoji: '⚔️', description: '+18 ATK, +3 DEF.', effect: { attack: 18, defense: 3, speed: 0 } },
+  { id: 'shadow_dagger', name: 'Shadow Dagger', type: 'weapon', price: 5400, emoji: '🔪', description: '+14 ATK, +8 SPD.', effect: { attack: 14, defense: 0, speed: 8 } },
+  { id: 'titan_hammer', name: 'Titan Hammer', type: 'weapon', price: 9000, emoji: '🔨', description: '+30 ATK, +12 DEF, -2 SPD.', effect: { attack: 30, defense: 12, speed: -2 } },
+  { id: 'void_scythe', name: 'Void Scythe', type: 'weapon', price: 18000, emoji: '🌑', description: '+48 ATK, +18 DEF, +6 SPD.', effect: { attack: 48, defense: 18, speed: 6 } },
+  { id: 'lootbox', name: 'Lootbox', type: 'lootbox', price: 1500, emoji: '🎁', description: 'Buka hadiah acak: koin, shard, item, atau egg.', effect: { lootbox: 'lootbox' } },
+  { id: 'crate', name: 'Crate', type: 'crate', price: 4500, emoji: '📦', description: 'Hadiah lebih besar dengan peluang item langka.', effect: { lootbox: 'crate' } },
 ];
 
 const SHOP_MAP = Object.fromEntries(SHOP_ITEMS.map((i) => [i.id, i]));
+const WEAPONS = SHOP_ITEMS.filter((item) => item.type === 'weapon');
+const WEAPON_MAP = Object.fromEntries(WEAPONS.map((item) => [item.id, item]));
 
 const BOSS_TEMPLATES = [
   {
@@ -214,6 +223,8 @@ module.exports = {
   EGGS_MAP,
   SHOP_ITEMS,
   SHOP_MAP,
+  WEAPONS,
+  WEAPON_MAP,
   BOSS_TEMPLATES,
   RANKS,
   ACHIEVEMENTS,

@@ -65,6 +65,12 @@ function playerBattleStats(user, pet, settings = {}) {
   };
   const pets = Array.isArray(pet) ? pet : (pet ? [pet] : []);
   const petBonus = Number(settings.petBonusMultiplier ?? 1);
+  const weapon = user?.equippedWeapon;
+  if (weapon && typeof weapon === 'object') {
+    base.attack += Number(weapon.attack) || 0;
+    base.defense += Number(weapon.defense) || 0;
+    base.speed += Number(weapon.speed) || 0;
+  }
   for (const activePet of pets) {
     base.hp += Math.round(activePet.hp * 0.35 * petBonus);
     base.attack += Math.round(activePet.attack * 0.5 * petBonus);
