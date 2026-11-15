@@ -17,7 +17,8 @@ test('help resolves command, category, alias, and keyword queries', () => {
   assert.equal(helpView('6cash').embeds[0].data.title, '📖 6cash');
   assert.match(helpView('economy').embeds[0].data.title, /ECONOMY/);
   assert.equal(helpView('me').embeds[0].data.title, '📖 6profile');
-  assert.match(helpView('daily').embeds[0].data.title, /HASIL PENCARIAN/);
+  assert.equal(helpView('daily').embeds[0].data.title, '📖 6daily');
+  assert.match(helpView('tidak-ada-command-ini').embeds[0].data.title, /HASIL PENCARIAN/);
   assert.match(helpView('tidak-ada-command-ini').embeds[0].data.description, /Tidak ada command/);
 });
 
@@ -60,5 +61,5 @@ test('slash /help is deployable and help interaction edits the menu', async () =
   const { handleHelpInteraction } = require('../src/rpg/ui/help');
   await handleHelpInteraction(interaction, 'select');
   assert.equal(captured.length, 1);
-  assert.match(captured[0].embeds[0].data.title, /BATTLE/);
+  assert.match(captured[0].embeds[0].data.title, /6battle|BATTLE/);
 });

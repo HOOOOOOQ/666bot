@@ -3,7 +3,7 @@
 const { createLogger } = require('../utils/logger');
 
 const log = createLogger('rpg-scheduler');
-const last = { boss: 0, market: 0, war: 0, sessions: 0 };
+const last = { boss: 0, market: 0, war: 0, sessions: 0, autohunt: 0, lottery: 0 };
 
 async function cleanupSessions() {
   const models = require('../database/models');
@@ -75,6 +75,18 @@ async function tick() {
   if (now - last.sessions > 60 * 1000) {
     last.sessions = now;
     await cleanupSessions().catch((error) => log.warn(`Session cleanup: ${error.message}`));
+  }
+  if (now - last.autohunt > 60 * 1000) {
+    last.autohunt = now;
+    await require('./services/extraService').autoHuntTick().catch((error) => log.warn(`Auto-hunt tick: ${error.message}`));
+  }
+  if (now - last.lottery > 60 * 1000) {
+    last.lottery = now;
+    const models = require('../database/models');
+    const guildIds = await models.Lottery.distinct('guildId', { status: 'open', endsAt: { $lte: new Date() } }).catch(() => []);
+    for (const guildId of guildIds) {
+      await require('./services/extraService').drawLottery(guildId).catch((error) => log.warn(`Lottery draw (${guildId}): ${error.message}`));
+    }
   }
 }
 

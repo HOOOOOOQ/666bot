@@ -14,6 +14,8 @@ const activityService = require('./activityService');
 const configService = require('./configService');
 const notificationService = require('./notificationService');
 const settingsService = require('../rpg/services/settingsService');
+const serverConfigService = require('../rpg/services/serverConfigService');
+const { CATEGORIES, ENTRIES } = require('../rpg/help/catalog');
 const statsService = require('../rpg/services/statsService');
 const bossService = require('../rpg/services/worldBossService');
 const marketService = require('../rpg/services/marketService');
@@ -370,6 +372,66 @@ async function handleDashboardRequest(req, res, url, pathName) {
       const limit = Math.min(100, Math.max(1, Number(url.searchParams.get('limit')) || 25));
       const docs = await models.RPGUser.find(guildId ? { guildId } : {}).sort({ wallet: -1 }).limit(limit).lean();
       sendJson(res, 200, { ok: true, data: docs });
+      return true;
+    }
+    if (pathName === '/api/dashboard/commands' && req.method === 'GET') {
+      if (!guildId) return sendJson(res, 400, { ok: false, error: 'guildId_required' }), true;
+      const cfg = await serverConfigService.getConfig(guildId);
+      const disabled = new Set(cfg.disabledCommands || []);
+      const seen = new Set();
+      const commands = ENTRIES.filter((entry) => {
+        if (seen.has(entry.name)) return false;
+        seen.add(entry.name);
+        return true;
+      }).map((entry) => ({
+        name: entry.name,
+        bare: entry.name.replace(/^6/, ''),
+        category: entry.category,
+        enabled: !disabled.has(entry.name.replace(/^6/, '')),
+      }));
+      sendJson(res, 200, { ok: true, data: { commands, disabledCommands: cfg.disabledCommands || [], customPrefix: cfg.customPrefix || null } });
+      return true;
+    }
+    if (pathName === '/api/dashboard/commands' && req.method === 'PATCH') {
+      if (!guildId) return sendJson(res, 400, { ok: false, error: 'guildId_required' }), true;
+      const body = await readBody(req);
+      const result = await serverConfigService.toggleCommand(guildId, body.command, body.enabled !== false);
+      sendJson(res, 200, { ok: true, data: result });
+      return true;
+    }
+    if (pathName === '/api/dashboard/categories' && req.method === 'GET') {
+      if (!guildId) return sendJson(res, 400, { ok: false, error: 'guildId_required' }), true;
+      const cfg = await serverConfigService.getConfig(guildId);
+      const disabled = new Set(cfg.disabledCommands || []);
+      const categories = CATEGORIES.map((category) => ({
+        id: category.id, label: category.label, emoji: category.emoji, blurb: category.blurb,
+        commands: category.commands.map((entry) => ({ name: entry.name, enabled: !disabled.has(entry.name.replace(/^6/, '')) })),
+        enabled: category.commands.every((entry) => !disabled.has(entry.name.replace(/^6/, ''))),
+      }));
+      sendJson(res, 200, { ok: true, data: categories });
+      return true;
+    }
+    if (pathName === '/api/dashboard/categories' && req.method === 'PATCH') {
+      if (!guildId) return sendJson(res, 400, { ok: false, error: 'guildId_required' }), true;
+      const body = await readBody(req);
+      const category = CATEGORIES.find((entry) => entry.id === body.category);
+      if (!category) return sendJson(res, 404, { ok: false, error: 'category_not_found' }), true;
+      for (const entry of category.commands) {
+        await serverConfigService.toggleCommand(guildId, entry.name.replace(/^6/, ''), body.enabled !== false);
+      }
+      sendJson(res, 200, { ok: true, data: { category: category.id, enabled: body.enabled !== false } });
+      return true;
+    }
+    const playerMatch = /^\/api\/dashboard\/players\/(\d{15,25})$/.exec(pathName);
+    if (playerMatch && req.method === 'GET') {
+      const user = await models.RPGUser.findOne({ guildId, userId: playerMatch[1] }).lean();
+      if (!user) return sendJson(res, 404, { ok: false, error: 'player_not_found' }), true;
+      const [transactions, monsters, pets] = await Promise.all([
+        models.EconomyTransaction.find({ guildId, userId: playerMatch[1] }).sort({ createdAt: -1 }).limit(50).lean(),
+        models.Monster.find({ guildId, userId: playerMatch[1] }).sort({ createdAt: -1 }).limit(50).lean(),
+        models.Pet.find({ guildId, userId: playerMatch[1] }).sort({ createdAt: -1 }).limit(50).lean(),
+      ]);
+      sendJson(res, 200, { ok: true, data: { user, transactions, monsters, pets } });
       return true;
     }
     const settingsMatch = /^\/api\/dashboard\/settings\/([A-Za-z]+)$/.exec(pathName);

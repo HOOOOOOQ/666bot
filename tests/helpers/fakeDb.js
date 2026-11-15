@@ -502,6 +502,13 @@ class FakeModel {
     return options.new === false ? before : clone(doc);
   }
 
+  async findOneAndDelete(filter) {
+    const index = this.docs.findIndex((doc) => matchesFilter(doc, filter));
+    if (index === -1) return null;
+    const [removed] = this.docs.splice(index, 1);
+    return clone(removed);
+  }
+
   async deleteOne(filter) {
     const index = this.docs.findIndex((doc) => matchesFilter(doc, filter));
     if (index === -1) return { deletedCount: 0 };

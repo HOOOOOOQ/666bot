@@ -15,7 +15,7 @@ module.exports = {
   async execute(ctx) {
     const query = ctx.args.join(' ').trim();
     await ctx.message.reply({
-      ...helpView(query || null),
+      ...helpView(query || null, ctx.message.client),
       allowedMentions: { parse: [], repliedUser: false },
     });
   },

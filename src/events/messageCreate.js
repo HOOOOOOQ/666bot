@@ -1,8 +1,9 @@
 'use strict';
 
-const { Events } = require('discord.js');
+const { Events, PermissionFlagsBits } = require('discord.js');
 const activityService = require('../services/activityService');
 const rpgHandler = require('../rpg/handler');
+const serverConfigService = require('../rpg/services/serverConfigService');
 const { createLogger } = require('../utils/logger');
 
 const log = createLogger('message');
@@ -10,7 +11,19 @@ const log = createLogger('message');
 module.exports = {
   name: Events.MessageCreate,
   async execute(message) {
-    if (!message || message.author?.system) return;
+    if (!message || message.author?.system || message.author?.bot) return;
+    const content = String(message.content || '').trim();
+    const customPrefix = message.guildId ? await serverConfigService.getCustomPrefix(message.guildId).catch(() => null) : null;
+    if (message.guildId && !content.startsWith('6') && !(customPrefix && content.startsWith(customPrefix))) {
+      const censored = await serverConfigService.findCensored(message.guildId, message.content).catch(() => null);
+      if (censored) {
+        if (message.guild?.members?.me?.permissions?.has(PermissionFlagsBits.ManageMessages)) {
+          await message.delete().catch(() => {});
+          await message.channel.send({ content: `🛡️ <@${message.author.id}>, kata itu difilter di server ini.`, allowedMentions: { parse: [], repliedUser: false } }).catch(() => {});
+        }
+        return;
+      }
+    }
 
     try {
       const rpgHandled = await rpgHandler.handleMessage(message).catch((error) => {

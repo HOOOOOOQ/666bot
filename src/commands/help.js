@@ -18,7 +18,7 @@ module.exports = {
   async execute(interaction) {
     const query = interaction.options.getString('command');
     await interaction.reply({
-      ...helpView(query || null),
+      ...helpView(query || null, interaction.client),
       ephemeral: true,
     });
   },

@@ -62,9 +62,10 @@ BEST STREAK: 45 DAYS • DUO XP: 2,800 XP
 - **Restart-safe** — streak, aktivitas, reward, konfigurasi, dan antrean log tetap konsisten setelah restart.
 - **Graceful shutdown** — flush antrean log & notifikasi, tutup API, tutup koneksi MongoDB.
 - **Streak API opsional** — endpoint HTTP untuk uptime monitor (Pterodactyl).
-- **Test suite** — 99 test otomatis (`node --test`) termasuk render kartu PNG, dedupe log, retry, recovery, dan seluruh sistem RPG.
-- **666 ULTIMATE RPG** — economy, hunting, battle, pet, 8 mini games, quest/achievement, trade, market, guild war, world boss, profile, dan dashboard web. Semua additive; fitur Duo lama tidak diubah.
-- **Dashboard RPG** — `/dashboard` dengan settings 8 grup, drop-rate editor tervalidasi, statistik live, transaction log, dan admin key.
+- **Test suite** — 108 test otomatis (`node --test`) termasuk render kartu PNG, meme engine PNG, dedupe log, retry, recovery, dan seluruh sistem RPG.
+- **666 ULTIMATE RPG** — economy, hunting, battle, pet, 9 gambling games, quest/achievement, trade, market, guild war, world boss, social, fun, meme generator, emotes, actions, utility, dan dashboard web. Semua additive; fitur Duo lama tidak diubah.
+- **Command List 666** — `6help` menampilkan satu embed **Command List** dengan 10 kategori (Rankings, Economy, Animals, Gambling, Fun, Social, Meme, Emotes, Actions, Utility), detail per command (usage, contoh, argumen, cooldown, permission, alias), pencarian, select menu, dan pagination data.
+- **Dashboard RPG** — `/dashboard` dengan settings 8 grup, drop-rate editor tervalidasi, command/category management live, player detail, transaction log, dan admin key.
 
 ---
 
@@ -175,6 +176,9 @@ Semua konfigurasi sensitif dibaca dari `.env` — **tidak ada token/kredensial d
 | `REMINDER_MINUTE` | `0` | Menit reminder |
 | `NOTIFICATIONS_ENABLED` | `true` | Notifikasi global |
 | `AUTO_DEPLOY` | `true` | Auto-register slash command saat start |
+| `SUPPORT_SERVER_URL` | *(kosong)* | Link guild/support untuk menu `6help` dan `6guildlink` |
+| `TENOR_API_KEY` | *(demo key)* | API key Tenor untuk `6gif` |
+| `PUBLIC_WEB_URL` | *(kosong)* | URL website publik untuk tombol website |
 | `ENABLE_API` | `true` | Aktifkan Streak API HTTP |
 | `API_PORT` | `3000` | Port API |
 | `API_HOST` | `0.0.0.0` | Host API |
@@ -661,7 +665,14 @@ Expansion besar yang **additive**: seluruh fitur Duo Streak, prefix lama, `/duo`
 | Guild War | `6guild war` | challenge, accept, status, leaderboard; season mingguan |
 | World Boss | `6boss` | status, attack, leaderboard, rewards; satu HP shared per server |
 | Profile | `6profile [@user]` | kartu profil lengkap (koin, level, hunt, battle, collection, guild, boss, trading) |
-| Help | `6help` `6h` `6?` `/help` | pusat bantuan interaktif: menu kategori, detail command, pencarian, contoh, dan tombol website |
+| Help | `6help` `6h` `6?` `/help` | **Command List** embed 10 kategori, detail command, pencarian, contoh, cooldown, permission, alias, select menu, dan tombol website |
+| Social | `6profile` `6level` `6avatar` `6marry` `6ship` `6cookie` `6pray` `6curse` `6emoji` `6wallpaper` `6godify` | profil, level, hubungan, interaksi sosial persisten, avatar, dan wallpaper |
+| Fun | `68ball` `6define` `6gif` `6pic` `6translate` `6roll` `6choose` `6bell` | RNG, dictionary/GIF/translate API, gambar acak, dan pilihan |
+| Meme | `6spongebobchicken` `6slapcar` `6isthisa` `6drake` `6distractedbf` `6communismcat` `6eject` `6emergencymeeting` `6headpat` `6tradeoffer` `6waddle` | generator meme PNG canvas dengan teks custom |
+| Emotes + Actions | `6blush` … `6bully` | 40 aksi/ekspresi dengan GIF nyata |
+| Utility | `6ping` `6stats` `6link` `6guildlink` `6disable` `6censor` `6prefix` `6rules` `6suggest` `6announcement` `6shards` `6math` `6color` `6patron` | info bot, moderator tools, prefix tambahan, filter kata, saran, dan kalkulator |
+| Animals tambahan | `6zoo` `6sell` `6sacrifice` `6sim` `6inv` `6equip` `6autohunt` `6dex` `6lootbox` `6egg` `6crate` `6team` `6weapon` `6rename` `6dismantle` | koleksi, equipment, auto-hunt, dex, lootbox/crate, dan manajemen monster/pet |
+| Gambling tambahan | `6lottery` | lottery server harian dengan tiket, pot, dan draw scheduler |
 
 Contoh:
 
@@ -689,7 +700,7 @@ Dashboard tersedia dari HTTP server yang sama dengan API:
 http://HOST:API_PORT/dashboard
 ```
 
-Halaman: `/dashboard/economy`, `/dashboard/hunting`, `/dashboard/pets`, `/dashboard/battle`, `/dashboard/minigames`, `/dashboard/quests`, `/dashboard/market`, `/dashboard/guilds`, `/dashboard/worldboss`, `/dashboard/statistics`, `/dashboard/settings`, `/dashboard/drop-rates`, `/dashboard/transactions`.
+Halaman: `/dashboard/economy`, `/dashboard/hunting`, `/dashboard/pets`, `/dashboard/battle`, `/dashboard/minigames` (Gambling), `/dashboard/quests`, `/dashboard/market`, `/dashboard/guilds`, `/dashboard/worldboss`, `/dashboard/statistics`, `/dashboard/settings`, `/dashboard/drop-rates`, `/dashboard/transactions`, `/dashboard/commands`, `/dashboard/categories`.
 
 Masuk dengan:
 
@@ -698,10 +709,12 @@ Masuk dengan:
 
 Dashboard membaca MongoDB secara live, refresh otomatis setiap 30 detik, dan mendukung:
 
-- editor settings 8 grup: **Economy, Hunting, Pets, Battle, Mini Games, Market, Guild, World Boss**;
+- editor settings 8 grup: **Economy, Hunting, Pets, Battle, Gambling, Market, Guild, World Boss**;
 - validasi angka/min/max dan relasi (mis. `maxBet >= minBet`);
 - perubahan langsung berlaku tanpa restart (cache settings 5 detik antar instance);
 - **drop-rate editor** dengan input %, visualisasi distribusi, validasi total tepat 100%, reset default, preview, dan riwayat perubahan;
+- **command & category management** per guild — toggle langsung tersimpan ke MongoDB dan dibaca handler tanpa restart;
+- **player detail** (`/api/dashboard/players/:userId`) berisi user, transaksi, monster, dan pet;
 - transaction log + filter, statistik agregat, chart 7 hari;
 - admin permission check pada setiap endpoint dashboard (`x-admin-key` atau `Authorization: Bearer <session>`); endpoint `POST /api/dashboard/session` menukar admin key menjadi token berumur terbatas.
 
