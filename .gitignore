@@ -21,6 +21,6 @@ Thumbs.db
 coverage/
 .nyc_output/
 
-# Local data dumps
-data/
+# Local data dumps (root only; src/rpg/data adalah source code)
+/data/
 *.dump
