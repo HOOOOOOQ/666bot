@@ -112,3 +112,14 @@ test('public website rejects traversal and unknown files', async () => {
   await missing.done;
   assert.equal(missing.res.statusCode, 404);
 });
+
+test('browser root redirects to the public site while API clients still get JSON', async () => {
+  const browser = request('GET', '/', { accept: 'text/html' });
+  await browser.done;
+  assert.equal(browser.res.statusCode, 302);
+  assert.equal(browser.res.headers.Location, '/site/');
+  const api = request('GET', '/');
+  await api.done;
+  assert.equal(api.res.statusCode, 200);
+  assert.equal(JSON.parse(api.res.body).ok, true);
+});

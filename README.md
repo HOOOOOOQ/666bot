@@ -62,7 +62,7 @@ BEST STREAK: 45 DAYS • DUO XP: 2,800 XP
 - **Restart-safe** — streak, aktivitas, reward, konfigurasi, dan antrean log tetap konsisten setelah restart.
 - **Graceful shutdown** — flush antrean log & notifikasi, tutup API, tutup koneksi MongoDB.
 - **Streak API opsional** — endpoint HTTP untuk uptime monitor (Pterodactyl).
-- **Test suite** — 98 test otomatis (`node --test`) termasuk render kartu PNG, dedupe log, retry, recovery, dan seluruh sistem RPG.
+- **Test suite** — 99 test otomatis (`node --test`) termasuk render kartu PNG, dedupe log, retry, recovery, dan seluruh sistem RPG.
 - **666 ULTIMATE RPG** — economy, hunting, battle, pet, 8 mini games, quest/achievement, trade, market, guild war, world boss, profile, dan dashboard web. Semua additive; fitur Duo lama tidak diubah.
 - **Dashboard RPG** — `/dashboard` dengan settings 8 grup, drop-rate editor tervalidasi, statistik live, transaction log, dan admin key.
 

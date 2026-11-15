@@ -431,6 +431,11 @@ async function handleRequest(req, res) {
     return sendJson(res, 405, { ok: false, error: 'method_not_allowed' });
   }
 
+  if (path === '/' && String(req.headers.accept || '').includes('text/html')) {
+    res.writeHead(302, { Location: '/site/' });
+    return res.end();
+  }
+
   if (path === '/' ) {
     return sendJson(res, 200, {
       ok: true,
