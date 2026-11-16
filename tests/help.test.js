@@ -2,64 +2,33 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const catalog = require('../src/rpg/help/catalog');
-const commands = require('../src/rpg/commands');
-const { helpView } = require('../src/rpg/ui/help');
+const { helpEmbed } = require('../src/ui/embeds');
+const { loadCommands } = require('../src/handlers/commandHandler');
 
-test('every registered prefix command has a help entry or alias', () => {
-  const missing = commands.list().filter((name) => !catalog.getEntry(name));
-  assert.deepEqual(missing, []);
-  assert.ok(catalog.ENTRIES.length >= 20);
+test('only /duo and /help are registered', () => {
+  const commands = loadCommands();
+  assert.deepEqual([...commands.keys()].sort(), ['duo', 'help']);
 });
 
-test('help resolves command, category, alias, and keyword queries', () => {
-  assert.equal(helpView('cash').embeds[0].data.title, '📖 tcash');
-  assert.equal(helpView('tcash').embeds[0].data.title, '📖 tcash');
-  assert.match(helpView('economy').embeds[0].data.title, /ECONOMY/);
-  assert.equal(helpView('me').embeds[0].data.title, '📖 tprofile');
-  assert.equal(helpView('daily').embeds[0].data.title, '📖 tdaily');
-  assert.match(helpView('tidak-ada-command-ini').embeds[0].data.title, /HASIL PENCARIAN/);
-  assert.match(helpView('tidak-ada-command-ini').embeds[0].data.description, /Tidak ada command/);
+test('the shared help embed only documents Duo Streak commands', () => {
+  const embed = helpEmbed().toJSON();
+  assert.match(embed.title, /DUO STREAK/);
+  assert.match(embed.description, /\/duo invite/);
+  assert.match(embed.description, /\/duo streak/);
+  assert.match(embed.description, /\/duo setlog/);
+  assert.doesNotMatch(embed.description, /tcash|thunt|RPG|dashboard/i);
 });
 
-test('overview stays inside Discord embed and component limits', () => {
-  const view = helpView();
-  assert.equal(view.embeds[0].data.fields.length, catalog.CATEGORIES.length);
-  assert.ok(view.embeds[0].data.fields.length <= 25);
-  for (const field of view.embeds[0].data.fields) {
-    assert.ok(field.name.length <= 256);
-    assert.ok(field.value.length <= 1024);
-  }
-  assert.ok(view.components.length <= 5);
-  const select = view.components[0].toJSON().components[0];
-  assert.equal(select.custom_id, 'rpg:help:select:0');
-  assert.equal(select.options.length, catalog.CATEGORIES.length);
-  assert.ok(select.options.length <= 25);
-});
-
-test('category view lists every command and keeps detail subcommands', () => {
-  const games = catalog.getCategory('games');
-  const view = helpView('games');
-  assert.equal(view.embeds[0].data.fields.length, games.commands.length);
-  const cash = helpView('cash').embeds[0].data;
-  const details = cash.fields.find((field) => field.name.includes('Subcommand'));
-  assert.match(details.value, /tcash daily/);
-});
-
-test('slash /help is deployable and help interaction edits the menu', async () => {
+test('slash /help replies with the streak guide', async () => {
   const slash = require('../src/commands/help');
   assert.equal(slash.data.name, 'help');
-  const json = slash.data.toJSON();
-  assert.equal(json.options[0].name, 'command');
+  assert.match(slash.data.description, /Duo Streak/i);
 
-  const captured = [];
-  const interaction = {
-    isStringSelectMenu: () => true,
-    values: ['battle'],
-    editReply: async (payload) => captured.push(payload),
-  };
-  const { handleHelpInteraction } = require('../src/rpg/ui/help');
-  await handleHelpInteraction(interaction, 'select');
-  assert.equal(captured.length, 1);
-  assert.match(captured[0].embeds[0].data.title, /tbattle|BATTLE/);
+  const replies = [];
+  await slash.execute({
+    reply: async (payload) => replies.push(payload),
+  });
+  assert.equal(replies.length, 1);
+  assert.match(replies[0].embeds[0].toJSON().title, /DUO STREAK/);
+  assert.equal(replies[0].ephemeral, true);
 });

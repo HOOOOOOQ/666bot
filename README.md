@@ -1,8 +1,8 @@
-# 🔥 666 BOT
+# 🔥 666 BOT — DUO STREAK
 
 **TWO MEMBERS. ONE CONNECTION. ONE STREAK.**
 
-Discord bot dengan fitur utama **666 DUO STREAK** — sistem streak harian untuk dua member yang saling terhubung sebagai Duo. Dibangun dengan Node.js 22, discord.js v14, MongoDB, dan arsitektur modular yang siap dijalankan 24/7 di hosting **Pterodactyl**.
+Discord bot khusus **666 DUO STREAK**: dua member terhubung sebagai Duo, lalu streak bertambah hanya ketika **keduanya** menyelesaikan aktivitas valid pada hari yang sama. Dibangun dengan Node.js 22+, discord.js v14, dan MongoDB.
 
 ```
 🔥 666 DUO STREAK
@@ -14,103 +14,50 @@ BEST STREAK: 45 DAYS • DUO XP: 2,800 XP
 666 SYSTEM • DUO CONNECTION
 ```
 
----
-
-## Daftar Isi
-
-1. [Fitur](#fitur)
-2. [Teknologi](#teknologi)
-3. [Persyaratan](#persyaratan)
-4. [Quick Start](#quick-start)
-5. [Setup Discord Application](#setup-discord-application)
-6. [Environment Variables](#environment-variables)
-7. [Setup MongoDB](#setup-mongodb)
-8. [Deploy Slash Commands](#deploy-slash-commands)
-9. [Menjalankan Bot](#menjalankan-bot)
-10. [Deploy ke Pterodactyl](#deploy-ke-pterodactyl)
-11. [Commands](#commands)
-12. [Cara Kerja Duo Streak](#cara-kerja-duo-streak)
-13. [Rewards](#rewards)
-14. [Notifikasi](#notifikasi)
-15. [Leaderboard](#leaderboard)
-16. [Database](#database)
-17. [Security & Reliability](#security--reliability)
-18. [Streak API (HTTP)](#streak-api-http)
-19. [Testing](#testing)
-20. [666 Ultimate RPG Economy](#666-ultimate-rpg-economy)
-21. [Struktur Project](#struktur-project)
-21. [Troubleshooting](#troubleshooting)
-22. [Checklist Deployment](#checklist-deployment)
-
----
-
 ## Fitur
 
-- **Duo Connection** — undang partner, terima/tolak, satu member hanya bisa berada di satu Duo aktif.
-- **Daily Duo Streak** — streak bertambah hanya jika **kedua member** menyelesaikan aktivitas valid pada hari yang sama.
-- **Timezone-aware day boundary** — default `Asia/Jakarta`, bisa diubah per server. Pergantian hari konsisten dan anti double-count.
-- **Activity detection dari Message Event** — anti spam, anti pesan berulang, cooldown, minimum panjang pesan, abaikan bot/emoji-only/link-only/command-like.
-- **Duo Profile Card (image)** — kartu PNG 1280×1280 bergaya dark cyber / blood red / gothic gaming: avatar Discord asli kedua member, nama, streak, best streak, Duo XP, total days, status aktivitas harian, progress badge. Bukan dummy data.
-- **Duo Leaderboard Card (image)** — rank dengan avatar, nama Duo, current streak, best streak. Rank 1 emas, 2 perak, 3 perunggu, sisanya merah. 10 Duo per halaman + tombol Prev/Next.
-- **666 DUO STREAK LOGS** — channel log otomatis per server. Bot memposting banner + embed setiap kali streak benar-benar naik: timestamp, kedua avatar, nama, current/previous/best streak, XP, status aktivitas.
-- **Automatic Rewards** — 7, 14, 30, 50, 100, 365 hari. Sekali diberikan, tidak akan pernah dobel.
-- **Notification System** — reminder harian sekali per hari, notifikasi streak selesai, streak putus, dan badge baru. Bisa dikirim ke channel atau DM.
-- **Leaderboard** — current streak, best streak, total XP, total days. Pagination tombol.
-- **History** — riwayat joined, completed, broken, reward, ended. Pagination tombol.
-- **Server Config** — `/duo config` untuk timezone, channel notifikasi, jam reminder, cooldown, minimum panjang pesan.
-- **MongoDB** — 8 collection inti + 25 collection RPG, unique index, partial index, TTL index, validasi schema.
-- **Restart-safe** — streak, aktivitas, reward, konfigurasi, dan antrean log tetap konsisten setelah restart.
-- **Graceful shutdown** — flush antrean log & notifikasi, tutup API, tutup koneksi MongoDB.
-- **Streak API opsional** — endpoint HTTP untuk uptime monitor (Pterodactyl).
-- **Test suite** — 115 test otomatis (`node --test`) termasuk render kartu PNG, meme engine PNG, dedupe log, retry, recovery, dan seluruh sistem RPG.
-- **666 ULTIMATE RPG** — economy, hunting, battle, pet, mini games termasuk **Mines 3×3 interaktif**, quest/achievement, trade, market, guild war, world boss, social, fun, meme generator, emotes, actions, utility, dan dashboard web. Semua additive; fitur Duo lama tidak diubah.
-- **Response layer bertingkat** — command memilih bentuk paling pas: plain text, rich text, embed, image, GIF, profile card, leaderboard, atau game board interaktif. Daily/weekly/monthly/work/beg tampil sebagai teks dengan reward bold, streak, bonus, dan countdown reset; tidak lagi dipaksa menjadi embed.
-- **Command List 666** — `thelp` menampilkan satu embed **Command List** dengan 10 kategori (Rankings, Economy, Animals, Gambling, Fun, Social, Meme, Emotes, Actions, Utility), detail per command (usage, contoh, argumen, cooldown, permission, alias), pencarian, select menu, dan pagination data.
-- **Dashboard RPG** — `/dashboard` dengan settings 8 grup, drop-rate editor tervalidasi, command/category management live, player detail, transaction log, dan admin key.
-
----
+- **Duo Connection** — undang partner, terima/tolak, satu member hanya boleh punya satu Duo aktif.
+- **Daily Duo Streak** — streak +1 hanya jika kedua member aktif pada hari yang sama.
+- **Timezone-aware** — default `Asia/Jakarta`, dapat diubah per server; pergantian hari konsisten dan anti double-count.
+- **Activity detection** — membaca pesan valid, anti spam, cooldown, minimum panjang pesan, abaikan bot/emoji-only/link-only.
+- **Profile Card PNG** — kartu 1280×1280 dengan avatar Discord asli, streak, best streak, XP, total hari, status hari ini, dan progres badge.
+- **Leaderboard Card PNG** — halaman leaderboard dengan avatar, nama Duo, current/best streak, dan pagination tombol.
+- **666 DUO STREAK LOGS** — log otomatis saat streak benar-benar naik, tidak dobel per hari.
+- **Automatic Rewards** — milestone 7, 14, 30, 50, 100, dan 365 hari; diberikan sekali.
+- **Notification** — reminder harian, streak selesai, streak putus, badge baru, dan partner keluar.
+- **History & Leaderboard** — riwayat lengkap dan peringkat dengan pagination.
+- **Server Config** — timezone, channel notifikasi, jam reminder, cooldown, minimum panjang pesan, dan log channel.
+- **Restart-safe** — aktivitas, streak, reward, konfigurasi, dan antrean log tersimpan di MongoDB.
+- **Streak API opsional** — endpoint HTTP untuk uptime monitor.
+- **Test suite** — 55 test otomatis tanpa MongoDB atau token Discord.
 
 ## Teknologi
 
 | Komponen | Versi |
 | --- | --- |
-| Node.js | **22+** (wajib) |
+| Node.js | **22+** |
 | discord.js | `^14.28.1` |
-| MongoDB | 6 / 7 / 8 (local atau Atlas) |
+| MongoDB | 6 / 7 / 8 |
 | Mongoose | `^8.24.9` |
-| dotenv | `^17.4.2` |
-| @napi-rs/canvas | `^1.1.1` (prebuilt, tanpa system library) |
+| @napi-rs/canvas | `^1.1.1` |
 | Test runner | built-in `node:test` |
-
----
 
 ## Persyaratan
 
-- Node.js **22.0.0** atau lebih baru (`node -v`).
-- MongoDB (local, Docker, atau MongoDB Atlas).
+- Node.js 22 atau lebih baru.
+- MongoDB lokal, Docker, atau MongoDB Atlas.
 - Discord Application + Bot Token.
-- Bot diundang ke server dengan scope `bot` + `applications.commands`.
-- Privileged intents **Message Content** dan **Server Members** diaktifkan.
-- Font sudah dibundel di `src/assets/fonts` (Bebas Neue + Chakra Petch, lisensi OFL). Tidak perlu install font di host.
-
----
+- Scope `bot` dan `applications.commands`.
+- Privileged intent **Message Content** dan **Server Members**.
+- Font sudah dibundel di `src/assets/fonts`.
 
 ## Quick Start
 
 ```bash
-# 1. Install dependency
 npm install
-
-# 2. Salin template environment
 cp .env.example .env
-
-# 3. Isi .env (token, client id, MongoDB URI)
-nano .env
-
-# 4. Deploy slash commands (opsional, bot juga auto-deploy saat start)
-npm run deploy
-
-# 5. Jalankan
+# isi DISCORD_TOKEN, DISCORD_CLIENT_ID, MONGODB_URI
+npm run deploy   # opsional; bot juga auto-deploy saat start
 npm start
 ```
 
@@ -120,895 +67,177 @@ Setelah bot online:
 /duo invite @partner
 /duo accept          (dijalankan oleh partner)
 /duo profile         (kartu profil PNG)
-/duo leaderboard     (kartu leaderboard PNG)
+/duo streak
 /duo help
 ```
 
-Admin dapat mengaktifkan log otomatis:
+Admin server dapat mengatur log:
 
 ```text
 /duo setlog #duo-streak-logs
 /duo logstatus
 ```
 
----
-
 ## Setup Discord Application
 
-1. Buka <https://discord.com/developers/applications> → **New Application** → beri nama `666 BOT`.
-2. Tab **Bot**:
-   - Klik **Reset Token** → salin token ke `DISCORD_TOKEN`.
-   - Aktifkan **MESSAGE CONTENT INTENT** (wajib untuk membaca isi pesan).
-   - Aktifkan **SERVER MEMBERS INTENT** (wajib untuk mendeteksi member keluar).
-3. Tab **General Information** → salin **Application ID** ke `DISCORD_CLIENT_ID`.
-4. Tab **OAuth2 → URL Generator**:
-   - Scopes: `bot`, `applications.commands`
-   - Bot Permissions: `View Channels`, `Send Messages`, `Embed Links`, `Read Message History`
-   - Buka URL hasil generate → pilih server → authorize.
-
-> Catatan: bot tidak membutuhkan permission Administrator. Cukup permission di atas.
-
----
+1. Buka <https://discord.com/developers/applications> → **New Application**.
+2. Tab **Bot** → salin token ke `DISCORD_TOKEN`.
+3. Aktifkan **MESSAGE CONTENT INTENT** dan **SERVER MEMBERS INTENT**.
+4. Tab **General Information** → salin Application ID ke `DISCORD_CLIENT_ID`.
+5. OAuth2 → URL Generator → scope `bot` + `applications.commands`; permission minimal `View Channels`, `Send Messages`, `Embed Links`, `Attach Files`, `Read Message History`.
 
 ## Environment Variables
 
-Semua konfigurasi sensitif dibaca dari `.env` — **tidak ada token/kredensial di source code**.
-
 ### Wajib
 
-| Variable | Contoh | Keterangan |
-| --- | --- | --- |
-| `DISCORD_TOKEN` | `MTIz...` | Bot token |
-| `DISCORD_CLIENT_ID` | `123456789012345678` | Application ID |
-| `MONGODB_URI` | `mongodb://127.0.0.1:27017/666bot` | Koneksi MongoDB |
+| Variable | Keterangan |
+| --- | --- |
+| `DISCORD_TOKEN` | Bot token |
+| `DISCORD_CLIENT_ID` | Application ID |
+| `MONGODB_URI` | Koneksi MongoDB |
 
 ### Opsional
 
 | Variable | Default | Keterangan |
 | --- | --- | --- |
-| `GUILD_ID` | *(kosong)* | Deploy command instan ke 1 server (testing). Kosong = global. |
+| `GUILD_ID` | kosong | Deploy slash command instan ke satu server |
 | `DEFAULT_TIMEZONE` | `Asia/Jakarta` | Timezone default server baru |
 | `ACTIVITY_COOLDOWN_SECONDS` | `60` | Cooldown aktivitas |
 | `MIN_MESSAGE_LENGTH` | `3` | Panjang minimum pesan valid |
 | `XP_PER_DAY` | `100` | Duo XP per hari lengkap |
 | `INVITE_TTL_HOURS` | `24` | Masa berlaku undangan |
 | `MAX_PENDING_INVITES` | `3` | Maksimum undangan pending per member |
-| `REMINDER_HOUR` | `21` | Jam reminder harian (0–23) |
+| `REMINDER_HOUR` | `21` | Jam reminder (0–23) |
 | `REMINDER_MINUTE` | `0` | Menit reminder |
 | `NOTIFICATIONS_ENABLED` | `true` | Notifikasi global |
 | `AUTO_DEPLOY` | `true` | Auto-register slash command saat start |
-| `SUPPORT_SERVER_URL` | *(kosong)* | Link guild/support untuk menu `thelp` dan `tguildlink` |
-| `TENOR_API_KEY` | *(demo key)* | API key Tenor untuk `tgif` |
-| `PUBLIC_WEB_URL` | *(kosong)* | URL website publik untuk tombol website |
-| `ENABLE_API` | `true` | Aktifkan Streak API HTTP |
+| `ENABLE_API` | `true` | Aktifkan Streak API |
 | `API_PORT` | `3000` | Port API |
 | `API_HOST` | `0.0.0.0` | Host API |
-| `API_KEY` | *(kosong)* | Jika diisi, `/api/*` butuh header `x-api-key` |
+| `API_KEY` | kosong | Jika diisi, `/api/*` membutuhkan `x-api-key` |
 | `LOG_LEVEL` | `info` | `error` / `warn` / `info` / `debug` |
 | `LOG_TO_FILE` | `false` | Simpan log ke `logs/666bot.log` |
 | `NODE_ENV` | `production` | Environment |
 
----
-
-## Setup MongoDB
-
-### Opsi A — MongoDB lokal / VPS
-
-```bash
-# Ubuntu/Debian (contoh)
-sudo apt install -y mongodb-org
-sudo systemctl enable --now mongod
-```
-
-URI: `mongodb://127.0.0.1:27017/666bot`
-
-### Opsi B — MongoDB Atlas (gratis)
-
-1. Buat cluster di <https://cloud.mongodb.com>.
-2. **Database Access** → buat user + password.
-3. **Network Access** → allow IP server bot (atau `0.0.0.0/0` untuk testing).
-4. **Connect → Drivers** → salin connection string:
-
-```text
-mongodb+srv://USER:PASSWORD@cluster0.xxxxx.mongodb.net/666bot?retryWrites=true&w=majority
-```
-
-### Catatan penting
-
-- Bot **tidak memerlukan replica set / transaction**. Semua proteksi race condition memakai atomic update + unique index, sehingga MongoDB standalone (umum di Pterodactyl) aman.
-- Collection dan index dibuat otomatis saat startup (`Model.createIndexes()`).
-- Unique index utama: satu user hanya boleh berada di **satu Duo aktif**. Duo yang sudah di-`break` tidak menghalangi pembuatan Duo baru.
-- Index TTL menghapus undangan pending yang kedaluwarsa secara otomatis.
-- Jika startup log menampilkan error index, bersihkan dokumen duplikat lama lalu restart.
-
----
-
-## Deploy Slash Commands
-
-Register command **sebelum** atau saat bot start.
-
-```bash
-# Deploy ke guild pada GUILD_ID (instan, cocok untuk testing)
-npm run deploy
-
-# Deploy global (bisa butuh hingga 1 jam propagasi)
-node src/deploy-commands.js --global
-```
-
-Dengan `AUTO_DEPLOY=true`, bot otomatis meng-update command setiap start. Set `AUTO_DEPLOY=false` jika ingin deploy manual saja (mis. untuk menghemat rate limit).
-
-> Jika `GUILD_ID` diisi, command hanya terdaftar di guild tersebut. Command global lama tidak otomatis dihapus.
-
----
-
-## Menjalankan Bot
-
-```bash
-npm start        # production
-npm run dev      # development (node --watch)
-npm test         # jalankan test suite
-```
-
-Startup yang sehat akan menampilkan log seperti:
-
-```text
-[boot] Environment: production • Node v22.x
-[ready] Logged in as 666 BOT#0001
-[ready] Registered 1 guild slash command(s)
-[cards] Canvas renderer ready (fonts + background plates loaded).
-[streaklogs] 666 DUO STREAK LOGS service ready.
-[scheduler] Daily scheduler started
-[api] Streak API listening on http://0.0.0.0:3000
-```
-
----
-
-## Deploy ke Pterodactyl
-
-### 1. Egg & Runtime
-
-Gunakan **Node.js Egg** (generic) dengan image Node **22**:
-
-- Docker image: `ghcr.io/parkervcp/yolks:nodejs_22` (atau image Node 22 lain yang tersedia di panel).
-- Startup command: **`npm start`** (atau `node src/index.js`).
-- Install command: **`npm install --omit=dev`**.
-
-### 2. Upload project
-
-- Upload file project (tanpa `node_modules`, tanpa `.env`) via **File Manager** atau clone Git:
-
-```bash
-git clone https://github.com/HOOOOOOQ/666bot.git .
-npm install --omit=dev
-```
-
-### 3. Environment variables
-
-Tambahkan di tab **Startup** panel Pterodactyl **atau** buat file `.env` lewat File Manager:
-
-```
-DISCORD_TOKEN=...
-DISCORD_CLIENT_ID=...
-MONGODB_URI=mongodb://...
-DEFAULT_TIMEZONE=Asia/Jakarta
-AUTO_DEPLOY=true
-```
-
-> Jangan pernah menaruh token di file yang di-commit ke Git. `.env` sudah masuk `.gitignore`.
-
-### 4. Port (opsional)
-
-Jika `ENABLE_API=true`:
-
-- Buat **Additional Allocation** di panel.
-- Set `API_PORT` ke port allocation tersebut.
-- Pterodactyl otomatis memetakan port; `API_HOST=0.0.0.0` wajib.
-
-Jika tidak memakai API: `ENABLE_API=false`.
-
-### 5. 24/7
-
-- Aktifkan **Start on Boot**.
-- Bot menangani `SIGTERM`/`SIGINT` dengan graceful shutdown (aman saat restart dari panel).
-- `uncaughtException` akan menutup proses dengan kode error, lalu panel menjalankan ulang otomatis.
-- Rendering memakai **@napi-rs/canvas** yang sudah menyertakan binary prebuilt — tidak perlu `libcairo` atau `pango` di container. Font dan background plate ikut di repository (`src/assets`), jadi hasil render identik di Pterodactyl.
-- Render kartu memakai ~1–3 MB per gambar dan CPU singkat (< 1 detik). Cache avatar 250 entri / 15 menit; aman untuk RAM 512 MB.
-- Untuk menghemat resource, biarkan `LOG_LEVEL=info` dan `LOG_TO_FILE=false`.
-
-### 6. Backup
-
-Data penting ada di MongoDB, bukan di filesystem container. Backup dari sisi MongoDB (Atlas snapshot / `mongodump`).
-
----
-
 ## Commands
 
-Semua command berada di bawah `/duo`.
+Semua command memakai slash command `/duo`.
 
-| Command | Fungsi |
+| Subcommand | Fungsi |
 | --- | --- |
-| `/duo invite @member` | Mengirim undangan Duo (dengan tombol Accept/Decline) |
-| `/duo accept` | Menerima undangan Duo terbaru |
-| `/duo decline` | Menolak undangan Duo terbaru |
-| `/duo profile [user]` | Kartu PNG profil Duo: kedua avatar, nama, streak, best, XP, total days, status harian |
-| `/duo streak` | Info streak saat ini + status aktivitas hari ini |
-| `/duo leaderboard [category] [page]` | Kartu PNG peringkat Duo (current/best/xp/days) 10 baris + pagination |
-| `/duo rewards` | Semua badge + progres menuju badge berikutnya |
-| `/duo history [page]` | Riwayat joined/completed/broken/reward/ended |
-| `/duo rename <nama>` | Mengubah nama Duo (sanitasi mention & karakter kontrol) |
-| `/duo break` | Mengakhiri Duo dengan konfirmasi tombol |
-| `/duo config` | Pengaturan server (Manage Server): timezone, channel, reminder, cooldown, min length |
-| `/duo setlog #channel` | Mengaktifkan channel **666 DUO STREAK LOGS** (Manage Server) |
-| `/duo logstatus` | Status sistem log: channel, sent/pending/failed/skipped, log terakhir (Manage Server) |
 | `/duo help` | Panduan lengkap |
+| `/duo invite @member` | Mengundang partner |
+| `/duo accept` | Menerima undangan |
+| `/duo decline` | Menolak undangan |
+| `/duo profile [user]` | Profil + kartu PNG |
+| `/duo streak` | Status streak hari ini |
+| `/duo leaderboard [category]` | Peringkat Duo |
+| `/duo rewards` | Badge dan progres |
+| `/duo history` | Riwayat aktivitas |
+| `/duo rename <nama>` | Mengganti nama Duo |
+| `/duo break` | Mengakhiri Duo dengan konfirmasi |
+| `/duo config` | Pengaturan server (Manage Server) |
+| `/duo setlog #channel` | Channel log otomatis (Manage Server) |
+| `/duo logstatus` | Status log otomatis (Manage Server) |
 
-Detail `/duo config`:
-
-```
-/duo config timezone:Asia/Jakarta channel:#duo-log reminder_hour:21 notifications:true
-/duo config clear_channel:true
-/duo config cooldown_seconds:90 min_message_length:5
-```
-
-Tanpa opsi, `/duo config` hanya menampilkan konfigurasi saat ini.
-
----
-
-## 666 DUO STREAK LOGS
-
-Log otomatis dikirim ke channel yang dipilih admin **hanya saat streak benar-benar bertambah** (kedua member aktif pada hari yang sama).
-
-```text
-/duo setlog #duo-streak-logs
-/duo logstatus
-```
-
-Contoh pesan log:
-
-```text
-🔥 666 DUO STREAK UPDATED
-STREAK INCREASED!
-🔥 27 DAYS → 28 DAYS
-
-✅ Tama completed   ✅ Zen completed
-
-CURRENT STREAK: 28 DAYS • PREVIOUS: 27 DAYS • BEST: 45 DAYS
-DUO XP: 2,800 XP • TOTAL DAYS: 28
-666 SYSTEM • AUTOMATIC LOGS
-```
-
-Setiap log juga menyertakan **banner PNG** berisi kedua avatar, nama, current/previous/best streak, XP, total hari, status aktivitas, dan timestamp.
-
-Aturan yang dijamin:
-
-| Aturan | Implementasi |
-| --- | --- |
-| Hanya saat increment nyata | Dipanggil setelah atomic update streak berhasil |
-| Tidak dikirim jika hanya satu member aktif | Streak baru naik saat `activityCount = 2` |
-| Tidak dobel per hari | Unique index `{ duoId, dayKey }` pada collection `streaklogs` |
-| Satu increment per Duo per hari | Filter `lastCompletedDay != dayKey` |
-| DB sebagai sumber kebenaran | Snapshot log disimpan sebelum dikirim |
-| Konsisten setelah restart | Baris `sending` di-recover saat boot, lalu retry otomatis |
-| Retry tanpa double-post | Klaim atomik `pending/failed → sending`, exponential backoff 1→30 menit, maksimum 6 attempt |
-| Channel per server | `GuildConfig.logChannelId` |
-
-`/duo logstatus` menampilkan jumlah terkirim, antrean, gagal, dilewati, serta log terakhir. Log gagal akan dicoba ulang otomatis oleh scheduler setiap 30 detik dan saat startup.
-
----
+`/help` menampilkan panduan yang sama secara ephemeral.
 
 ## Cara Kerja Duo Streak
 
-### 1. Membentuk Duo
+1. Member A mengundang member B dengan `/duo invite`.
+2. B menerima dengan `/duo accept`; keduanya menjadi satu Duo aktif.
+3. Setiap hari, masing-masing member harus mengirim minimal satu pesan valid.
+4. Jika keduanya aktif pada hari yang sama, streak bertambah satu.
+5. Jika hanya satu yang aktif sampai pergantian hari, streak putus.
+6. Hari dihitung berdasarkan timezone server, bukan waktu lokal masing-masing member.
 
-```
-A: /duo invite @B
-B: /duo accept
-```
-
-Validasi yang dilakukan:
-
-- Tidak bisa mengundang diri sendiri.
-- Tidak bisa mengundang bot.
-- Pengundang dan target tidak boleh sudah punya Duo aktif.
-- Maksimal 3 undangan pending; maksimal 10 undangan per jam.
-- Undangan berlaku 24 jam.
-- Satu user hanya bisa berada di satu Duo aktif **per server** (unique partial index MongoDB).
-
-Setelah diterima, `currentStreak = 0`. **Streak baru dimulai setelah kedua member menyelesaikan aktivitas pertama.**
-
-### 2. Aktivitas Harian
-
-Syarat pesan dihitung sebagai aktivitas valid:
-
-- Dikirim oleh member manusia di dalam server (bukan DM, bukan bot).
-- Bukan pesan sistem.
-- Panjang konten ≥ `MIN_MESSAGE_LENGTH` (default 3) setelah emoji/mention/link dibersihkan.
-- Bukan emoji-only, bukan mention-only, bukan link-only.
-- Bukan spam: `aaaaaaa`, `lolololo`, `asdfasdf`, karakter berulang, atau rasio karakter unik sangat rendah.
-- Tidak dimulai dengan `!`, `/`, atau `.` (mirip command).
-- Cooldown aktivitas default 60 detik per member.
-- Pesan identik yang diulang dalam 30 detik tidak dihitung.
-- Channel yang di-ignore (jika dikonfigurasi) tidak dihitung.
-
-Satu member hanya bisa menyumbang **satu aktivitas per hari**. Penulisan aktivitas dilindungi unique index `{ duoId, userId, dayKey }`, sehingga 1.000 pesan atau restart bot tidak akan menghitung ganda.
-
-### 3. Kapan Streak Bertambah?
-
-Saat aktivitas kedua member pada hari yang sama tercatat:
-
-```
-currentStreak += 1
-totalDays     += 1
-xp            += XP_PER_DAY
-bestStreak     = max(bestStreak, currentStreak)
-lastCompletedDay = hari ini
-```
-
-Proses ini memakai atomic update dengan filter `lastCompletedDay != hari ini`, sehingga dua pesan yang masuk bersamaan tetap hanya menambah **satu** hari streak.
-
-### 4. Kapan Streak Putus?
-
-Scheduler memeriksa setiap guild setiap 30 detik:
-
-- Saat pergantian hari (timezone server), semua Duo aktif yang `lastCompletedDay` bukan hari kemarin akan di-reset `currentStreak = 0` dan dicatat sebagai `broken`.
-- Notifikasi streak putus dikirim sekali.
-- `bestStreak`, `totalDays`, XP, dan badge **tetap tersimpan**.
-- Jika bot sempat offline, pengecekan catch-up otomatis berjalan saat startup.
-
-### 5. Timezone & Hari
-
-- Semua hari disimpan sebagai `dayKey` `YYYY-MM-DD` pada timezone server.
-- Default `Asia/Jakarta` (UTC+7), dapat diubah per server via `/duo config`.
-- Tidak bergantung pada jam host, sehingga pindah hosting tidak mengubah boundary hari.
-- Perhitungan DST-aware (untuk timezone yang memakai DST).
-
-### 6. Restart Safety
-
-- Aktivitas harian unik per hari.
-- `lastCompletedDay` mencegah streak bertambah dua kali.
-- History memiliki unique index per `{ duoId, dayKey, type }`.
-- Reward memiliki unique index per `{ duoId, milestone }`.
-- Reminder dibatasi `lastReminderDay` atomik.
-- Duo cache di memori hanya berisi Duo aktif dan otomatis di-invalidate saat break/rename.
-
----
+Aktivitas tidak dihitung jika pesan berasal dari bot, hanya emoji, hanya link, terlalu pendek, spam, berulang, atau masih dalam cooldown.
 
 ## Rewards
 
-| Milestone | Badge |
-| --- | --- |
-| 7 hari | 🥉 Rookie Duo Badge |
-| 14 hari | 🔗 Connected Duo Badge |
-| 30 hari | ⚔️ Elite Duo Badge |
-| 50 hari | 🔥 Flame Duo Badge |
-| 100 hari | 👑 Legendary Duo Badge |
-| 365 hari | 👑 Eternal Duo Badge |
+Milestone badge: **7, 14, 30, 50, 100, dan 365 hari**. Reward diberikan sekali per Duo dan disimpan di `DuoReward`, sehingga tidak dobel setelah restart atau multi-instance.
 
-Badge diberikan **otomatis** ketika streak mencapai milestone, disimpan di collection `duorewards`, dicatat di `streakhistories`, dan tidak pernah dobel. Badge tetap dimiliki setelah streak putus.
+## Notifications & Logs
 
----
-
-## Notifikasi
-
-| Event | Kapan | Tujuan |
-| --- | --- | --- |
-| Streak selesai | Saat kedua member aktif | Channel notifikasi / DM |
-| Streak putus | Saat rollover mendeteksi hari tidak lengkap | Channel / DM |
-| Badge baru | Saat milestone tercapai | Channel / DM |
-| Reminder harian | Pukul `reminder_hour` (default 21:00), hanya jika streak belum lengkap | Channel / DM |
-| Partner keluar server | Saat member meninggalkan server | Partner yang tersisa |
-
-- Reminder dikirim **maksimal sekali per Duo per hari** (`lastReminderDay`).
-- Channel notifikasi diatur via `/duo config channel:#channel`. Tanpa channel, notifikasi dikirim via DM.
-- Semua notifikasi melewati queue dengan delay agar aman terhadap rate limit Discord.
-- Matikan reminder dengan `/duo config reminders:false`, atau matikan semua dengan `notifications:false`.
-
----
-
-## Leaderboard
-
-Kategori:
-
-| Kategori | Field |
-| --- | --- |
-| `current` | Current streak |
-| `best` | Best streak |
-| `xp` | Total Duo XP |
-| `days` | Total Days Together |
-
-```text
-/duo leaderboard category:best
-/duo leaderboard category:xp page:2
-```
-
-Setiap halaman dirender sebagai **kartu PNG 1280×1280**: rank, dua avatar Discord, nama Duo, current streak, dan best streak. 10 Duo per halaman dengan tombol Prev / Next / Close. Rank 1 emas, rank 2 perak, rank 3 perunggu, rank lainnya merah. Hanya Duo berstatus `active` yang masuk peringkat, dan angkanya dibaca langsung dari MongoDB.
-
----
+- Reminder harian dikirim sekali per hari setelah jam reminder server.
+- Notifikasi streak selesai/putus dan badge baru dapat dikirim ke channel atau DM.
+- `/duo setlog` mengaktifkan **666 DUO STREAK LOGS**.
+- Log hanya dibuat saat streak bertambah; satu log per Duo per hari.
+- Log yang gagal terkirim masuk antrean durable dan dicoba ulang oleh scheduler.
 
 ## Database
 
-### Collections
+Database dan data lama **tidak dihapus** oleh versi ini. Collection yang dipakai:
 
-| Collection | Isi |
+| Collection | Fungsi |
 | --- | --- |
-| `duos` | Member, nama, streak, best streak, total days, XP, status, tanggal |
-| `invitations` | Undangan pending/accepted/declined/expired + TTL |
-| `dailyactivities` | 1 dokumen per member per hari per Duo |
-| `streakhistories` | Event: joined, completed, broken, reward, ended |
-| `duorewards` | Badge yang sudah didapat per milestone |
-| `userstats` | Statistik per member: hari aktif, pesan, completed days, streak |
-| `guildconfigs` | Timezone, notifikasi, reminder, cooldown, channel, `logChannelId` |
-| `streaklogs` | Satu baris per Duo per hari yang streak-nya naik + status pengiriman/retry |
+| `Duo` | Relasi dan status streak |
+| `Invitation` | Undangan pending |
+| `DailyActivity` | Aktivitas harian per member |
+| `StreakHistory` | Riwayat event streak |
+| `DuoReward` | Reward yang sudah diberikan |
+| `UserStat` | Statistik per user |
+| `GuildConfig` | Konfigurasi server |
+| `StreakLog` | Antrean dan status log |
 
-### Index penting
+Unique index utama: satu user hanya boleh berada di satu Duo aktif. TTL index membersihkan undangan kedaluwarsa.
 
-```text
-duos            { guildId: 1, members.userId: 1 } unique partial(status=active)
-duos            { guildId, status, currentStreak } (leaderboard)
-invitations     { guildId, fromUserId, toUserId } unique partial(status=pending)
-dailyactivities { duoId, userId, dayKey } unique
-streakhistories { duoId, dayKey, type } unique
-duorewards      { duoId, milestone } unique
-userstats       { guildId, userId } unique
-guildconfigs    { guildId } unique
-streaklogs      { duoId, dayKey } unique
-streaklogs      { status, nextAttemptAt } (retry queue)
-streaklogs      { guildId, createdAt } (logstatus)
-```
+## Streak API (opsional)
 
-### Struktur dokumen Duo
+Aktif dengan `ENABLE_API=true`.
 
-```js
-{
-  guildId: "900000000000000001",
-  name: "Tama × Zen",
-  members: [
-    { userId: "100...1", username: "tama", displayName: "Tama", avatar: "https://..." },
-    { userId: "100...2", username: "zen",  displayName: "Zen",  avatar: "https://..." }
-  ],
-  status: "active",
-  currentStreak: 28,
-  bestStreak: 45,
-  totalDays: 28,
-  xp: 2800,
-  lastCompletedDay: "2026-11-13",
-  lastReminderDay: "2026-11-13",
-  streakStartedAt: ISODate("2026-10-17T..."),
-  notificationsEnabled: true
-}
-```
-
----
-
-## Security & Reliability
-
-- **Validasi command** — tipe opsi, nama Duo disanitasi, semua member diverifikasi.
-- **Cegah Duo ganda** — unique partial index per server + pengecekan sebelum insert.
-- **Cegah undangan ke diri sendiri / bot** — validasi eksplisit.
-- **Anti invite spam** — maksimal 3 pending, 10 undangan/jam, TTL 24 jam, unique pending index.
-- **Anti aktivitas palsu** — validasi konten, anti spam, anti pesan berulang, cooldown.
-- **Anti double count** — unique daily activity, atomic `lastCompletedDay`, cache per hari.
-- **Race condition** — atomic `findOneAndUpdate` dengan filter status & hari; aman tanpa transaction.
-- **Error handling** — command error ditangkap dan dibalas ephemeral; event error di-log tanpa mematikan bot.
-- **Logging** — scoped logger `boot`, `duo`, `activity`, `streak`, `rewards`, `notify`, `scheduler`, `api`.
-- **Rate limit aware** — queue notifikasi berurutan, delay 1.2 detik.
-- **Graceful shutdown** — flush antrean log + notifikasi, tutup API, putus MongoDB.
-- **Tanpa kredensial di source** — semua lewat `.env`.
-- **Permission** — `/duo config`, `/duo setlog`, dan `/duo logstatus` membutuhkan `Manage Server`.
-- **Log delivery** — unique index per hari, klaim atomik, retry exponential backoff, recovery saat restart.
-- **API opsional** — `API_KEY` untuk membatasi akses endpoint `/api/*`.
-
----
-
-## Streak API (HTTP)
-
-Aktif secara default (`ENABLE_API=true`). Berguna untuk uptime monitor, status page, atau dashboard eksternal.
-
-```bash
-# Health (public)
-curl http://localhost:3000/health
-
-# Statistik
-curl "http://localhost:3000/api/stats?guildId=900000000000000001" \
-  -H "x-api-key: YOUR_KEY"
-
-# Leaderboard
-curl "http://localhost:3000/api/leaderboard?guildId=900000000000000001&category=current&limit=10"
-
-# Detail Duo berdasarkan Discord User ID
-curl "http://localhost:3000/api/duo/100000000000000001?guildId=900000000000000001"
-
-# Badge
-curl "http://localhost:3000/api/rewards/100000000000000001?guildId=900000000000000001"
-```
-
-Contoh respons `/health`:
-
-```json
-{
-  "ok": true,
-  "status": "online",
-  "uptimeSeconds": 86400,
-  "bot": { "id": "123", "tag": "666 BOT#0001", "ping": 42, "guilds": 1 },
-  "database": { "state": "connected", "ready": true },
-  "notificationsQueued": 0
-}
-```
-
-- Bind ke `0.0.0.0` agar bisa diakses dari luar container Pterodactyl.
-- Jika `API_KEY` diisi, kirim header `x-api-key` (atau `?key=`).
-- Rate limit 90 request/menit per IP.
-- Matikan dengan `ENABLE_API=false` jika tidak diperlukan.
-
----
-
----
-
-## 666 ULTIMATE RPG ECONOMY
-
-Expansion besar yang **additive**: seluruh fitur Duo Streak, `/duo`, database, dan konfigurasi lama tetap berjalan. Semua sistem memakai prefix **`t`** dan dapat dikonfigurasi dari dashboard web.
-
-### Fitur RPG
-
-| Sistem | Command | Isi |
-| --- | --- | --- |
-| Economy | `tcash` | balance, daily/weekly/monthly, work, beg, deposit, withdraw, transfer, leaderboard, inventory, shop, buy, sell, history |
-| Hunting | `thunt` | start, inventory, collection, sell, stats, leaderboard |
-| Battle | `tbattle @user` | accept, decline, stats, leaderboard; turn-based PvP + ELO + anti win-trading |
-| Pet | `tpet` | hatch, feed, equip/unequip, inventory, upgrade, stats, evolve, collection; slot aktif mengikuti settings `maxSlots` |
-| Mini Games | `tcoinflip` `tdice` `tslots` `tblackjack` `troulette` `tguess` `ttrivia` `trps` `tmine` | betting, tombol interaktif, RNG crypto, house edge transparan; `tmine` memakai poin virtual/EXP tanpa taruhan saldo |
-| Quest | `tquest` | daily, weekly, special, hidden, claim |
-| Achievement | `tachievement` | badge + reward sekali |
-| Rank | `trank` | level, rank, EXP, posisi server |
-| Trade | `ttrade @user` | offer, accept, decline, confirm, cancel; dua pihak wajib confirm |
-| Market | `tmarket` | list, sell, buy, cancel, mine, history; listing fee + market tax |
-| Guild | `tguild` | create, join, leave, info, members, invite, deposit, upgrade, leaderboard |
-| Guild War | `tguild war` | challenge, accept, status, leaderboard; season mingguan |
-| World Boss | `tboss` | status, attack, leaderboard, rewards; satu HP shared per server |
-| Profile | `tprofile [@user]` | kartu profil lengkap (koin, level, hunt, battle, collection, guild, boss, trading) |
-| Help | `thelp` `th` `t?` `/help` | **Command List** embed 10 kategori, detail command, pencarian, contoh, cooldown, permission, alias, select menu, dan tombol website |
-| Social | `tprofile` `tlevel` `tavatar` `tmarry` `tship` `tcookie` `tpray` `tcurse` `temoji` `twallpaper` `tgodify` | profil, level, hubungan, interaksi sosial persisten, avatar, dan wallpaper |
-| Fun | `t8ball` `tdefine` `tgif` `tpic` `ttranslate` `troll` `tchoose` `tbell` | RNG, dictionary/GIF/translate API, gambar acak, dan pilihan |
-| Meme | `tspongebobchicken` `tslapcar` `tisthisa` `tdrake` `tdistractedbf` `tcommunismcat` `teject` `temergencymeeting` `theadpat` `ttradeoffer` `twaddle` | generator meme PNG canvas dengan teks custom |
-| Emotes + Actions | `tblush` … `tbully` | 40 aksi/ekspresi dengan GIF nyata |
-| Utility | `tping` `tstats` `tlink` `tguildlink` `tdisable` `tcensor` `tprefix` `trules` `tsuggest` `tannouncement` `tshards` `tmath` `tcolor` `tpatron` | info bot, moderator tools, prefix tambahan, filter kata, saran, dan kalkulator |
-| Animals tambahan | `tzoo` `tsell` `tsacrifice` `tsim` `tinv` `tequip` `tautohunt` `tdex` `tlootbox` `tegg` `tcrate` `tteam` `tweapon` `trename` `tdismantle` | koleksi, equipment, auto-hunt, dex, lootbox/crate, dan manajemen monster/pet |
-| Gambling tambahan | `tlottery` | lottery server harian dengan tiket, pot, dan draw scheduler |
-
-Contoh:
-
-```text
-tcash daily
-thunt
-thunt sell all
-tbattle @partner
-tpet hatch egg_rare
-tcoinflip heads 100
-tblackjack 250
-tmine 3000
-ttrade @friend 500
-tmarket sell monster <id> 1500
-tguild create Nightfall
-tboss attack
-tquest claim daily_hunt_5
-tprofile @member
-```
-
-### Response Layer
-
-Command tidak lagi otomatis mengirim embed. `src/rpg/ui/response.js` menyediakan kontrak kecil yang dipakai oleh command dan interaction handler:
-
-| Tipe | Dipakai untuk |
+| Endpoint | Keterangan |
 | --- | --- |
-| `plain` / `richText` | reward, work/beg, transfer, stats, rank, quest, achievement, notice singkat |
-| `gameBoard` | coinflip, slots, dice, roulette, guess, blackjack, trivia, RPS, battle result, mines |
-| `image` | encounter hunting dengan artwork monster |
-| `gif` | emotes/actions (teks + URL GIF, tanpa embed tambahan) |
-| `profileCard` | `tprofile` dan `tcash profile` |
-| `leaderboard` | ranking teks |
-| `embed` | data terstruktur yang memang butuh field, seperti shop, market, guild, boss, dan inventory |
+| `GET /health` | Status bot, MongoDB, uptime, queue |
+| `GET /api/stats?guildId=...` | Statistik global/server |
+| `GET /api/leaderboard?guildId=...&category=current` | Leaderboard |
+| `GET /api/duo/:userId?guildId=...` | Detail Duo dan status hari ini |
+| `GET /api/rewards/:userId?guildId=...` | Reward dan progres |
 
-Semua respons tetap melalui `reply()` / `toPayload()` dengan `allowedMentions` aman. Game interaktif memakai satu pesan session: handler memanggil `deferUpdate()` lalu `editReply()`, tombol dinonaktifkan setelah selesai/kedaluwarsa, dan handler memverifikasi pemilik session sebelum memproses klik. `formatCountdown()` memakai reset UTC yang sama dengan `dayKey/weekKey/monthKey` backend agar countdown daily/weekly/monthly tidak menyesatkan.
-
-### Dashboard Web
-
-Dashboard tersedia dari HTTP server yang sama dengan API:
-
-```text
-http://HOST:API_PORT/dashboard
-```
-
-Halaman: `/dashboard/economy`, `/dashboard/hunting`, `/dashboard/pets`, `/dashboard/battle`, `/dashboard/minigames` (Gambling), `/dashboard/quests`, `/dashboard/market`, `/dashboard/guilds`, `/dashboard/worldboss`, `/dashboard/statistics`, `/dashboard/settings`, `/dashboard/drop-rates`, `/dashboard/transactions`, `/dashboard/commands`, `/dashboard/categories`.
-
-Masuk dengan:
-
-- **Admin Key** — nilai `DASHBOARD_ADMIN_KEY` (fallback `API_KEY`; default development `666-admin` — ganti di production). Key ditukar dengan session token HMAC berumur `DASHBOARD_SESSION_HOURS` (default 12 jam), jadi key mentah tidak disimpan di browser.
-- **Guild ID** — Discord server ID yang ingin dikelola.
-
-Dashboard membaca MongoDB secara live, refresh otomatis setiap 30 detik, dan mendukung:
-
-- editor settings 8 grup: **Economy, Hunting, Pets, Battle, Gambling, Market, Guild, World Boss**;
-- validasi angka/min/max dan relasi (mis. `maxBet >= minBet`);
-- perubahan langsung berlaku tanpa restart (cache settings 5 detik antar instance);
-- **drop-rate editor** dengan input %, visualisasi distribusi, validasi total tepat 100%, reset default, preview, dan riwayat perubahan;
-- **command & category management** per guild — toggle langsung tersimpan ke MongoDB dan dibaca handler tanpa restart;
-- **player detail** (`/api/dashboard/players/:userId`) berisi user, transaksi, monster, dan pet;
-- transaction log + filter, statistik agregat, chart 7 hari;
-- admin permission check pada setiap endpoint dashboard (`x-admin-key` atau `Authorization: Bearer <session>`); endpoint `POST /api/dashboard/session` menukar admin key menjadi token berumur terbatas.
-
-### Website publik + Pusat Bantuan
-
-Website statis siap deploy ada di `web/` dan juga disajikan oleh bot di:
-
-```text
-http://HOST:API_PORT/site/
-http://HOST:API_PORT/site/help/
-```
-
-Isinya landing page 666 Ultimate RPG, daftar fitur, quick start, dan dokumentasi command yang bisa dicari. Dokumentasi di-generate dari katalog command yang sama dengan `thelp` supaya tidak pernah basi:
-
-```bash
-npm run web:build   # tulis web/commands.json dari src/rpg/help/catalog.js
-npm run web:check   # gagal jika commands.json stale (cocok untuk CI)
-```
-
-Deploy terpisah ke Vercel: jadikan folder `web` sebagai Root Directory project, tanpa build command. `web/vercel.json` sudah mengatur clean URL dan cache asset. Setelah dapat domain Vercel, isi `PUBLIC_WEB_URL` di `.env` bot agar tombol **Buka Website** muncul di menu `/help`.
-
-### Login dashboard
-
-```text
-POST /api/dashboard/session  { "adminKey": "..." }
-→ { "ok": true, "data": { "token": "<expiry>.<hmac>", "expiresAt": "..." } }
-```
-
-Kirim token pada request berikutnya: `Authorization: Bearer <token>`. Raw `x-admin-key` tetap didukung untuk integrasi/CLI. Session HMAC memakai `DASHBOARD_ADMIN_KEY`; mengganti key otomatis membatalkan semua session lama.
-
-### Environment tambahan
-
-```env
-ENABLE_DASHBOARD=true
-DASHBOARD_ADMIN_KEY=ganti-dengan-key-rahasia
-DASHBOARD_SESSION_HOURS=12
-PUBLIC_WEB_URL=https://domain-website-kamu.vercel.app
-```
-
-### MongoDB collections baru
-
-`economy_users`, `economy_transactions`, `hunting_users`, `hunting_monsters`, `monster_collection`, `pets`, `pet_collection`, `battles`, `game_sessions`, `game_history`, `quests`, `achievements`, `market_listings`, `market_transactions`, `trade_sessions`, `guilds`, `guild_members`, `guild_wars`, `world_bosses`, `world_boss_sessions`, `world_boss_contributions`, `economy_settings`, `game_settings`, `game_cooldowns`, `settings_history`.
-
-Semua model terdaftar di `src/database/models/index.js` sehingga `ensureIndexes()` membuat index saat boot (`autoIndex` tetap `false`). Index unik dipakai untuk anti double reward: user per guild, idempotency transaksi, cooldown `(guild,user,scope)`, progress quest, kontribusi boss, dan satu world boss aktif per guild.
-
-### Multi-bot & keamanan
-
-- Cooldown terdistribusi di `game_cooldowns` (unique index + TTL), bukan hanya memory.
-- Setiap mutasi saldo memakai **idempotency key** unik; dua instance tidak bisa memberi reward yang sama dua kali.
-- Daily/weekly/monthly memakai conditional atomic update (`lastDailyDay != hari-ini`).
-- Battle accept, market buy, trade execute, world-boss damage memakai conditional atomic update.
-- Trade mengunci item (`lockedBy`) dan mewajibkan konfirmasi kedua pihak; pembayaran dilakukan setelah validasi.
-- Market memakai urutan lock listing → debit buyer → credit seller → pindah item, dengan kompensasi/refund bila langkah gagal.
-- `withTransaction()` memakai MongoDB transaction bila replica set tersedia, lalu fallback aman untuk standalone.
-- Anti win-trading: matchup berulang dalam 24 jam mengurangi/menghapus reward.
-- RNG memakai `crypto.randomInt` di `src/rpg/utils/rng.js`; tidak ada manipulasi hasil tersembunyi. House edge mini games transparan di settings.
-- Dashboard write endpoint mewajibkan `x-admin-key`; CORS dan method dibatasi; body JSON dibatasi 1 MB.
-
-### Struktur modul RPG
-
-```text
-src/
-  database/models/rpg/       25 model Mongo (registry di index.js)
-  rpg/
-    commands/                command t-prefix modular
-    config/defaults.js       default settings + schema + validasi drop rate
-    data/catalog.js          monster, pet, egg, item, boss, quest, achievement
-    services/                economy, hunting, pet, battle, game, quest, market, trade, guild, boss, stats, settings, cooldown
-    ui/embeds.js             666 embeds, progress bar, tombol
-    utils/                   RNG crypto, formula, periode, transaksi DB
-    handler.js               prefix parser + error handling
-    interactions.js          tombol rpg:
-    scheduler.js             boss spawn, expiry, war finalize
-  dashboard/                 dashboard web (HTML/CSS/JS vanilla)
-```
-
-### Test
-
-```bash
-npm test
-```
-
-Test suite sekarang mencakup fitur lama + RPG: registry command, parser prefix, validasi drop rate/settings, formula, RNG, battle simulator, blackjack, mines, economy idempotency/concurrency, cooldown terdistribusi, hunt/pet, battle atomic, mini game, world boss, guild, trade dua-confirm, market, command render, response layer, pagination/inventory owner, tombol interaksi, dan dashboard API/static.
+Jika `API_KEY` diisi, endpoint `/api/*` memerlukan header `x-api-key`. `/health` tetap publik.
 
 ## Testing
 
-Test suite berjalan **tanpa MongoDB dan tanpa token Discord** — memakai in-memory database yang meniru Mongoose + unique index.
+Test berjalan tanpa MongoDB dan tanpa token Discord:
 
 ```bash
 npm test
 ```
 
-Cakupan:
-
-- Timezone & day-key (midnight Jakarta, leap year, DST-safe offset, US timezone).
-- Sanitasi nama Duo dan validasi konten pesan/spam.
-- Undangan: self-invite, bot, duplikat, double-duo, limit pending.
-- Alur lengkap: invite → accept → aktivitas A → aktivitas B → streak +1.
-- Aktivitas hanya satu member tidak menambah streak.
-- Anti double-count (termasuk 2 aktivitas bersamaan).
-- 7 hari berturut-turut → Rookie Duo Badge (dan tidak dobel).
-- Rollover memutus streak, menyimpan best streak, idempotent, dan streak bisa dimulai ulang.
-- Break Duo membebaskan member untuk membuat Duo baru.
-- Reminder hanya sekali per hari.
-- Leaderboard & history.
-- Semua embed (profile, streak, rewards, history, notifikasi, help) dirender tanpa `undefined`/`NaN`.
-- Renderer PNG profile, leaderboard, dan streak log menghasilkan buffer valid (> 10 KB).
-- Log otomatis: hanya saat increment, tidak untuk satu member, unik per hari, retry tanpa dobel, recovery setelah restart.
-- `/duo setlog` memvalidasi Manage Server + izin bot; `/duo logstatus` menghitung antrean.
-- RPG: registry/parser command `t`, economy idempotency & concurrency, cooldown terdistribusi, hunt/pet, battle simulator & tombol accept, mini games (termasuk blackjack/trivia/RPS), trade dua-confirm, market lock, guild/war, world boss, quest/achievement, validasi settings & drop rate.
-- Dashboard: static page + asset, auth 401, validasi guild ID, route API lama tetap jalan, 503 saat MongoDB down.
-
----
+Cakupan: flow Duo lengkap, tombol accept/decline/break, activity detection, timezone, streak rollover, reward idempotency, notifikasi, streak log, render kartu PNG, embed, validator, dan Streak API.
 
 ## Struktur Project
 
 ```text
-666bot/
-├── src/
-│   ├── index.js                  # Entry point, client, graceful shutdown
-│   ├── deploy-commands.js        # Register slash commands
-│   ├── config/
-│   │   └── index.js              # Env loader + validation
-│   ├── commands/
-│   │   └── duo/
-│   │       ├── index.js          # /duo builder + subcommand router
-│   │       ├── invite.js
-│   │       ├── accept.js
-│   │       ├── decline.js
-│   │       ├── profile.js
-│   │       ├── streak.js
-│   │       ├── leaderboard.js
-│   │       ├── rewards.js
-│   │       ├── history.js
-│   │       ├── rename.js
-│   │       ├── break.js
-│   │       ├── config.js
-│   │       ├── setlog.js
-│   │       ├── logstatus.js
-│   │       ├── help.js
-│   │       └── _shared.js
-│   ├── events/
-│   │   ├── ready.js
-│   │   ├── messageCreate.js
-│   │   ├── interactionCreate.js
-│   │   └── guildMemberRemove.js
-│   ├── handlers/
-│   │   ├── commandHandler.js
-│   │   └── eventHandler.js
-│   ├── services/
-│   │   ├── duoService.js
-│   │   ├── streakService.js
-│   │   ├── activityService.js
-│   │   ├── rewardService.js
-│   │   ├── notificationService.js
-│   │   ├── schedulerService.js
-│   │   ├── configService.js
-│   │   ├── profileService.js
-│   │   ├── cardService.js        # Render PNG + cache avatar
-│   │   ├── logService.js         # Queue, retry, dedupe 666 DUO STREAK LOGS
-│   │   └── apiService.js
-│   ├── rpg/                       # 666 ULTIMATE RPG (commands, services, ui, data, utils)
-│   │   ├── help/catalog.js        # Sumber dokumentasi thelp + website
-│   │   ├── ui/help.js             # Render menu bantuan interaktif
-│   │   └── commands/              # command prefix t (termasuk help.js)
-│   ├── commands/help.js           # Slash /help
-│   ├── dashboard/                 # Dashboard web vanilla (index.html, styles.css, app.js)
-│   ├── database/
-│   │   ├── connection.js
-│   │   └── models/
-│   │       ├── rpg/              # 25 model RPG (RPGUser, Guild, WorldBoss, ...)
-│   │       ├── Duo.js
-│   │       ├── Invitation.js
-│   │       ├── DailyActivity.js
-│   │       ├── StreakHistory.js
-│   │       ├── DuoReward.js
-│   │       ├── UserStat.js
-│   │       ├── GuildConfig.js
-│   │       ├── StreakLog.js
-│   │       └── index.js
-│   ├── ui/
-│   │   ├── theme.js              # Warna, emoji, progress bar
-│   │   ├── embeds.js             # Embed card, log & notifikasi
-│   │   ├── paginator.js          # Tombol Prev/Next + image attachment
-│   │   └── cards/
-│   │       ├── canvasTools.js    # Font, panel, crown, flame, chain, avatar
-│   │       ├── profileCard.js    # Render profil 1280×1280
-│   │       ├── leaderboardCard.js# Render leaderboard 1280×1280
-│   │       ├── streakLogCard.js  # Render banner log 1280×720
-│   │       └── payloads.js       # Embed + AttachmentBuilder
-│   ├── assets/
-│   │   ├── fonts/                # Bebas Neue + Chakra Petch (OFL)
-│   │   └── images/               # Background plate 666
-│   └── utils/
-│       ├── time.js               # Timezone, day key, midnight
-│       ├── validators.js         # Sanitasi & anti spam
-│       ├── logger.js
-│       ├── errors.js
-│       ├── cooldown.js
-│       └── members.js
-├── web/                          # Landing page + pusat bantuan statis (Vercel-ready)
-├── scripts/generate-web-help.js  # Generate web/commands.json dari katalog
-├── tests/
-│   ├── duoFlow.test.js
-│   ├── commands.test.js
-│   ├── streakLog.test.js
-│   ├── embeds.test.js
-│   ├── time.test.js
-│   ├── validators.test.js
-│   ├── rpg.test.js
-│   ├── rpgEconomy.test.js
-│   ├── rpgGameplay.test.js
-│   ├── rpgCommands.test.js
-│   ├── rpgInteractions.test.js
-│   ├── dashboard.test.js
-│   ├── helpers/fakeDb.js
-│   └── helpers/rpgFakeDb.js
-├── .env.example
-├── .gitignore
-├── package.json
-└── README.md
+src/
+  commands/
+    duo/                    subcommand /duo
+    help.js                 /help
+  config/                   env + validasi
+  database/models/          model MongoDB Duo Streak
+  events/                   ready, interaction, message, member remove
+  handlers/                 loader command/event
+  services/                 duo, activity, streak, reward, config, log,
+                            notification, profile, scheduler, card, API
+  ui/
+    cards/                  renderer PNG
+    embeds.js               embed 666
+    paginator.js            pagination tombol
+  utils/                    logger, time, validators, member, cooldown
+tests/                      test suite in-memory
 ```
-
----
 
 ## Troubleshooting
 
-| Gejala | Penyebab & solusi |
+| Masalah | Solusi |
 | --- | --- |
-| `Configuration: DISCORD_TOKEN is missing` | `.env` belum dibuat/terbaca. Pastikan file ada di root project. |
-| Bot online tapi slash command tidak muncul | Jalankan `npm run deploy`. Jika global, tunggu hingga 1 jam. Coba `GUILD_ID` + `npm run deploy`. |
-| Aktivitas tidak dihitung | Aktifkan **MESSAGE CONTENT INTENT** di Developer Portal; pastikan pesan ≥ 3 karakter, bukan emoji/link/command, dan user punya Duo aktif. |
-| Streak tidak bertambah meski dua member chat | Kedua member harus chat di **hari yang sama** (timezone server), dan masing-masing minimal satu pesan valid. Cek `/duo streak`. |
-| Streak putus padahal sudah chat | Cek timezone server (`/duo config`). Pesan setelah pergantian hari dihitung untuk hari baru. |
-| Reminder tidak terkirim | Pastikan `reminders` aktif, channel notifikasi valid, dan DM member terbuka. Reminder hanya untuk Duo dengan streak > 0 yang belum lengkap. |
-| Log streak tidak muncul | Jalankan `/duo setlog #channel`, pastikan kedua member benar-benar menyelesaikan aktivitas hari itu, dan bot punya izin **View Channel, Send Messages, Embed Links, Attach Files**. Cek `/duo logstatus`. |
-| Log gagal terkirim | Buka `/duo logstatus`. Sistem retry otomatis (1→30 menit, maks 6 attempt). Jika channel dihapus, set ulang dengan `/duo setlog`. |
-| `MongoServerError: E11000 duplicate key` saat startup/index | Ada data duplikat lama yang melanggar unique index. Bersihkan dokumen duplikat, lalu restart. |
-| API tidak bisa diakses | Set `API_HOST=0.0.0.0`, buka allocation di Pterodactyl, cek firewall. |
-| Bot restart terus | Cek log panel: biasanya token salah, MongoDB tidak reachable, atau Node < 22. |
-| Command error "Cooldown" | Cooldown internal 2–3 detik antar pemakaian command. |
-| Dashboard 401 | Isi Admin Key = `DASHBOARD_ADMIN_KEY`; jika kosong, fallback `API_KEY` atau default `666-admin`. |
-| Dashboard 503 `database_unavailable` | MongoDB belum tersambung; cek `MONGODB_URI` dan log koneksi. |
-| Settings tidak berubah di instance lain | Cache settings 5 detik; tunggu refresh atau restart. Pastikan hanya satu sumber `DASHBOARD_ADMIN_KEY`. |
-| `E11000` pada transaksi/quest | Unique idempotency index aktif; jangan menghapus index, justru ini pengaman double reward. |
+| Bot tidak start | Pastikan `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, dan `MONGODB_URI` valid. |
+| Slash command tidak muncul | Jalankan `npm run deploy`; command global bisa butuh hingga 1 jam. |
+| Aktivitas tidak dihitung | Cek cooldown, panjang pesan, channel ignored, dan intent Message Content. |
+| Streak tidak naik | Kedua member harus menyelesaikan aktivitas valid pada hari yang sama. |
+| Log tidak terkirim | Pastikan `/duo setlog` sudah diatur dan bot punya permission Send Messages + Attach Files. |
+| Kartu gagal dirender | Pastikan dependency `@napi-rs/canvas` terpasang; sistem tetap mengirim embed fallback. |
 
----
+## License
 
-## Checklist Deployment
-
-- [ ] Node.js 22+ terpasang.
-- [ ] `npm install --omit=dev` selesai.
-- [ ] `.env` berisi `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, `MONGODB_URI`.
-- [ ] Privileged intents **Message Content** + **Server Members** aktif.
-- [ ] Bot diundang dengan scope `applications.commands`.
-- [ ] Slash command terdeploy (`AUTO_DEPLOY` atau `npm run deploy`).
-- [ ] MongoDB dapat diakses dari server.
-- [ ] Timezone dipilih (`Asia/Jakarta` default).
-- [ ] Channel notifikasi diset (opsional).
-- [ ] `/duo setlog #channel` dijalankan dan `/duo logstatus` menunjukkan channel aktif.
-- [ ] Port API dialokasikan (jika `ENABLE_API=true`).
-- [ ] `ENABLE_DASHBOARD=true` dan `DASHBOARD_ADMIN_KEY` kuat (bukan default `666-admin`).
-- [ ] Buka `/dashboard`, login, cek settings & drop-rate.
-- [ ] MongoDB memakai replica set bila ingin transaksi market/trade rollback penuh.
-- [ ] Test lulus: `npm test`.
-- [ ] Uji alur nyata: invite → accept → chat dua member → cek `/duo profile`, `/duo leaderboard`, dan log otomatis di channel.
-
----
-
-## Branding
-
-```text
-666 BOT
-TWO MEMBERS. ONE CONNECTION. ONE STREAK.
-
-🔥 666 DUO STREAK SYSTEM
-```
-
-Dibangun untuk koneksi harian yang benar-benar dijaga — bukan sekadar angka.
+MIT.
