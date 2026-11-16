@@ -3,8 +3,8 @@
 /**
  * Single entry point for all Mongoose models.
  *
- * Services import models from here (never directly) which keeps the data layer
- * modular and makes the test-suite able to swap in an in-memory implementation.
+ * Only Duo Streak collections live here. Services import models from this file
+ * so the test-suite can swap in an in-memory implementation.
  */
 const Duo = require('./Duo');
 const Invitation = require('./Invitation');
@@ -24,5 +24,4 @@ module.exports = {
   UserStat,
   GuildConfig,
   StreakLog,
-  ...require('./rpg'),
 };

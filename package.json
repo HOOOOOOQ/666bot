@@ -13,9 +13,7 @@
     "dev": "node --watch src/index.js",
     "deploy": "node src/deploy-commands.js",
     "test": "node --test",
-    "test:watch": "node --test --watch tests/",
-    "web:build": "node scripts/generate-web-help.js",
-    "web:check": "node scripts/generate-web-help.js --check"
+    "test:watch": "node --test --watch tests/"
   },
   "keywords": [
     "discord",
